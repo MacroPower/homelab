@@ -12,6 +12,17 @@ schema Values:
     affinity : ValuesAffinity, optional
         # Assign a group of affinity scheduling rules
         #
+    alignServiceNameWithOTelSemConv : bool, optional, default is False
+        Align the `service.name` resource attribute with the
+        [OpenTelemetry semantic conventions for Kubernetes attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/)
+        (which is what Grafana Beyla uses). When enabled, the detection chain becomes:
+        pod annotation `resource.opentelemetry.io/service.name` → pod label `app.kubernetes.io/instance` → pod label
+        `app.kubernetes.io/name` → owner workload name (Deployment, StatefulSet, etc.) → pod name → container name.
+        The `service.version` resource attribute is similarly detected from the `app.kubernetes.io/version` pod label.
+    allowedConfigMapWriters : str, optional, default is "system:serviceaccount:beyla-k8s-injector:beyla"
+        Comma-separated allowlist of usernames permitted to create/update the
+        annotated injection ConfigMaps — typically Beyla's ServiceAccount. Members of
+        system:masters are always allowed (break-glass).
     alloy : ValuesAlloy, optional
         # Various Alloy settings. For backwards compatibility with the grafana-agent
         # chart, this field may also be called "agent". Naming this field "agent" is
@@ -23,7 +34,11 @@ schema Values:
         Annotation Autodiscovery enables gathering metrics from Kubernetes Pods and Services discovered by special annotations.
         Requires a destination that supports metrics.
         To see the valid options, please see the [Annotation Autodiscovery feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-annotation-autodiscovery).
-    annotations : [any | ValuesAnnotations], optional
+    annotationSelector : str, optional, default is "logs.grafana.com/pods.enabled"
+        The annotation to control the behavior of gathering logs from this pod.
+        Pod annotation to use for controlling log discovery. If a pod has this annotation, it will either enable or disable
+        gathering of logs, depending on the value of the discoveryMethod.
+    annotations : ValuesAnnotations, optional
         Annotations to add to the Alloy Custom Resource. These annotations are not added to the workload or Pod.
     apiServer : ValuesApiServer, optional
         API Server metrics gather information about the Kubernetes API Server.
@@ -31,7 +46,17 @@ schema Values:
         Application Observability.
         Requires destinations that supports metrics, logs, and traces.
         To see the valid options, please see the [Application Observability feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-application-observability).
+    attachNamespaceMetadata : bool, optional, default is False
+        Attach namespace metadata to pod discovery targets. When enabled, all namespace labels
+        are available as log labels via `__meta_kubernetes_namespace_label_*`.
     auth : ValuesAuth, optional
+    authFilter : ValuesAuthFilter, optional
+        Enable kube-state-metrics native request authn/authz on the metrics endpoints
+        via the `--auth-filter` flag, as an alternative to running kube-rbac-proxy.
+        When enabled, the `create` permissions on `tokenreviews` and
+        `subjectaccessreviews` required by the filter are added to the (Cluster)Role
+        automatically. Scrapers must authenticate; see the chart README and the
+        kube-state-metrics docs on protecting metrics endpoints.
     autoInstrumentation : ValuesAutoInstrumentation, optional
         Auto-Instrumentation.
         Requires destinations that supports metrics, logs, and traces.
@@ -50,11 +75,24 @@ schema Values:
     bearerToken : ValuesBearerToken, optional
         Sets bearer_token_file line in the prometheus.scrape annotation_autodiscovery.
     beyla : ValuesBeyla, optional
+        Beyla, only used for its Kubernetes metadata cache for now.
+    bookmarks : ValuesBookmarks, optional
     cadvisor : ValuesCadvisor, optional
         cAdvisor metrics gather information about containers on each node.
     canMount : ValuesCanMount, optional
     "cert-manager" : ValuesCertManager, optional
         Scrape metrics/logs from cert-manager
+    certManager : ValuesCertManager, optional
+        On-the-fly cert-manager installation. When `webhook.certManager.mode` is
+        forced to `cert-manager` AND the cert-manager.io/v1 API is absent, the chart
+        installs cert-manager via a short-lived `pre-install` hook Pod
+        (hooks/install-cert-manager.sh: checks whether cert-manager is already present
+        and, if not, installs it via Helm and waits for its webhook to become Ready).
+        In `auto` mode a missing cert-manager falls back to self-signed and the hook
+        never runs; in `self-signed` mode cert-manager is never used. So to install
+        cert-manager on the fly, set `webhook.certManager.mode: cert-manager`. The hook
+        Pod uses a temporary ServiceAccount + (Cluster)Role(Binding) deleted as soon as
+        it succeeds.
     cluster : ValuesCluster, optional
         yamllint disable rule:line-length rule:comments-indentation
     clusterEvents : ValuesClusterEvents, optional
@@ -69,10 +107,25 @@ schema Values:
         To see the valid options, please see the [Cluster Monitoring feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-cluster-metrics).
     clusterName : str, optional, default is "cluster.local"
         Override the default name of cluster - Can be found in /etc/kubernetes/admin.conf: clusters -> cluster -> name
+    clustering : bool, optional, default is False
+        Whether to enable clustering for cluster events collection. When `true`, the assigned collector must have
+        clustering enabled, and events will be sharded across cluster peers. When `false` (default), the feature should
+        run on a singleton collector.
+    collector : str, optional
+        The collector to assign this instance to. When empty, the feature-level `integrations.collector` is used.
     collectorCommon : ValuesCollectorCommon, optional
         Collector common affects all collectors
     collectors : str | ValuesCollectors, optional
         Define collectors.
+    collectorsExclude : [any], optional
+        collectorsExclude / collectorsExtra tweak the default `collectors` list above
+        without redefining it. Both operate on `.Values.collectors` (not on KSM's
+        built-in defaults): with `collectors: []` there is nothing to layer onto and
+        `collectorsExtra` becomes the entire --resources list.
+        collectorsExclude removes entries from the list:
+    collectorsExtra : [any], optional
+        - pods
+        collectorsExtra appends entries after exclusion (deduplicated):
     commonLabels : ValuesCommonLabels, optional
         # Extra labels to attach to all resources (can be templated)
     config : str | ValuesConfig, optional, default is "collectors:\n  enabled: '[defaults],memory,container'"
@@ -110,15 +163,30 @@ schema Values:
         Enabling support for customResourceState, will create a configMap including your config that will be read from kube-state-metrics
     daemonsetAnnotations : ValuesDaemonsetAnnotations, optional
         Annotations to be added to windows exporter daemonset
+    dataProcessors : ValuesDataProcessors, optional
+        Optional processors that sit between features and destinations. A feature can opt in by listing a processor under
+        its `dataProcessors:` key. Data from that feature flows through the processor's pipeline before reaching its
+        destinations. See the [data processors documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/dataProcessors/README.md).
     databaseObservability : ValuesDatabaseObservability, optional
         Capture table, schema, and query information for the Database Observability feature in Grafana Cloud.
     "dcgm-exporter" : ValuesDcgmExporter, optional
         Scrape metrics/logs from DCGM Exporter
+    defaultDestinations : [any], optional
+        Destinations to fall back to when no route matches. MANDATORY: every router must define at least one default
+        destination, otherwise unmatched telemetry has nowhere to go.
     defaultLogFormat : str, optional, default is "cri"
         Default parsing format if it cannot be determined from container UID. Options are `null`, `cri`, or `docker`.
     destinations : ValuesDestinations, optional
         The destinations where telemetry data will be sent.
         See the [destinations documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/destinations/README.md) for more information.
+    disabled : bool, optional
+        Set to `true` to disable this destination. Disabled destinations are excluded from all telemetry data flows, which
+        is useful for removing a destination that was defined in a shared or parent values file.
+    discoveryMethod : str, optional, default is "all"
+        Controls the behavior of discovering pods for logs. Possible values: `all`, `annotation`.
+        When set to "all", every pod (filtered by the namespace and label selectors) will have their logs gathered.
+        When set to "annotation", only pods with the annotation selector set to something other than "false", "no" or "skip"
+        will have their logs gathered.
     dnsConfig : ValuesDnsConfig, optional
         Custom DNS configuration to be added to prometheus-windows-exporter pods
     dnsPolicy : str, optional, default is ""
@@ -128,11 +196,15 @@ schema Values:
     ebpf : ValuesEbpf, optional
         Settings for gathering profiles using eBPF
     ecosystem : str, optional
-        The ecosystem for this destination. By setting this ecosystem, matching telemetry data sources might be
-        auto-assigned to this destination. Options: `loki`, `otlp`, `prometheus`, `pyroscope`
-        @ section -- General
+        The collection pipeline this router routes on: `otlp`, `prometheus`, `loki`, or `pyroscope`. `otlp` routes
+        OpenTelemetry Protocol data (metrics, logs, and traces) by matching resource attributes with OTTL. `prometheus`,
+        `loki`, and `pyroscope` route the corresponding label-based pipeline (metrics, logs, and profiles respectively) by
+        matching labels. The ecosystem also determines how each route's `match` conditions are written: `resourceAttribute`
+        for `otlp`, `label` for the others. A feature may only route through a router whose ecosystem matches the pipeline
+        that feature collects on.
     enabled : bool, optional, default is True
-        Whether to deploy the Beyla DaemonSet. Defaults to true. Set to false to deploy only the Kubernetes metadata cache.
+        Deploy this collector. Set to `false` to skip creating the collector's resources without removing the collector
+        from the values file.
     endpoints : [any], optional
         for deployments that have node_exporter deployed outside of the cluster, list
         their addresses here
@@ -144,15 +216,78 @@ schema Values:
         extra environment variables to be set from resources such as k8s configMaps/secrets
     etcd : ValuesEtcd, optional
         Scrape metrics/logs from etcd
+    excludeEventData : bool, optional, default is False
+        Whether to exclude the rendered `EventData` from the log message.
+    excludeEventMessage : bool, optional, default is False
+        Whether to exclude the human-friendly event message from the log message.
     excludeLevels : [any], optional
         List of event levels to ignore. e.g. `["Normal", "Warning"]`
     excludeNamespaces : [any], optional
         Do not capture logs from any pods in these namespaces.
     excludeReasons : [any], optional
         List of event reasons to ignore. e.g. `["Pulling", "Started"]`
+    excludeUserData : bool, optional, default is False
+        Whether to exclude the rendered `UserData` from the log message.
     exporter : ValuesExporter, optional
         Settings for the Alloy embedded PostgreSQL Exporter
-    extraArgs : [any], optional
+    external : ValuesExternal, optional
+        External labels allow users to apply custom labels to node assets and
+        allocations.
+
+        The OpenCost deployment can read external labels from an existing ConfigMap.
+
+        Supported ConfigMap formats:
+
+        1. Traditional ConfigMap
+
+           data:
+             cluster: prod
+             env: dev
+             region: nam
+
+           In this case, labels are read directly from ConfigMap.data. The
+           key and route fields are optional and may be omitted.
+
+        2. Block-scalar ConfigMap
+
+           data:
+             config.yaml: |
+               metadata:
+                 externalLabels:
+                   cluster: prod
+                   env: dev
+                   region: nam
+
+           In this case, specify the key that contains the YAML document and
+           a dot-separated route to the labels map within it.
+
+        Fields:
+          configMapName - name of the ConfigMap to read.
+          namespace     - namespace of the ConfigMap. Defaults to the agent's
+                          own namespace if left empty.
+          key           - Optional. The ConfigMap data key containing the YAML
+                          document. Required only for block-scalar ConfigMaps.
+          route         - Optional. Dot-separated path to the labels map within
+                          the key's YAML content, e.g. "metadata.externalLabels".
+                          When omitted or empty, labels are read directly from
+                          ConfigMap.data (traditional ConfigMap).
+
+        Traditional ConfigMap example:
+
+        external:
+          nodeLabels:
+            configMapName: external-label-configmap
+            namespace: ""
+
+        Block-scalar ConfigMap example:
+
+        external:
+          nodeLabels:
+            configMapName: external-label-configmap
+            namespace: ""
+            key: config.yaml
+            route: metadata.externalLabels
+    extraArgs : [str], optional
         # Additional container arguments
         #
     extraCapabilities : [any], optional
@@ -161,6 +296,8 @@ schema Values:
         Extra Alloy configuration to be added to the configuration file.
     extraDiscoveryRules : str, optional, default is ""
         Rules to filter pods for log gathering. Only used for "volumes" or "kubernetesApi" gather methods.
+    extraEnv : [any], optional
+        Extra environment variables to add to the container (e.g. OTLP endpoint settings)
     extraEnvVars : ValuesExtraEnvVars, optional
         Extra environment variables
     extraHeaders : ValuesExtraHeaders, optional
@@ -186,7 +323,7 @@ schema Values:
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.relabel/#rule))
         This value is templated so that you can refer to other values from this file.
     extraLogProcessingStages : str, optional, default is ""
-        Stage blocks to be added to the loki.process component for pod logs.
+        Stage blocks to be added to the loki.process component for event logs.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.process/#blocks))
         This value is templated so that you can refer to other values from this file.
     extraManifests : [any], optional
@@ -197,12 +334,26 @@ schema Values:
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))
     extraObjects : [any], optional
         Deploy additional manifest objects
+    extraResourceAttributes : ValuesExtraResourceAttributes, optional
+        Extra resource attributes to be set on all telemetry before delivering to the destination.
+        All values are treated as strings and automatically quoted.
+    extraResourceAttributesFrom : ValuesExtraResourceAttributesFrom, optional
+        Extra resource attributes to be set on all telemetry using a dynamic reference before delivering to the
+        destination. All values are treated as raw strings and not quoted.
+    extraService : ValuesExtraService, optional
+        Deploy an additional Kubernetes Service that points at this collector's Pods, giving applications and SDKs a
+        predictable, stable endpoint regardless of the collector's workload type (DaemonSet, Deployment, or StatefulSet). The
+        Service exposes the Alloy listen port along with any ports opened by presets such as `otel-receiver`. It inherits the
+        collector's `service` settings (type, annotations, and so on).
     extraVolumeMounts : [any], optional
         # Extra volume mounts in the node-exporter container
     extraVolumes : [any], optional
         # Extra volumes to become available in the pod
     fieldSelectors : [any], optional
         Discover Tempo instances based on field selectors.
+    filters : ValuesFilters, optional
+        Drop pod logs based on the pod's annotations or labels. A pod's logs are dropped if any of the configured
+        filters match.
     fullnameOverride : any, optional, default is ""
         Overrides the chart's computed fullname. Used to change the full prefix of
         resource names.
@@ -251,6 +402,9 @@ schema Values:
     ingress : ValuesIngress, optional
     initContainers : [any], optional
         # InitContainers allows injecting additional initContainers.
+    injector : ValuesInjector, optional
+        Configures RBAC for the k8s-injection-controller OpenTelemetry SDK injector, which
+        writes per-node state ConfigMaps consumed by the injection controller.
     integrations : ValuesIntegrations, optional
         Service Integrations enables gathering telemetry data for common services and applications deployed to Kubernetes.
         To see the valid options, please see the [Service Integrations documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-integrations).
@@ -258,8 +412,8 @@ schema Values:
         Scrape metrics/logs from Istio sidecar and service.
     istiodMetrics : ValuesIstiodMetrics, optional
     java : ValuesJava, optional
-    jobLabel : str, optional, default is "integrations/kubernetes/eventhandler"
-        The value of the job label for scraped metrics and logs
+    jobLabel : str, optional, default is "integrations/kubernetes/manifests"
+        The value for the job label.
     journal : ValuesJournal, optional
     journalLabels : ValuesJournalLabels, optional
         Log labels to set from extracted journal fields.
@@ -268,6 +422,8 @@ schema Values:
         `machine_id`, `pid`, `stream_id`, `systemd_cgroup`, `systemd_invocation_id`, `systemd_slice`,
         `systemd_unit`, `transport`, `uid`.
         More Info: https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html
+    "k8s-manifest-tail" : ValuesK8SManifestTail, optional
+        k8s-manifest-tail watches and logs Kubernetes manifest changes.
     k8sCache : ValuesK8SCache, optional
         Options to deploy the Kubernetes metadata cache as a separate service
     kepler : ValuesKepler, optional
@@ -293,23 +449,30 @@ schema Values:
         Kubelet Probe metrics gather information about liveness and readiness probe information.
     kubeletResource : ValuesKubeletResource, optional
         Kubelet Resource metrics gather information about resource information on each node.
+    kubernetesManifests : ValuesKubernetesManifests, optional
+        Kubernetes Manifests enables collecting Kubernetes resource manifest files and modifications as logs.
+        **Experimental**: This feature is subject to change and may be altered or removed in a future release.
+        Requires a logs destination and k8s-manifest-tail deployed via telemetryServices.
     labelSelectors : ValuesLabelSelectors, optional
         Filter the list of discovered pods and services by labels. Only for the "volumes" gather method.
         Example: `labelSelectors: { 'app': 'myapp' }` will only discover pods with the label `app=myapp`.
         Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover pods with the label `app=myapp` or `app=myotherapp`.
-    labels : [any | ValuesLabels], optional
+    labels : ValuesLabels, optional
         Labels to add to the Alloy Custom Resource. These labels are not added to the workload or Pod.
-    leaderElection : ValuesLeaderElection, optional
-        Leader election settings.
+    leaderElection : bool | ValuesLeaderElection, optional, default is True
+        Run the controller with leader election enabled.
     linuxHosts : ValuesLinuxHosts, optional
         Linux host metrics gathers hardware information about Linux nodes from a Node Exporter instance.
     liveDebugging : ValuesLiveDebugging, optional
     livenessProbe : ValuesLivenessProbe, optional
         # Liveness probe
         #
+    locale : int, optional, default is 0
+        The [locale ID (LCID)](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-lcid/) to use when
+        rendering event messages. `0` uses the system default locale.
     logFormat : str, optional, default is "logfmt"
         Log format used to forward cluster events. Allowed values: `logfmt` (default), `json`.
-    logProcessingRules : str, optional
+    logProcessingRules : str, optional, default is ""
         Rule blocks to be evaluated before printing the log messages to the standard output. See
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/loki/loki.relabel/#rule)) for more information.
     logProcessingStages : str, optional
@@ -318,9 +481,13 @@ schema Values:
     logging : ValuesLogging, optional
     loglevel : str, optional, default is "info"
     logs : ValuesLogs, optional
-        Settings for log gathering using the Pod Logs feature
+        Drop all logs sent to this destination.
     loki : ValuesLoki, optional
         Scrape metrics/logs from Loki
+    lokiLogsReceiver : ValuesLokiLogsReceiver, optional
+        Loki Logs Receiver enables receiving logs over the Loki API from applications.
+        Requires a destination that supports logs.
+        To see the valid options, please see the [Loki Logs Receiver feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-loki-logs-receiver).
     maxBackoffPeriod : str, optional
         The maximum backoff period for the Pyroscope destination.
     maxBackoffRetries : int, optional
@@ -328,8 +495,8 @@ schema Values:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for cadvisor prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricAllowlist : [any], optional
         Comma-separated list of metrics to be exposed.
         This list comprises of exact metric names and/or regex patterns.
@@ -353,7 +520,7 @@ schema Values:
         label keys you would like to allow for them (Example: '=namespaces=[k8s-label-1,k8s-label-n,...],pods=[app],...)'.
         A single '*' can be provided per resource instead to allow any labels, but that has
         severe performance implications (Example: '=pods=[*]').
-    metricProcessingRules : str, optional
+    metricProcessingRules : str, optional, default is ""
         Rule blocks to apply to all metrics. Uses the
         [write_relabel_config block](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/#write_relabel_config-block)
         of the prometheus.remote_write component. Format:
@@ -363,7 +530,7 @@ schema Values:
           ...
         }
     metrics : ValuesMetrics, optional
-        Settings for metrics collection
+        Drop all metrics sent to this destination.
     metricsTuning : ValuesMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of metrics sent to storage.
     mimir : ValuesMimir, optional
@@ -379,15 +546,24 @@ schema Values:
     mysql : ValuesMysql, optional
         Scrape metrics/logs from MySQL
     name : str, optional
-        The name for this Pyroscope destination.
+        The name for this router destination. A router is not a real telemetry backend: it is a
+        virtual destination that a feature points at (`destinations: [myRouter]`) which then fans
+        telemetry out to real destinations based on the route match conditions.
     nameOverride : any, optional, default is ""
         Overrides the chart's name. Used to change the infix in the resource names.
+    namespace : ValuesNamespace, optional
+        Namespace where the controller and all its namespaced resources are
+        installed. When `namespace.create` is true the chart renders the Namespace
+        object itself; set it to false (and pass `helm install --namespace <ns>`) if
+        you prefer Helm / `--create-namespace` to own the namespace.
     namespaceAnnotations : ValuesNamespaceAnnotations, optional
-        Log attributes to set with values copied from the Kubernetes Namespace annotations.
-        Format: `<log_label>: <kubernetes_namespace_annotation>`.
+        Kubernetes namespace annotations to copy to telemetry data, as a map of
+        `<telemetry label>: <namespace annotation name>`. Applies to data carrying a `namespace`
+        label (or Kubernetes resource attributes for OTLP).
     namespaceLabels : ValuesNamespaceLabels, optional
-        Log attributes to set with values copied from the Kubernetes Namespace labels.
-        Format: `<log_label>: <kubernetes_namespace_label>`.
+        Kubernetes namespace labels to copy to telemetry data, as a map of
+        `<telemetry label>: <namespace label name>`. Applies to data carrying a `namespace`
+        label (or Kubernetes resource attributes for OTLP).
     namespaceOverride : any, optional, default is ""
         Overrides the chart's namespace.
     namespaces : str | any, optional, default is ""
@@ -433,6 +609,13 @@ schema Values:
     otelAnnotations : bool, optional, default is False
         Whether to automatically set the recommended OpenTelemetry
         [resource attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/).
+    overrideUnknownServiceNames : bool, optional, default is False
+        If the incoming `service.name` attribute is `unknown_service`, then override it with a value based on Kubernetes
+        annotations, attributes, or names. This can happen if the application is using an OpenTelemetry SDKs but did not
+        configure with a service name. Most useful when combined with `alignServiceNameWithOTelSemConv`.
+    overwriteClusterLabel : bool, optional
+        If the cluster labels are already set, should this destination overwrite them? This is set to true for backwards
+        compatibility. It will be set to false in a future version.
     ownNamespaceOnly : bool, optional, default is False
         Restrict the Alloy Operator to its own namespace only. Overrides the `namespaces` setting.
     pdb : ValuesPdb, optional
@@ -442,13 +625,17 @@ schema Values:
         #
     plugins : ValuesPlugins, optional
     podAnnotations : ValuesPodAnnotations, optional
-        Annotations to be added to windows exporter pods
+        Kubernetes pod annotations to copy to telemetry data, as a map of
+        `<telemetry label>: <pod annotation name>`. Applies to data carrying `namespace` and
+        `pod` labels (or Kubernetes resource attributes for OTLP).
     podAutomountServiceAccountToken : bool, optional, default is True
          Enable automounting of service account token at the pod level
     podDisruptionBudget : ValuesPodDisruptionBudget, optional
         Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
     podLabels : ValuesPodLabels, optional
-        Extra labels to be added to windows exporter pods
+        Kubernetes pod labels to copy to telemetry data, as a map of
+        `<telemetry label>: <pod label name>`. Applies to data carrying `namespace` and `pod`
+        labels (or Kubernetes resource attributes for OTLP).
     podLogsObjects : ValuesPodLogsObjects, optional
         PodLogs Objects
         Requires a destination that supports logs.
@@ -460,17 +647,19 @@ schema Values:
     podLogsViaLoki : ValuesPodLogsViaLoki, optional
         Pod logs in Loki format.
         Requires a destination that supports logs.
-        To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).
+        To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-loki).
     podLogsViaOpenTelemetry : ValuesPodLogsViaOpenTelemetry, optional
         Pod logs in OpenTelemetry format.
         Requires a destination that supports logs.
-        To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).
+        To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-opentelemetry).
     podMonitors : ValuesPodMonitors, optional
         Prometheus Operator PodMonitors
     podSecurityContext : ValuesPodSecurityContext, optional
         Holds pod-level security attributes and common container settings
     pods : ValuesPods, optional
-    port : int, optional, default is 4040
+    pollInterval : str, optional, default is "3s"
+        How frequently to poll the event log for new events.
+    port : int, optional, default is 9090
         Port number on which the server listens for new connections.
     postgresql : ValuesPostgresql, optional
         Scrape metrics/logs from PostgreSQL
@@ -496,6 +685,7 @@ schema Values:
         These relabeling rules are applied to profiles received by this feature.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/pyroscope/pyroscope.relabel/#rule))
     profiles : ValuesProfiles, optional
+        Drop all profiles sent to this destination.
     profilesReceiver : ValuesProfilesReceiver, optional
         Profiles Receiver enables receiving profiles from applications.
         Requires a destination that supports profiles.
@@ -505,6 +695,10 @@ schema Values:
         Requires a destination that supports profiles.
         To see the valid options, please see the [Profiling feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-profiling).
     prometheus : ValuesPrometheus, optional
+    prometheusMetricsReceiver : ValuesPrometheusMetricsReceiver, optional
+        Prometheus Metrics Receiver enables receiving Prometheus metrics from applications via remote write.
+        Requires a destination that supports metrics.
+        To see the valid options, please see the [Prometheus Metrics Receiver feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-prometheus-metrics-receiver).
     prometheusOperatorObjects : ValuesPrometheusOperatorObjects, optional
         Prometheus Operator Objects enables the gathering of metrics from objects like Probes, PodMonitors, and
         ServiceMonitors. Requires a destination that supports metrics.
@@ -535,6 +729,11 @@ schema Values:
         #
     receivers : ValuesReceivers, optional
     redfish : ValuesRedfish, optional
+    refreshInterval : str, optional
+        How often to refresh the list of discovered EC2 instances and their tags.
+    region : str, optional
+        The AWS region to discover EC2 instances in. If not set, the region is determined from
+        the EC2 instance metadata of the host running the collector.
     releaseLabel : bool, optional, default is False
         # set to true to add the release label so scraping of the servicemonitor with kube-prometheus-stack works out of the box
     releaseNamespace : bool, optional, default is False
@@ -545,6 +744,14 @@ schema Values:
     remoteWriteProtocol : int, optional
         Shortcut for setting the `protobufMessage`. Valid options are 1 (default) or 2, which sets `protobufMessage` to
         `io.prometheus.write.v2.Request`.
+    replaceComponent : [any], optional
+        *Experimental*: Replace the body of a generated Alloy component with custom content. Each entry must match the
+        `type` and `name` of a component that the chart would otherwise render (e.g. `prometheus.relabel "metricsService"`).
+        The templated component must end with a `} // <type> "<name>"` close tag for replacement to find it. A replacement
+        is applied to every collector whose config contains the component, and the render only fails if no collector
+        contains it, so a component that exists on only some collectors is fine. Set `module: <name>` to scope the
+        replacement to a component inside a `declare "<module>" { ... }` block. Set `optional: true` to skip a replacement
+        that matches no collector instead of failing the render.
     replicaCount : int, optional, default is 1
         How many replicas to use for the Alloy Operator Deployment.
     replicas : int, optional, default is 1
@@ -559,14 +766,37 @@ schema Values:
     revisionHistoryLimit : int, optional, default is 10
         Number of old history to retain to allow rollback
         Default Kubernetes value is set to 10
+    roleARN : str, optional
+        The ARN of the role to assume when discovering EC2 instances. If not set, the default
+        credentials from the AWS credential chain are used.
+    routes : [any], optional
+        Routing rules, evaluated in declaration order: the first rule whose `match` conditions all match wins. Records that
+        don't match any rule (or whose matched rule does not list a destination for a given signal) fall back to
+        `defaultDestinations`. Each route's `match` is a list of `{<field>, op, value}` conditions that are ANDed together,
+        where `<field>` is `resourceAttribute` (for an `otlp` router) or `label` (for a `prometheus`/`loki`/`pyroscope`
+        router). `op` is one of `equals`, `notEquals`, `in`, `matches`, `notMatches` (`notEquals` and `notMatches` are
+        `otlp`-only). `value` is a string (or a list of strings for `in`).
+    rules : ValuesRules, optional
+        Discover PrometheusRule objects in the cluster and synchronize them with this destination's Ruler API. Uses the
+        Alloy [`mimir.rules.kubernetes`](https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/)
+        component. Authentication, tenant ID, and TLS are reused from the destination's other settings.
     scrapeConfigs : ValuesScrapeConfigs, optional
         Prometheus Operator ScrapeConfigs
     scrapeInterval : str, optional, default is ""
-        How frequently to scrape metrics from discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeInterval` annotation is not set.
-        Overrides global.scrapeInterval
+        How frequently to scrape metrics from discovered pods and services. Only used if the
+        `k8s.grafana.com/metrics.scrapeInterval` annotation is not set.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
-        The scrape timeout for discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeTimeout` annotation is not set.
-        Overrides global.scrapeTimeout
+        The scrape timeout for discovered pods and services. Only used if the `k8s.grafana.com/metrics.scrapeTimeout`
+        annotation is not set.
+        Overrides `global.scrapeTimeout`.
+    sdkConfig : ValuesSdkConfig, optional
+        SDK auto-instrumentation defaults mounted into the controller (the
+        `config.SDKInject` document passed via --config). When disabled the
+        controller still selects matching workloads but performs no mutation.
+    sdkInjector : ValuesSdkInjector, optional
+        SDK Injector deploys the Grafana Kubernetes Injection Controller for Beyla SDK auto-instrumentation.
+        To see all valid settings, run `helm show values grafana/k8s-injection-controller`.
     secret : ValuesSecret, optional
     secretAnnotations : ValuesSecretAnnotations, optional
          Annotations to add to the Secret
@@ -610,6 +840,17 @@ schema Values:
     sidecars : [any], optional
         # Additional containers for export metrics to text file
         #
+    sources : [any], optional
+        The list of Windows event log sources to gather. Each entry becomes a separate `loki.source.windowsevent`
+        component, so you can gather any channel (for example `Application`, `System`, or `Security`) without hard-coding a
+        fixed set. Per-entry fields:
+          - `name` (required): a unique identifier used for the Alloy component label and the bookmark filename.
+          - `eventLogName`: the Windows event log channel to read from. Required unless `xpathQuery` specifies the channel in
+            [XML form](https://learn.microsoft.com/en-us/windows/win32/wes/consuming-events).
+          - `jobLabel`: the value for the `job` label on this source's logs.
+          - `xpathQuery`: an [XPath query](https://learn.microsoft.com/en-us/windows/win32/wes/consuming-events) for filtering
+            which events are read. The default of `*` reads all events.
+          - `labels`: a map of additional static labels to set on this source's logs.
     startupProbe : ValuesStartupProbe, optional
         # Startup probe can optionally be enabled.
         #
@@ -623,12 +864,14 @@ schema Values:
         Log labels to set with static values, not quoted so it can reference config components.
     structuredMetadata : ValuesStructuredMetadata, optional
         The structured metadata mappings to set.
-        Format: `<key>: <extracted_key>`.
-        Example:
-        structuredMetadata:
-          component: component
-          kind: kind
-          name: name
+        To not set any structured metadata, set this to an empty object (e.g. `{}`)
+        Format: `<key>: <field>`.
+        Available fields include: `channel`, `computer`, `source`, `eventID`, `keywords`, `level`, `levelText`,
+        `opCode`, `task`, `timeCreated`.
+    tags : ValuesTags, optional
+        EC2 instance tags to copy to telemetry data, as a map of
+        `<telemetry label>: <EC2 tag name>`. Applies to data carrying a `node` label that matches
+        an instance's private DNS name.
     telemetryServices : ValuesTelemetryServices, optional
 
         Telemetry Services
@@ -649,7 +892,7 @@ schema Values:
         Enable or disable container termination message settings
         https://kubernetes.io/docs/tasks/debug/debug-application/determine-reason-pod-failure/
     timeout : str, optional
-        Timeout for requests made to the URL.
+        Time to wait per individual attempt to send data to the OTLP destination.
     tls : ValuesTls, optional
     tlsSecret : ValuesTlsSecret, optional
         # tlsSecret refers to an existing secret holding TLS items: client CA certificate, private key and certificate.
@@ -663,12 +906,15 @@ schema Values:
         # Topology spread constraints for pod assignment
         # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
     traces : ValuesTraces, optional
+        Drop all traces sent to this destination.
     updateStrategy : ValuesUpdateStrategy, optional
         # Customize the updateStrategy if set
     url : str, optional
         The URL for the Pyroscope destination.
     urlFrom : str, optional
         Raw config for accessing the URL.
+    useIncomingTimestamp : bool, optional, default is False
+        Whether to use the event's own creation timestamp as the log timestamp, rather than the time the event was read.
     version : str, optional, default is ""
         Override version of app, required if image.tag is defined and does not follow semver
     verticalPodAutoscaler : ValuesVerticalPodAutoscaler, optional
@@ -679,8 +925,21 @@ schema Values:
     volumes : [any], optional
         volumes are used to add custom volumes to deployment
         See example below
+    watchNamespace : str, optional, default is ""
+        Namespace whose ConfigMaps the controller watches for Beyla-managed
+        injection config. Leave empty to watch the controller's own namespace
+        (`namespace.name`); set it to the namespace where Beyla writes its state
+        ConfigMaps (e.g. "monitoring") when the two are not co-located. When it
+        differs from `namespace.name` the chart also renders a Role + RoleBinding in
+        that namespace granting the controller get/list/watch on ConfigMaps.
+    webhook : ValuesWebhook, optional
+        Pod mutating webhook configuration.
     "windows-exporter" : ValuesWindowsExporter, optional
         Windows Exporter gathers hardware information about Windows nodes.
+    windowsEventLogs : ValuesWindowsEventLogs, optional
+        Windows event logs.
+        Requires a destination that supports logs and a collector using the `windows` preset.
+        To see the valid options, please see the [Windows Event Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-windows-event-logs).
     windowsHosts : ValuesWindowsHosts, optional
         Windows Host metrics gathers hardware information about Windows nodes.
     writeAheadLog : ValuesWriteAheadLog, optional
@@ -688,15 +947,20 @@ schema Values:
     writeBufferSize : str, optional
         Size of the write buffer the gRPC client to use for writing requests.
     """
-    [...str]: any
+
     affinity?: ValuesAffinity
+    alignServiceNameWithOTelSemConv?: bool
+    allowedConfigMapWriters?: str
     alloy?: ValuesAlloy
     "alloy-operator"?: ValuesAlloyOperator
     annotationAutodiscovery?: ValuesAnnotationAutodiscovery
-    annotations?: [any | ValuesAnnotations]
+    annotationSelector?: str
+    annotations?: ValuesAnnotations
     apiServer?: ValuesApiServer
     applicationObservability?: ValuesApplicationObservability
+    attachNamespaceMetadata?: bool
     auth?: ValuesAuth
+    authFilter?: ValuesAuthFilter
     autoInstrumentation?: ValuesAutoInstrumentation
     automountServiceAccountToken?: bool
     autosharding?: ValuesAutosharding
@@ -704,16 +968,22 @@ schema Values:
     batchWait?: str
     bearerToken?: ValuesBearerToken
     beyla?: ValuesBeyla
+    bookmarks?: ValuesBookmarks
     cadvisor?: ValuesCadvisor
     canMount?: ValuesCanMount
     "cert-manager"?: ValuesCertManager
+    certManager?: ValuesCertManager
     cluster?: ValuesCluster
     clusterEvents?: ValuesClusterEvents
     clusterLabels?: [str]
     clusterMetrics?: ValuesClusterMetrics
     clusterName?: str
+    clustering?: bool
+    collector?: str
     collectorCommon?: ValuesCollectorCommon
     collectors?: str | ValuesCollectors
+    collectorsExclude?: [any]
+    collectorsExtra?: [any]
     commonLabels?: ValuesCommonLabels
     config?: str | ValuesConfig
     configReloader?: ValuesConfigReloader
@@ -730,10 +1000,14 @@ schema Values:
     customLabels?: ValuesCustomLabels
     customResourceState?: ValuesCustomResourceState
     daemonsetAnnotations?: ValuesDaemonsetAnnotations
+    dataProcessors?: ValuesDataProcessors
     databaseObservability?: ValuesDatabaseObservability
     "dcgm-exporter"?: ValuesDcgmExporter
+    defaultDestinations?: [any]
     defaultLogFormat?: str
     destinations?: ValuesDestinations
+    disabled?: bool
+    discoveryMethod?: str
     dnsConfig?: ValuesDnsConfig
     dnsPolicy?: str
     ebpf?: ValuesEbpf
@@ -744,14 +1018,19 @@ schema Values:
     env?: any | ValuesEnv
     envValueFrom?: ValuesEnvValueFrom
     etcd?: ValuesEtcd
+    excludeEventData?: bool
+    excludeEventMessage?: bool
     excludeLevels?: [any]
     excludeNamespaces?: [any]
     excludeReasons?: [any]
+    excludeUserData?: bool
     exporter?: ValuesExporter
-    extraArgs?: [any]
+    external?: ValuesExternal
+    extraArgs?: [str]
     extraCapabilities?: [any]
     extraConfig?: str
     extraDiscoveryRules?: str
+    extraEnv?: [any]
     extraEnvVars?: ValuesExtraEnvVars
     extraHeaders?: ValuesExtraHeaders
     extraHeadersFrom?: ValuesExtraHeadersFrom
@@ -764,9 +1043,13 @@ schema Values:
     extraManifests?: [any]
     extraMetricProcessingRules?: str
     extraObjects?: [any]
+    extraResourceAttributes?: ValuesExtraResourceAttributes
+    extraResourceAttributesFrom?: ValuesExtraResourceAttributesFrom
+    extraService?: ValuesExtraService
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
     fieldSelectors?: [any]
+    filters?: ValuesFilters
     fullnameOverride?: any
     global?: ValuesGlobal
     grafana?: ValuesGrafana
@@ -786,6 +1069,7 @@ schema Values:
     includeReasons?: [any]
     ingress?: ValuesIngress
     initContainers?: [any]
+    injector?: ValuesInjector
     integrations?: ValuesIntegrations
     istio?: ValuesIstio
     istiodMetrics?: ValuesIstiodMetrics
@@ -793,6 +1077,7 @@ schema Values:
     jobLabel?: str
     journal?: ValuesJournal
     journalLabels?: ValuesJournalLabels
+    "k8s-manifest-tail"?: ValuesK8SManifestTail
     k8sCache?: ValuesK8SCache
     kepler?: ValuesKepler
     "kube-state-metrics"?: ValuesKubeStateMetrics
@@ -805,12 +1090,14 @@ schema Values:
     kubelet?: ValuesKubelet
     kubeletProbes?: ValuesKubeletProbes
     kubeletResource?: ValuesKubeletResource
+    kubernetesManifests?: ValuesKubernetesManifests
     labelSelectors?: ValuesLabelSelectors
-    labels?: [any | ValuesLabels]
-    leaderElection?: ValuesLeaderElection
+    labels?: ValuesLabels
+    leaderElection?: bool | ValuesLeaderElection
     linuxHosts?: ValuesLinuxHosts
     liveDebugging?: ValuesLiveDebugging
     livenessProbe?: ValuesLivenessProbe
+    locale?: int
     logFormat?: str
     logProcessingRules?: str
     logProcessingStages?: str
@@ -818,6 +1105,7 @@ schema Values:
     loglevel?: str
     logs?: ValuesLogs
     loki?: ValuesLoki
+    lokiLogsReceiver?: ValuesLokiLogsReceiver
     maxBackoffPeriod?: str
     maxBackoffRetries?: int
     maxCacheSize?: any
@@ -836,6 +1124,7 @@ schema Values:
     mysql?: ValuesMysql
     name?: str
     nameOverride?: any
+    namespace?: ValuesNamespace
     namespaceAnnotations?: ValuesNamespaceAnnotations
     namespaceLabels?: ValuesNamespaceLabels
     namespaceOverride?: any
@@ -855,6 +1144,8 @@ schema Values:
     openTelemetryConversion?: ValuesOpenTelemetryConversion
     opencost?: ValuesOpencost
     otelAnnotations?: bool
+    overrideUnknownServiceNames?: bool
+    overwriteClusterLabel?: bool
     ownNamespaceOnly?: bool
     pdb?: ValuesPdb
     permissionInitContainer?: ValuesPermissionInitContainer
@@ -870,6 +1161,7 @@ schema Values:
     podMonitors?: ValuesPodMonitors
     podSecurityContext?: ValuesPodSecurityContext
     pods?: ValuesPods
+    pollInterval?: str
     port?: int
     postgresql?: ValuesPostgresql
     pprof?: ValuesPprof
@@ -884,6 +1176,7 @@ schema Values:
     profilesReceiver?: ValuesProfilesReceiver
     profiling?: ValuesProfiling
     prometheus?: ValuesPrometheus
+    prometheusMetricsReceiver?: ValuesPrometheusMetricsReceiver
     prometheusOperatorObjects?: ValuesPrometheusOperatorObjects
     prometheusScrape?: bool
     protobufMessage?: str
@@ -898,10 +1191,13 @@ schema Values:
     readinessProbe?: ValuesReadinessProbe
     receivers?: ValuesReceivers
     redfish?: ValuesRedfish
+    refreshInterval?: str
+    region?: str
     releaseLabel?: bool
     releaseNamespace?: bool
     remoteConfig?: ValuesRemoteConfig
     remoteWriteProtocol?: int
+    replaceComponent?: [any]
     replicaCount?: int
     replicas?: int
     resources?: ValuesResources
@@ -909,9 +1205,14 @@ schema Values:
     retryOnFailure?: ValuesRetryOnFailure
     retryOnHttp429?: bool
     revisionHistoryLimit?: int
+    roleARN?: str
+    routes?: [any]
+    rules?: ValuesRules
     scrapeConfigs?: ValuesScrapeConfigs
     scrapeInterval?: str
     scrapeTimeout?: str
+    sdkConfig?: ValuesSdkConfig
+    sdkInjector?: ValuesSdkInjector
     secret?: ValuesSecret
     secretAnnotations?: ValuesSecretAnnotations
     secretFilter?: ValuesSecretFilter
@@ -931,12 +1232,14 @@ schema Values:
     sidecarMetrics?: ValuesSidecarMetrics
     sidecarVolumeMount?: [any]
     sidecars?: [any]
+    sources?: [any]
     startupProbe?: ValuesStartupProbe
     staticAttributes?: ValuesStaticAttributes
     staticAttributesFrom?: ValuesStaticAttributesFrom
     staticLabels?: ValuesStaticLabels
     staticLabelsFrom?: ValuesStaticLabelsFrom
     structuredMetadata?: ValuesStructuredMetadata
+    tags?: ValuesTags
     telemetryServices?: ValuesTelemetryServices
     tempo?: ValuesTempo
     tenantId?: str
@@ -953,20 +1256,26 @@ schema Values:
     updateStrategy?: ValuesUpdateStrategy
     url?: str
     urlFrom?: str
+    useIncomingTimestamp?: bool
     version?: str
     verticalPodAutoscaler?: ValuesVerticalPodAutoscaler
     volumeMounts?: [any]
     volumes?: [any]
+    watchNamespace?: str
+    webhook?: ValuesWebhook
     "windows-exporter"?: ValuesWindowsExporter
+    windowsEventLogs?: ValuesWindowsEventLogs
     windowsHosts?: ValuesWindowsHosts
     writeAheadLog?: ValuesWriteAheadLog
     writeBufferSize?: str
+    [...str]: any
 
 schema ValuesAffinity:
     r"""
     # Assign a group of affinity scheduling rules
     #
     """
+
     [...str]: any
 
 schema ValuesAlloy:
@@ -978,6 +1287,12 @@ schema ValuesAlloy:
     Attributes
     ----------
     clustering : ValuesAlloyClustering, optional
+    command : [any], optional
+        Override the entrypoint command for the Alloy container. When set, this
+        replaces the image's default entrypoint (the chart-provided `args` are still
+        passed). Useful on Windows where the binary lives at a different path, for
+        example `["C:\\Program Files\\GrafanaLabs\\Alloy\\alloy.exe"]`. Leave empty
+        to use the image's default entrypoint.
     configMap : ValuesAlloyConfigMap, optional
     enableHttpServerPort : bool, optional
         Enables Grafana Alloy container's http server port.
@@ -992,6 +1307,7 @@ schema ValuesAlloy:
         Extra environment variables to pass to the Alloy container.
     extraPorts : [any], optional
         Extra ports to expose on the Alloy container.
+        If `service.type` is `NodePort`, each item may set `nodePort` to choose the Service NodePort for that port.
     hostAliases : [any], optional
         Host aliases to add to the Alloy container.
     initialDelaySeconds : int, optional
@@ -1024,8 +1340,9 @@ schema ValuesAlloy:
     uiPathPrefix : str, optional
          Base path where the UI is exposed.
     """
-    [...str]: any
+
     clustering?: ValuesAlloyClustering
+    command?: [any]
     configMap?: ValuesAlloyConfigMap
     enableHttpServerPort?: bool
     enableReporting?: bool
@@ -1048,6 +1365,7 @@ schema ValuesAlloy:
     storagePath?: str
     timeoutSeconds?: int
     uiPathPrefix?: str
+    [...str]: any
 
 schema ValuesAlloyClustering:
     r"""
@@ -1062,10 +1380,11 @@ schema ValuesAlloyClustering:
     portName : str, optional
         Name for the port used for clustering, useful if running inside an Istio Mesh
     """
-    [...str]: any
+
     enabled?: bool
     name?: str
     portName?: str
+    [...str]: any
 
 schema ValuesAlloyConfigMap:
     r"""
@@ -1082,22 +1401,25 @@ schema ValuesAlloyConfigMap:
     name : any, optional
         Name of existing ConfigMap to use. Used when create is false.
     """
-    [...str]: any
+
     content?: str
     create?: bool
     key?: any
     name?: any
+    [...str]: any
 
 schema ValuesAlloyLifecycle:
     r"""
     Set lifecycle hooks for the Grafana Alloy container.
     """
+
     [...str]: any
 
 schema ValuesAlloyLivenessProbe:
     r"""
     Set livenessProbe for the Grafana Alloy container.
     """
+
     [...str]: any
 
 schema ValuesAlloyMounts:
@@ -1115,10 +1437,11 @@ schema ValuesAlloyMounts:
     varlog : bool, optional
         Mount /var/log from the host into the container for log collection.
     """
-    [...str]: any
+
     dockercontainers?: bool
     extra?: [any]
     varlog?: bool
+    [...str]: any
 
 schema ValuesAlloyOperator:
     r"""
@@ -1127,13 +1450,18 @@ schema ValuesAlloyOperator:
 
     Attributes
     ----------
+    conflictCheck : bool, optional, default is True
+        Check for another Alloy Operator already running in the cluster that would compete to manage the same Alloy
+        instances.
     deploy : bool, optional, default is True
         Deploy the Alloy Operator.
     waitForAlloyRemoval : ValuesAlloyOperatorWaitForAlloyRemoval, optional
     """
-    [...str]: any
+
+    conflictCheck?: bool
     deploy?: bool
     waitForAlloyRemoval?: ValuesAlloyOperatorWaitForAlloyRemoval
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemoval:
     r"""
@@ -1142,27 +1470,33 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
     Attributes
     ----------
     enabled : bool, optional, default is True
-        Run Helm hooks to wait for all Alloy instances to be removed before uninstalling the Alloy Operator.
-        This ensures that all Alloy instances are properly cleaned up before the operator is removed.
+        Run Helm hooks that ensure all Alloy instances are cleaned up before the Alloy Operator is removed. This
+        enables two hooks that share the settings in this section: a post-install/post-upgrade hook that adds a finalizer
+        to the Alloy Operator deployment, and a pre-delete hook that removes Alloy instances and the finalizer during
+        uninstall.
     image : ValuesAlloyOperatorWaitForAlloyRemovalImage, optional
-        The image to use for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+        The image to use for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook and
+        the pre-delete removal hook).
     nodeSelector : ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector, optional
-        Node selector to use for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+        Node selector to use for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook
+        and the pre-delete removal hook).
     podAnnotations : ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations, optional
-        Annotations to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before
-        uninstalling the Alloy Operator
+        Annotations to apply to the Pod for the Alloy removal Helm Hooks (both the post-install/post-upgrade
+        add-finalizer hook and the pre-delete removal hook).
     podLabels : ValuesAlloyOperatorWaitForAlloyRemovalPodLabels, optional
-        Labels to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before uninstalling
-        the Alloy Operator
+        Labels to apply to the Pod for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer
+        hook and the pre-delete removal hook).
     resources : ValuesAlloyOperatorWaitForAlloyRemovalResources, optional
-        Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+        Set the resource field for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook
+        and the pre-delete removal hook).
     securityContext : ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext, optional
         Default security context to apply to the container. This can also be set to `null` to remove the security
         context entirely. Also, `runAsUser` can be set to `null` to remove it.
     tolerations : [any], optional
-        Tolerations to apply to the Helm Hook that ensures that Alloy instances are removed during uninstall.
+        Tolerations to apply to the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook and
+        the pre-delete removal hook).
     """
-    [...str]: any
+
     enabled?: bool
     image?: ValuesAlloyOperatorWaitForAlloyRemovalImage
     nodeSelector?: ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector
@@ -1171,10 +1505,12 @@ schema ValuesAlloyOperatorWaitForAlloyRemoval:
     resources?: ValuesAlloyOperatorWaitForAlloyRemovalResources
     securityContext?: ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext
     tolerations?: [any]
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalImage:
     r"""
-    The image to use for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+    The image to use for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook and
+    the pre-delete removal hook).
 
     Attributes
     ----------
@@ -1185,50 +1521,57 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalImage:
     repository : str, optional, default is "grafana/helm-chart-toolbox-kubectl"
     tag : str, optional, default is "0.1.2"
     """
-    [...str]: any
+
     digest?: str
     pullPolicy?: str
     pullSecrets?: [any]
     registry?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalNodeSelector:
     r"""
-    Node selector to use for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+    Node selector to use for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook
+    and the pre-delete removal hook).
 
     Attributes
     ----------
     "kubernetes.io/os" : str, optional, default is "linux"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalPodAnnotations:
     r"""
-    Annotations to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before
-    uninstalling the Alloy Operator
+    Annotations to apply to the Pod for the Alloy removal Helm Hooks (both the post-install/post-upgrade
+    add-finalizer hook and the pre-delete removal hook).
     """
+
     [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalPodLabels:
     r"""
-    Labels to apply to the Pod for the Helm Hook to wait for all Alloy instances to be removed before uninstalling
-    the Alloy Operator
+    Labels to apply to the Pod for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer
+    hook and the pre-delete removal hook).
 
     Attributes
     ----------
     "linkerd.io/inject" : str, optional, default is "disabled"
     "sidecar.istio.io/inject" : str, optional, default is "false"
     """
-    [...str]: any
+
     "linkerd.io/inject"?: str
     "sidecar.istio.io/inject"?: str
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalResources:
     r"""
-    Set the resource field for the Helm Hook that ensures that Alloy instances are removed during uninstall.
+    Set the resource field for the Alloy removal Helm Hooks (both the post-install/post-upgrade add-finalizer hook
+    and the pre-delete removal hook).
     """
+
     [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext:
@@ -1245,13 +1588,14 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContext:
     runAsUser : int, optional, default is 4242
     seccompProfile : ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile, optional
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     runAsUser?: int
     seccompProfile?: ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities:
     r"""
@@ -1261,8 +1605,9 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
+
     drop?: [str]
+    [...str]: any
 
 schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile:
     r"""
@@ -1272,13 +1617,15 @@ schema ValuesAlloyOperatorWaitForAlloyRemovalSecurityContextSeccompProfile:
     ----------
     $type : str, optional, default is "RuntimeDefault"
     """
-    [...str]: any
+
     $type?: str
+    [...str]: any
 
 schema ValuesAlloyResources:
     r"""
     Resource requests and limits to apply to the Grafana Alloy container.
     """
+
     [...str]: any
 
 schema ValuesAlloySecurityContext:
@@ -1291,10 +1638,11 @@ schema ValuesAlloySecurityContext:
     capabilities : ValuesAlloySecurityContextCapabilities, optional
     seccompProfile : ValuesAlloySecurityContextSeccompProfile, optional
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesAlloySecurityContextCapabilities
     seccompProfile?: ValuesAlloySecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesAlloySecurityContextCapabilities:
     r"""
@@ -1305,9 +1653,10 @@ schema ValuesAlloySecurityContextCapabilities:
     add : [str], optional
     drop : [str], optional
     """
-    [...str]: any
+
     add?: [str]
     drop?: [str]
+    [...str]: any
 
 schema ValuesAlloySecurityContextSeccompProfile:
     r"""
@@ -1317,8 +1666,9 @@ schema ValuesAlloySecurityContextSeccompProfile:
     ----------
     $type : str, optional
     """
-    [...str]: any
+
     $type?: str
+    [...str]: any
 
 schema ValuesAnnotationAutodiscovery:
     r"""
@@ -1329,16 +1679,21 @@ schema ValuesAnnotationAutodiscovery:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where cluster metrics will be sent. If empty, all metrics-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering metrics from Kubernetes Pods and Services discovered by special annotations.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesAnnotations:
     r"""
@@ -1374,7 +1729,7 @@ schema ValuesAnnotations:
     scrape : str, optional, default is "k8s.grafana.com/scrape"
         Annotation for enabling scraping for this service or pod. Value should be either "true" or "false"
     """
-    [...str]: any
+
     instance?: str
     job?: str
     metricsContainer?: str
@@ -1387,6 +1742,7 @@ schema ValuesAnnotations:
     metricsScrapeTimeout?: str
     prefix?: str
     scrape?: str
+    [...str]: any
 
 schema ValuesApiServer:
     r"""
@@ -1410,17 +1766,18 @@ schema ValuesApiServer:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the API Server prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides metrics.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesApiServerMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     scrapeInterval : str, optional, default is ""
-        How frequently to scrape metrics from the API Server
-        Overrides metrics.scrapeInterval
+        How frequently to scrape metrics from the API Server.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping API Server metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: any
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -1429,6 +1786,7 @@ schema ValuesApiServer:
     metricsTuning?: ValuesApiServerMetricsTuning
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesApiServerMetricsTuning:
     r"""
@@ -1441,9 +1799,10 @@ schema ValuesApiServerMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions. An empty list means keep all.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesApplicationObservability:
     r"""
@@ -1454,7 +1813,10 @@ schema ValuesApplicationObservability:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where application data will be sent. If empty, all capable destinations will be used.
     enabled : bool, optional, default is False
@@ -1462,16 +1824,19 @@ schema ValuesApplicationObservability:
     receivers : ValuesApplicationObservabilityReceivers, optional
         The receivers used for receiving application data.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
     receivers?: ValuesApplicationObservabilityReceivers
+    [...str]: any
 
 schema ValuesApplicationObservabilityReceivers:
     r"""
     The receivers used for receiving application data.
     """
+
     [...str]: any
 
 schema ValuesAuth:
@@ -1500,7 +1865,8 @@ schema ValuesAuth:
         Authentication using AWS Signature Version 4
     $type : str, optional
         The type of authentication to do.
-        Options are "none" (default), "basic", "bearerToken".
+        Options are "none", "basic", "bearerToken". When unset, defaults to "basic" if a username and
+        password are provided, otherwise "none".
     username : str, optional
         The username for basic authentication.
     usernameFrom : str, optional
@@ -1508,7 +1874,7 @@ schema ValuesAuth:
     usernameKey : str, optional
         The key for storing the username in the secret.
     """
-    [...str]: any
+
     bearerToken?: str
     bearerTokenFile?: str
     bearerTokenFrom?: str
@@ -1522,6 +1888,24 @@ schema ValuesAuth:
     username?: str
     usernameFrom?: str
     usernameKey?: str
+    [...str]: any
+
+schema ValuesAuthFilter:
+    r"""
+    Enable kube-state-metrics native request authn/authz on the metrics endpoints
+    via the `--auth-filter` flag, as an alternative to running kube-rbac-proxy.
+    When enabled, the `create` permissions on `tokenreviews` and
+    `subjectaccessreviews` required by the filter are added to the (Cluster)Role
+    automatically. Scrapers must authenticate; see the chart README and the
+    kube-state-metrics docs on protecting metrics endpoints.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+    """
+
+    enabled?: bool
+    [...str]: any
 
 schema ValuesAuthOauth2:
     r"""
@@ -1559,7 +1943,7 @@ schema ValuesAuthOauth2:
     tokenURL : str, optional
         URL to fetch the token from.
     """
-    [...str]: any
+
     clientId?: str
     clientIdFrom?: str
     clientIdKey?: str
@@ -1575,17 +1959,20 @@ schema ValuesAuthOauth2:
     scopes?: [any]
     tls?: ValuesAuthOauth2Tls
     tokenURL?: str
+    [...str]: any
 
 schema ValuesAuthOauth2EndpointParams:
     r"""
     OAuth2 endpoint parameters
     """
+
     [...str]: any
 
 schema ValuesAuthOauth2ProxyConnectHeader:
     r"""
     Specifies headers to send to proxies during CONNECT requests.
     """
+
     [...str]: any
 
 schema ValuesAuthOauth2Tls:
@@ -1621,7 +2008,7 @@ schema ValuesAuthOauth2Tls:
     keyKey : str, optional
         The key in the secret where the client key for OAuth2 is stored
     """
-    [...str]: any
+
     ca?: str
     caFile?: str
     caFrom?: str
@@ -1635,6 +2022,7 @@ schema ValuesAuthOauth2Tls:
     keyFile?: str
     keyFrom?: str
     keyKey?: str
+    [...str]: any
 
 schema ValuesAuthSigv4:
     r"""
@@ -1661,7 +2049,7 @@ schema ValuesAuthSigv4:
     secretKeyKey : str, optional
         The key for storing the secret key in the secret.
     """
-    [...str]: any
+
     accessKey?: str
     accessKeyFrom?: str
     accessKeyKey?: str
@@ -1671,6 +2059,7 @@ schema ValuesAuthSigv4:
     secretKey?: str
     secretKeyFrom?: str
     secretKeyKey?: str
+    [...str]: any
 
 schema ValuesAutoInstrumentation:
     r"""
@@ -1681,16 +2070,21 @@ schema ValuesAutoInstrumentation:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where application data will be sent. If empty, all capable destinations will be used.
     enabled : bool, optional, default is False
         Enable automatic instrumentation for applications.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesAutosharding:
     r"""
@@ -1703,8 +2097,9 @@ schema ValuesAutosharding:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesBearerToken:
     r"""
@@ -1715,13 +2110,14 @@ schema ValuesBearerToken:
     enabled : bool, optional, default is True
     token : str, optional, default is "/var/run/secrets/kubernetes.io/serviceaccount/token"
     """
-    [...str]: any
+
     enabled?: bool
     token?: str
+    [...str]: any
 
 schema ValuesBeyla:
     r"""
-    ValuesBeyla
+    Beyla, only used for its Kubernetes metadata cache for now.
 
     Attributes
     ----------
@@ -1731,6 +2127,11 @@ schema ValuesBeyla:
         When enabled, traces will be sent to the OTLP receiver if Application Observability is configured.
         When disabled, only metrics (RED metrics) from the instrumented applications will be collected from Beyla, and
         traces will not be automatically delivered.
+    deploy : bool, optional, default is False
+        Deploy Grafana Beyla's services. This controls *all* systems from the Grafana Beyla Helm chart: Beyla itself, and
+        the Beyla Kubernetes metadata cache.
+    enabled : bool, optional, default is False
+        Enable Grafana Beyla. This should remain off until we remove Beyla from the autoInstrumentation feature.
     extraDiscoveryRules : str, optional, default is ""
         Rule blocks to be added to the discovery.relabel component for Beyla.
         These relabeling rules are applied pre-scrape against the targets from service discovery.
@@ -1740,42 +2141,55 @@ schema ValuesBeyla:
         Rule blocks to be added to the prometheus.relabel component for Beyla. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))
         These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no __meta* labels are present.
     k8sCache : ValuesBeylaK8SCache, optional
-        Beyla Kubernetes cache settings.
+        Options for the Grafana Beyla Kubernetes metadata cache.
     labelMatchers : ValuesBeylaLabelMatchers, optional
         Label matchers used to select the Beyla pods for scraping metrics.
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the prometheus.relabel component for Beyla.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides metrics.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesBeylaMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
+    nameOverride : str, optional, default is "beyla-cache"
+        Distinct name so this Beyla's ServiceAccount, ClusterRole, and ClusterRoleBinding do not collide with the
+        Beyla deployed by the autoInstrumentation feature (which uses the default "beyla" name).
     nodeSelector : ValuesBeylaNodeSelector, optional
     podAnnotations : ValuesBeylaPodAnnotations, optional
+    portConflictCheck : bool, optional, default is True
+        Check for a host port conflict before deploying Beyla.
+        Beyla runs with hostNetwork enabled and binds its port on every node, so any DaemonSet already binding
+        the same host port (another Beyla or an unrelated workload) causes a conflict. If a conflict is detected,
+        the install fails with guidance to pick a unique port. Set to false to skip the check.
     preset : str, optional, default is "application"
         The configuration preset to use. Valid options are "application" or "network".
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from Beyla.
-        Overrides metrics.scrapeInterval
+        Overrides `global.scrapeInterval`.
     service : ValuesBeylaService, optional
         The port number for the Beyla service.
     tolerations : [ValuesBeylaTolerationsItems0], optional
     """
-    [...str]: any
+
     config?: ValuesBeylaConfig
     deliverTracesToApplicationObservability?: bool
+    deploy?: bool
+    enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
     k8sCache?: ValuesBeylaK8SCache
     labelMatchers?: ValuesBeylaLabelMatchers
     maxCacheSize?: any
     metricsTuning?: ValuesBeylaMetricsTuning
+    nameOverride?: str
     nodeSelector?: ValuesBeylaNodeSelector
     podAnnotations?: ValuesBeylaPodAnnotations
+    portConflictCheck?: bool
     preset?: str
     scrapeInterval?: str
     service?: ValuesBeylaService
     tolerations?: [ValuesBeylaTolerationsItems0]
+    [...str]: any
 
 schema ValuesBeylaConfig:
     r"""
@@ -1793,11 +2207,12 @@ schema ValuesBeylaConfig:
         Others will be modified depending on the value of beyla.preset.
     skipConfigMapCheck : bool, optional, default is True
     """
-    [...str]: any
+
     checksum?: str
     create?: bool
     data?: ValuesBeylaConfigData
     skipConfigMapCheck?: bool
+    [...str]: any
 
 schema ValuesBeylaConfigData:
     r"""
@@ -1811,10 +2226,11 @@ schema ValuesBeylaConfigData:
     internal_metrics : ValuesBeylaConfigDataInternalMetrics, optional
     prometheus_export : ValuesBeylaConfigDataPrometheusExport, optional
     """
-    [...str]: any
+
     attributes?: ValuesBeylaConfigDataAttributes
     internal_metrics?: ValuesBeylaConfigDataInternalMetrics
     prometheus_export?: ValuesBeylaConfigDataPrometheusExport
+    [...str]: any
 
 schema ValuesBeylaConfigDataAttributes:
     r"""
@@ -1824,8 +2240,9 @@ schema ValuesBeylaConfigDataAttributes:
     ----------
     kubernetes : ValuesBeylaConfigDataAttributesKubernetes, optional
     """
-    [...str]: any
+
     kubernetes?: ValuesBeylaConfigDataAttributesKubernetes
+    [...str]: any
 
 schema ValuesBeylaConfigDataAttributesKubernetes:
     r"""
@@ -1835,8 +2252,9 @@ schema ValuesBeylaConfigDataAttributesKubernetes:
     ----------
     enable : bool, optional, default is True
     """
-    [...str]: any
+
     enable?: bool
+    [...str]: any
 
 schema ValuesBeylaConfigDataInternalMetrics:
     r"""
@@ -1846,8 +2264,9 @@ schema ValuesBeylaConfigDataInternalMetrics:
     ----------
     prometheus : ValuesBeylaConfigDataInternalMetricsPrometheus, optional
     """
-    [...str]: any
+
     prometheus?: ValuesBeylaConfigDataInternalMetricsPrometheus
+    [...str]: any
 
 schema ValuesBeylaConfigDataInternalMetricsPrometheus:
     r"""
@@ -1858,9 +2277,10 @@ schema ValuesBeylaConfigDataInternalMetricsPrometheus:
     path : str, optional, default is "/internal/metrics"
     port : int, optional, default is 9090
     """
-    [...str]: any
+
     path?: str
     port?: int
+    [...str]: any
 
 schema ValuesBeylaConfigDataPrometheusExport:
     r"""
@@ -1872,24 +2292,26 @@ schema ValuesBeylaConfigDataPrometheusExport:
     path : str, optional, default is "/metrics"
     port : int, optional, default is 9090
     """
-    [...str]: any
+
     features?: [str]
     path?: str
     port?: int
+    [...str]: any
 
 schema ValuesBeylaK8SCache:
     r"""
-    Beyla Kubernetes cache settings.
+    Options for the Grafana Beyla Kubernetes metadata cache.
 
     Attributes
     ----------
-    replicas : int, optional, default is 1
+    replicas : int, optional, default is 0
         Use 1 replica per 50 nodes as a starting point.
     resources : ValuesBeylaK8SCacheResources, optional
     """
-    [...str]: any
+
     replicas?: int
     resources?: ValuesBeylaK8SCacheResources
+    [...str]: any
 
 schema ValuesBeylaK8SCacheResources:
     r"""
@@ -1901,9 +2323,10 @@ schema ValuesBeylaK8SCacheResources:
         Generous limits to allow for startup spike.
     requests : ValuesBeylaK8SCacheResourcesRequests, optional
     """
-    [...str]: any
+
     limits?: ValuesBeylaK8SCacheResourcesLimits
     requests?: ValuesBeylaK8SCacheResourcesRequests
+    [...str]: any
 
 schema ValuesBeylaK8SCacheResourcesLimits:
     r"""
@@ -1914,9 +2337,10 @@ schema ValuesBeylaK8SCacheResourcesLimits:
     cpu : str, optional, default is "3.0"
     memory : str, optional, default is "2Gi"
     """
-    [...str]: any
+
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesBeylaK8SCacheResourcesRequests:
     r"""
@@ -1927,9 +2351,10 @@ schema ValuesBeylaK8SCacheResourcesRequests:
     cpu : str, optional, default is "0.1"
     memory : str, optional, default is "256Mi"
     """
-    [...str]: any
+
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesBeylaLabelMatchers:
     r"""
@@ -1939,8 +2364,9 @@ schema ValuesBeylaLabelMatchers:
     ----------
     "app.kubernetes.io/name" : str, optional, default is "beyla"
     """
-    [...str]: any
+
     "app.kubernetes.io/name"?: str
+    [...str]: any
 
 schema ValuesBeylaMetricsTuning:
     r"""
@@ -1953,9 +2379,10 @@ schema ValuesBeylaMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesBeylaNodeSelector:
     r"""
@@ -1965,8 +2392,9 @@ schema ValuesBeylaNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional, default is "linux"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesBeylaPodAnnotations:
     r"""
@@ -1977,9 +2405,10 @@ schema ValuesBeylaPodAnnotations:
     "k8s.grafana.com/job" : str, optional, default is "default/beyla"
     "k8s.grafana.com/logs.job" : str, optional, default is "integrations/beyla"
     """
-    [...str]: any
+
     "k8s.grafana.com/job"?: str
     "k8s.grafana.com/logs.job"?: str
+    [...str]: any
 
 schema ValuesBeylaService:
     r"""
@@ -1989,8 +2418,9 @@ schema ValuesBeylaService:
     ----------
     targetPort : int, optional, default is 9090
     """
-    [...str]: any
+
     targetPort?: int
+    [...str]: any
 
 schema ValuesBeylaTolerationsItems0:
     r"""
@@ -2001,9 +2431,29 @@ schema ValuesBeylaTolerationsItems0:
     effect : str, optional, default is "NoSchedule"
     operator : str, optional, default is "Exists"
     """
-    [...str]: any
+
     effect?: str
     operator?: str
+    [...str]: any
+
+schema ValuesBookmarks:
+    r"""
+    ValuesBookmarks
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Whether to persist the read position (bookmark) for each event log channel to a directory on the host. This
+        keeps Alloy from re-reading events after a Pod restart. Because the collector runs as a DaemonSet, the bookmarks
+        are stored on each Windows Node via a `hostPath` volume mount. When disabled, Alloy re-reads events from the
+        beginning of each channel when the Pod restarts.
+    hostPath : str, optional, default is "C:\\ProgramData\\Grafana\\Alloy\\WindowsEventLogs"
+        The path on the Windows Node where bookmark files are stored.
+    """
+
+    enabled?: bool
+    hostPath?: str
+    [...str]: any
 
 schema ValuesCadvisor:
     r"""
@@ -2027,18 +2477,20 @@ schema ValuesCadvisor:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the cAdvisor prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesCadvisorMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     nodeAddressFormat : str, optional, default is "direct"
         How to access cAdvisor to get metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape cAdvisor metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping cAdvisor metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -2048,6 +2500,7 @@ schema ValuesCadvisor:
     nodeAddressFormat?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesCadvisorMetricsTuning:
     r"""
@@ -2076,7 +2529,7 @@ schema ValuesCadvisorMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of metrics from cAdvisor to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     dropEmptyContainerLabels?: bool
     dropEmptyImageLabels?: bool
     excludeMetrics?: [any]
@@ -2087,6 +2540,7 @@ schema ValuesCadvisorMetricsTuning:
     keepPhysicalNetworkDevices?: [str]
     normalizeUnnecessaryLabels?: [ValuesCadvisorMetricsTuningNormalizeUnnecessaryLabelsItems0]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesCadvisorMetricsTuningNormalizeUnnecessaryLabelsItems0:
     r"""
@@ -2097,9 +2551,10 @@ schema ValuesCadvisorMetricsTuningNormalizeUnnecessaryLabelsItems0:
     labels : [str], optional
     metric : str, optional, default is "machine_memory_bytes"
     """
-    [...str]: any
+
     labels?: [str]
     metric?: str
+    [...str]: any
 
 schema ValuesCanMount:
     r"""
@@ -2109,19 +2564,105 @@ schema ValuesCanMount:
     ----------
     usrSrc : bool, optional, default is True
     """
-    [...str]: any
+
     usrSrc?: bool
+    [...str]: any
 
 schema ValuesCertManager:
     r"""
-    Scrape metrics/logs from cert-manager
+    On-the-fly cert-manager installation. When `webhook.certManager.mode` is
+    forced to `cert-manager` AND the cert-manager.io/v1 API is absent, the chart
+    installs cert-manager via a short-lived `pre-install` hook Pod
+    (hooks/install-cert-manager.sh: checks whether cert-manager is already present
+    and, if not, installs it via Helm and waits for its webhook to become Ready).
+    In `auto` mode a missing cert-manager falls back to self-signed and the hook
+    never runs; in `self-signed` mode cert-manager is never used. So to install
+    cert-manager on the fly, set `webhook.certManager.mode: cert-manager`. The hook
+    Pod uses a temporary ServiceAccount + (Cluster)Role(Binding) deleted as soon as
+    it succeeds.
 
     Attributes
     ----------
-    instances : [any], optional
+    installHook : ValuesCertManagerInstallHook, optional
     """
+
+    installHook?: ValuesCertManagerInstallHook
     [...str]: any
-    instances?: [any]
+
+schema ValuesCertManagerInstallHook:
+    r"""
+    ValuesCertManagerInstallHook
+
+    Attributes
+    ----------
+    image : ValuesCertManagerInstallHookImage, optional
+        Image carrying both `kubectl` and `helm` (used by the hook Pod).
+        TODO: look for an official image or create our own
+    resources : ValuesCertManagerInstallHookResources, optional
+    """
+
+    image?: ValuesCertManagerInstallHookImage
+    resources?: ValuesCertManagerInstallHookResources
+    [...str]: any
+
+schema ValuesCertManagerInstallHookImage:
+    r"""
+    Image carrying both `kubectl` and `helm` (used by the hook Pod).
+    TODO: look for an official image or create our own
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "dtzar/helm-kubectl"
+    tag : str, optional, default is "3.16"
+    """
+
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+    [...str]: any
+
+schema ValuesCertManagerInstallHookResources:
+    r"""
+    ValuesCertManagerInstallHookResources
+
+    Attributes
+    ----------
+    limits : ValuesCertManagerInstallHookResourcesLimits, optional
+    requests : ValuesCertManagerInstallHookResourcesRequests, optional
+    """
+
+    limits?: ValuesCertManagerInstallHookResourcesLimits
+    requests?: ValuesCertManagerInstallHookResourcesRequests
+    [...str]: any
+
+schema ValuesCertManagerInstallHookResourcesLimits:
+    r"""
+    ValuesCertManagerInstallHookResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "256Mi"
+    """
+
+    cpu?: str
+    memory?: str
+    [...str]: any
+
+schema ValuesCertManagerInstallHookResourcesRequests:
+    r"""
+    ValuesCertManagerInstallHookResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "50m"
+    memory : str, optional, default is "64Mi"
+    """
+
+    cpu?: str
+    memory?: str
+    [...str]: any
 
 schema ValuesCluster:
     r"""
@@ -2131,9 +2672,14 @@ schema ValuesCluster:
     ----------
     name : str, optional, default is ""
         The name for this cluster.
+    nameFrom : str, optional, default is ""
+        A raw Alloy expression for the cluster name. Use this to dynamically set the cluster name, e.g.
+        `sys.env("CLUSTER_NAME")`. If set, this takes precedence over `cluster.name`.
     """
-    [...str]: any
+
     name?: str
+    nameFrom?: str
+    [...str]: any
 
 schema ValuesClusterEvents:
     r"""
@@ -2144,16 +2690,21 @@ schema ValuesClusterEvents:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where cluster events will be sent. If empty, all logs-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Cluster events.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesClusterMetrics:
     r"""
@@ -2164,16 +2715,21 @@ schema ValuesClusterMetrics:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where cluster metrics will be sent. If empty, all metrics-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Cluster metrics.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesCollectorCommon:
     r"""
@@ -2184,25 +2740,29 @@ schema ValuesCollectorCommon:
     alloy : ValuesCollectorCommonAlloy, optional
         Apply settings for all Alloy collectors
     """
-    [...str]: any
+
     alloy?: ValuesCollectorCommonAlloy
+    [...str]: any
 
 schema ValuesCollectorCommonAlloy:
     r"""
     Apply settings for all Alloy collectors
     """
+
     [...str]: any
 
 schema ValuesCollectors:
     r"""
     Define collectors.
     """
+
     [...str]: any
 
 schema ValuesCommonLabels:
     r"""
     # Extra labels to attach to all resources (can be templated)
     """
+
     [...str]: any
 
 schema ValuesConfig:
@@ -2219,20 +2779,37 @@ schema ValuesConfig:
         set to true, to use the below default configurations
     data : ValuesConfigData, optional
         default value of beyla configuration
+    excludeNamespaces : [str], optional
+        Namespaces to exclude
+    logging : ValuesConfigLogging, optional
     name : str, optional, default is ""
         # -- Provide the name of the external configmap containing the beyla configuration.
         # To create configmap from configuration file, user can use the below command. Note: The name 'beyla-config.yaml' is important.
         # `kubectl create cm --from-file=beyla-config.yaml=<name-of-config-file> -n <namespace>`
         # If empty, default configuration below is used.
+    namespaces : [any], optional
+        Namespaces to include. Empty means all namespaces
+    objects : [any], optional
+        List of Kubernetes resources to watch. Each entry requires `apiVersion` and `kind`. At least one object must be provided.
+    output : ValuesConfigOutput, optional
+    refreshInterval : str, optional, default is "24h"
+        How often to do a full refresh of all resources
     skipConfigMapCheck : bool, optional, default is False
         set to true, to skip the check around the ConfigMap creation
     """
-    [...str]: any
+
     checksum?: str
     create?: bool
     data?: ValuesConfigData
+    excludeNamespaces?: [str]
+    logging?: ValuesConfigLogging
     name?: str
+    namespaces?: [any]
+    objects?: [any]
+    output?: ValuesConfigOutput
+    refreshInterval?: str
     skipConfigMapCheck?: bool
+    [...str]: any
 
 schema ValuesConfigData:
     r"""
@@ -2260,10 +2837,11 @@ schema ValuesConfigData:
         network:
           enable: true
     """
-    [...str]: any
+
     attributes?: ValuesConfigDataAttributes
     $filter?: ValuesConfigDataFilter
     prometheus_export?: ValuesConfigDataPrometheusExport
+    [...str]: any
 
 schema ValuesConfigDataAttributes:
     r"""
@@ -2285,8 +2863,9 @@ schema ValuesConfigDataAttributes:
     ----------
     kubernetes : ValuesConfigDataAttributesKubernetes, optional
     """
-    [...str]: any
+
     kubernetes?: ValuesConfigDataAttributesKubernetes
+    [...str]: any
 
 schema ValuesConfigDataAttributesKubernetes:
     r"""
@@ -2296,8 +2875,9 @@ schema ValuesConfigDataAttributesKubernetes:
     ----------
     enable : bool, optional, default is True
     """
-    [...str]: any
+
     enable?: bool
+    [...str]: any
 
 schema ValuesConfigDataFilter:
     r"""
@@ -2307,8 +2887,9 @@ schema ValuesConfigDataFilter:
     ----------
     network : ValuesConfigDataFilterNetwork, optional
     """
-    [...str]: any
+
     network?: ValuesConfigDataFilterNetwork
+    [...str]: any
 
 schema ValuesConfigDataFilterNetwork:
     r"""
@@ -2319,9 +2900,10 @@ schema ValuesConfigDataFilterNetwork:
     k8s_dst_owner_name : ValuesConfigDataFilterNetworkK8SDstOwnerName, optional
     k8s_src_owner_name : ValuesConfigDataFilterNetworkK8SSrcOwnerName, optional
     """
-    [...str]: any
+
     k8s_dst_owner_name?: ValuesConfigDataFilterNetworkK8SDstOwnerName
     k8s_src_owner_name?: ValuesConfigDataFilterNetworkK8SSrcOwnerName
+    [...str]: any
 
 schema ValuesConfigDataFilterNetworkK8SDstOwnerName:
     r"""
@@ -2331,8 +2913,9 @@ schema ValuesConfigDataFilterNetworkK8SDstOwnerName:
     ----------
     not_match : str, optional, default is "{kube*,*jaeger-agent*,*prometheus*,*promtail*,*grafana-agent*}"
     """
-    [...str]: any
+
     not_match?: str
+    [...str]: any
 
 schema ValuesConfigDataFilterNetworkK8SSrcOwnerName:
     r"""
@@ -2342,8 +2925,9 @@ schema ValuesConfigDataFilterNetworkK8SSrcOwnerName:
     ----------
     not_match : str, optional, default is "{kube*,*jaeger-agent*,*prometheus*,*promtail*,*grafana-agent*}"
     """
-    [...str]: any
+
     not_match?: str
+    [...str]: any
 
 schema ValuesConfigDataPrometheusExport:
     r"""
@@ -2356,9 +2940,42 @@ schema ValuesConfigDataPrometheusExport:
     path : str, optional, default is "/metrics"
     port : int, optional, default is 9090
     """
-    [...str]: any
+
     path?: str
     port?: int
+    [...str]: any
+
+schema ValuesConfigLogging:
+    r"""
+    ValuesConfigLogging
+
+    Attributes
+    ----------
+    logDiffs : str, optional, default is "detailed"
+        Log resource diffs. One of `false`, `compact`, or `detailed`
+    logManifests : bool, optional, default is True
+        Log the full manifest payload on each change
+    """
+
+    logDiffs?: str
+    logManifests?: bool
+    [...str]: any
+
+schema ValuesConfigOutput:
+    r"""
+    ValuesConfigOutput
+
+    Attributes
+    ----------
+    directory : str, optional, default is "/var/manifests"
+        Directory to write manifests into
+    format : str, optional, default is "json"
+        Output format, either `yaml` or `json`
+    """
+
+    directory?: str
+    format?: str
+    [...str]: any
 
 schema ValuesConfigReloader:
     r"""
@@ -2376,12 +2993,13 @@ schema ValuesConfigReloader:
     securityContext : ValuesConfigReloaderSecurityContext, optional
         Security context to apply to the Grafana configReloader container.
     """
-    [...str]: any
+
     customArgs?: [any]
     enabled?: bool
     image?: ValuesConfigReloaderImage
     resources?: ValuesConfigReloaderResources
     securityContext?: ValuesConfigReloaderSecurityContext
+    [...str]: any
 
 schema ValuesConfigReloaderImage:
     r"""
@@ -2391,6 +3009,8 @@ schema ValuesConfigReloaderImage:
     ----------
     digest : str, optional
         SHA256 digest of image to use for config reloading (either in format "sha256:XYZ" or "XYZ"). When set, will override `configReloader.image.tag`
+    pullPolicy : str, optional
+        Config reloader image pull policy.
     registry : str, optional
         Config reloader image registry (defaults to docker.io)
     repository : str, optional
@@ -2398,11 +3018,13 @@ schema ValuesConfigReloaderImage:
     tag : str, optional
         Tag of image to use for config reloading.
     """
-    [...str]: any
+
     digest?: str
+    pullPolicy?: str
     registry?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesConfigReloaderResources:
     r"""
@@ -2412,8 +3034,9 @@ schema ValuesConfigReloaderResources:
     ----------
     requests : ValuesConfigReloaderResourcesRequests, optional
     """
-    [...str]: any
+
     requests?: ValuesConfigReloaderResourcesRequests
+    [...str]: any
 
 schema ValuesConfigReloaderResourcesRequests:
     r"""
@@ -2424,14 +3047,57 @@ schema ValuesConfigReloaderResourcesRequests:
     cpu : str, optional
     memory : str, optional
     """
-    [...str]: any
+
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesConfigReloaderSecurityContext:
     r"""
     Security context to apply to the Grafana configReloader container.
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional
+    capabilities : ValuesConfigReloaderSecurityContextCapabilities, optional
+    readOnlyRootFilesystem : bool, optional
+    runAsGroup : int, optional
+    runAsNonRoot : bool, optional
+    runAsUser : int, optional
+    seccompProfile : ValuesConfigReloaderSecurityContextSeccompProfile, optional
     """
+
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesConfigReloaderSecurityContextCapabilities
+    readOnlyRootFilesystem?: bool
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesConfigReloaderSecurityContextSeccompProfile
+    [...str]: any
+
+schema ValuesConfigReloaderSecurityContextCapabilities:
+    r"""
+    ValuesConfigReloaderSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+
+    drop?: [str]
+    [...str]: any
+
+schema ValuesConfigReloaderSecurityContextSeccompProfile:
+    r"""
+    ValuesConfigReloaderSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional
+    """
+
+    $type?: str
     [...str]: any
 
 schema ValuesConnectors:
@@ -2446,10 +3112,11 @@ schema ValuesConnectors:
     spanMetrics : ValuesConnectorsSpanMetrics, optional
         Span Metrics connector settings.
     """
-    [...str]: any
+
     grafanaCloudMetrics?: ValuesConnectorsGrafanaCloudMetrics
     spanLogs?: ValuesConnectorsSpanLogs
     spanMetrics?: ValuesConnectorsSpanMetrics
+    [...str]: any
 
 schema ValuesConnectorsGrafanaCloudMetrics:
     r"""
@@ -2462,8 +3129,9 @@ schema ValuesConnectorsGrafanaCloudMetrics:
         in Grafana Cloud. Note: Enabling this may incur additional costs.
         See [Application Observability Pricing](https://grafana.com/docs/grafana-cloud/monitor-applications/application-observability/pricing/)
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesConnectorsSpanLogs:
     r"""
@@ -2489,7 +3157,7 @@ schema ValuesConnectorsSpanLogs:
     spans : bool, optional, default is False
         Create a log line for each span. This can lead to a large number of logs.
     """
-    [...str]: any
+
     enabled?: bool
     labels?: [any]
     overrides?: ValuesConnectorsSpanLogsOverrides
@@ -2498,12 +3166,14 @@ schema ValuesConnectorsSpanLogs:
     roots?: bool
     spanAttributes?: [any]
     spans?: bool
+    [...str]: any
 
 schema ValuesConnectorsSpanLogsOverrides:
     r"""
     Add overrides for keys in the log body.
     Example: `overrides: { "service_key": "service.name" }`
     """
+
     [...str]: any
 
 schema ValuesConnectorsSpanMetrics:
@@ -2530,8 +3200,14 @@ schema ValuesConnectorsSpanMetrics:
         List of dimensions to be excluded from the default set of dimensions.
     exemplars : ValuesConnectorsSpanMetricsExemplars, optional
     histogram : ValuesConnectorsSpanMetricsHistogram, optional
+    metricsExpiration : any, optional, default is ""
+        (duration) Time period after which metrics are considered stale and are removed from the cache.
+        Leaving this unset (or `0s`) means metrics never expire.
     namespace : str, optional, default is "traces.span.metrics"
         The Metric namespace.
+    seriesExpiration : any, optional, default is ""
+        (duration) Time period after which individual metric series are considered stale and are no longer exported.
+        Leaving this unset (or `0s`) means series never expire.
     skipBeyla : bool, optional, default is True
         Skip Beyla traces when `span.metrics.skip` resource attribute is present.
     skipInternal : bool, optional, default is True
@@ -2540,7 +3216,7 @@ schema ValuesConnectorsSpanMetrics:
         Apply transformations to span metrics after they are generated.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))
     """
-    [...str]: any
+
     aggregationCardinalityLimit?: int
     dimensions?: [any]
     dimensionsCacheSize?: int
@@ -2549,10 +3225,13 @@ schema ValuesConnectorsSpanMetrics:
     excludeDimensions?: [any]
     exemplars?: ValuesConnectorsSpanMetricsExemplars
     histogram?: ValuesConnectorsSpanMetricsHistogram
+    metricsExpiration?: any
     namespace?: str
+    seriesExpiration?: any
     skipBeyla?: bool
     skipInternal?: bool
     transforms?: ValuesConnectorsSpanMetricsTransforms
+    [...str]: any
 
 schema ValuesConnectorsSpanMetricsEvents:
     r"""
@@ -2563,8 +3242,9 @@ schema ValuesConnectorsSpanMetricsEvents:
     enabled : bool, optional, default is False
         Capture events metrics, which track span events.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesConnectorsSpanMetricsExemplars:
     r"""
@@ -2575,11 +3255,12 @@ schema ValuesConnectorsSpanMetricsExemplars:
     enabled : bool, optional, default is False
         Attach exemplars to histograms.
     maxPerDataPoint : any, optional, default is ""
-        (number) Limits the number of exemplars that can be added to a unique dimension set.
+        (int) Limits the number of exemplars that can be added to a unique dimension set.
     """
-    [...str]: any
+
     enabled?: bool
     maxPerDataPoint?: any
+    [...str]: any
 
 schema ValuesConnectorsSpanMetricsHistogram:
     r"""
@@ -2598,12 +3279,13 @@ schema ValuesConnectorsSpanMetricsHistogram:
     unit : str, optional, default is "s"
         The histogram unit.
     """
-    [...str]: any
+
     enabled?: bool
     explicit?: ValuesConnectorsSpanMetricsHistogramExplicit
     exponential?: ValuesConnectorsSpanMetricsHistogramExponential
     $type?: str
     unit?: str
+    [...str]: any
 
 schema ValuesConnectorsSpanMetricsHistogramExplicit:
     r"""
@@ -2614,8 +3296,9 @@ schema ValuesConnectorsSpanMetricsHistogramExplicit:
     buckets : [str], optional
         The histogram buckets to use.
     """
-    [...str]: any
+
     buckets?: [str]
+    [...str]: any
 
 schema ValuesConnectorsSpanMetricsHistogramExponential:
     r"""
@@ -2626,8 +3309,9 @@ schema ValuesConnectorsSpanMetricsHistogramExponential:
     maxSize : int, optional, default is 160
         Maximum number of buckets per positive or negative number range.
     """
-    [...str]: any
+
     maxSize?: int
+    [...str]: any
 
 schema ValuesConnectorsSpanMetricsTransforms:
     r"""
@@ -2640,10 +3324,11 @@ schema ValuesConnectorsSpanMetricsTransforms:
     metric : [any], optional
     resource : [any], optional
     """
-    [...str]: any
+
     datapoint?: [any]
     metric?: [any]
     resource?: [any]
+    [...str]: any
 
 schema ValuesContainerSecurityContext:
     r"""
@@ -2657,10 +3342,11 @@ schema ValuesContainerSecurityContext:
     capabilities : ValuesContainerSecurityContextCapabilities, optional
     readOnlyRootFilesystem : bool, optional, default is True
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesContainerSecurityContextCapabilities
     readOnlyRootFilesystem?: bool
+    [...str]: any
 
 schema ValuesContainerSecurityContextCapabilities:
     r"""
@@ -2670,8 +3356,9 @@ schema ValuesContainerSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
+
     drop?: [str]
+    [...str]: any
 
 schema ValuesContextPropagation:
     r"""
@@ -2681,8 +3368,9 @@ schema ValuesContextPropagation:
     ----------
     enabled : bool, optional, default is True
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesControlPlane:
     r"""
@@ -2694,8 +3382,9 @@ schema ValuesControlPlane:
         enable all Kubernetes Control Plane metrics sources. This includes api-server, kube-scheduler,
         kube-controller-manager, and KubeDNS.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesController:
     r"""
@@ -2741,6 +3430,8 @@ schema ValuesController:
         priorityClassName to apply to Grafana Alloy pods.
     replicas : int, optional
         Number of pods to deploy. Ignored when controller.type is 'daemonset'.
+    revisionHistoryLimit : int, optional
+        The maximum number of revisions that will be maintained in the Controllers's revision history. The history consists of all revisions not represented by a currently applied reversion.
     terminationGracePeriodSeconds : any, optional
         Termination grace period in seconds for the Grafana Alloy pods.
         The default value used by Kubernetes if unspecifed is 30 seconds.
@@ -2757,7 +3448,7 @@ schema ValuesController:
         volumeClaimTemplates to add when controller.type is 'statefulset'.
     volumes : ValuesControllerVolumes, optional
     """
-    [...str]: any
+
     affinity?: ValuesControllerAffinity
     autoscaling?: ValuesControllerAutoscaling
     dnsPolicy?: str
@@ -2776,6 +3467,7 @@ schema ValuesController:
     podLabels?: ValuesControllerPodLabels
     priorityClassName?: str
     replicas?: int
+    revisionHistoryLimit?: int
     terminationGracePeriodSeconds?: any
     tolerations?: [any]
     topologySpreadConstraints?: [any]
@@ -2783,11 +3475,13 @@ schema ValuesController:
     updateStrategy?: ValuesControllerUpdateStrategy
     volumeClaimTemplates?: [any]
     volumes?: ValuesControllerVolumes
+    [...str]: any
 
 schema ValuesControllerAffinity:
     r"""
     Affinity configuration for pods.
     """
+
     [...str]: any
 
 schema ValuesControllerAutoscaling:
@@ -2814,7 +3508,7 @@ schema ValuesControllerAutoscaling:
     vertical : ValuesControllerAutoscalingVertical, optional
         Configures the Vertical Pod Autoscaler for the controller.
     """
-    [...str]: any
+
     enabled?: bool
     horizontal?: ValuesControllerAutoscalingHorizontal
     maxReplicas?: int
@@ -2824,6 +3518,7 @@ schema ValuesControllerAutoscaling:
     targetCPUUtilizationPercentage?: int
     targetMemoryUtilizationPercentage?: int
     vertical?: ValuesControllerAutoscalingVertical
+    [...str]: any
 
 schema ValuesControllerAutoscalingHorizontal:
     r"""
@@ -2833,6 +3528,19 @@ schema ValuesControllerAutoscalingHorizontal:
     ----------
     enabled : bool, optional
         Enables the Horizontal Pod Autoscaler for the controller.
+    externalHPA : bool, optional
+        When true, the chart omits `spec.replicas` from the workload AND does NOT
+        render its own HorizontalPodAutoscaler. Use this when an external controller
+        (e.g. KEDA, a hand-written HPA, or another scaler) owns replicas for the Alloy
+        workload. Mutually exclusive with `horizontal.enabled`. When set, all other
+        `controller.autoscaling.horizontal.*` fields are ignored.
+
+        Upgrade note: switching this from `false` to `true` on an existing release
+        triggers a one-time single-cycle dip to 1 replica on the next `helm upgrade`
+        (Helm removes the `replicas` field via `{"spec":{"replicas":null}}`, which
+        Kubernetes interprets as "reset to default"). The external HPA corrects this
+        within its next polling interval; users with `minReplicaCount > 1` are
+        restored within ~30s under KEDA defaults. Plan upgrades accordingly.
     maxReplicas : int, optional
         The upper limit for the number of replicas to which the autoscaler can scale up.
     minReplicas : int, optional
@@ -2844,14 +3552,16 @@ schema ValuesControllerAutoscalingHorizontal:
     targetMemoryUtilizationPercentage : int, optional
         Average Memory utilization across all relevant pods, a percentage of the requested value of the resource for the pods. Setting `targetMemoryUtilizationPercentage` to 0 will disable Memory scaling.
     """
-    [...str]: any
+
     enabled?: bool
+    externalHPA?: bool
     maxReplicas?: int
     minReplicas?: int
     scaleDown?: ValuesControllerAutoscalingHorizontalScaleDown
     scaleUp?: ValuesControllerAutoscalingHorizontalScaleUp
     targetCPUUtilizationPercentage?: int
     targetMemoryUtilizationPercentage?: int
+    [...str]: any
 
 schema ValuesControllerAutoscalingHorizontalScaleDown:
     r"""
@@ -2869,10 +3579,11 @@ schema ValuesControllerAutoscalingHorizontalScaleDown:
     stabilizationWindowSeconds : int, optional
         The duration that the autoscaling mechanism should look back on to make decisions about scaling down.
     """
-    [...str]: any
+
     policies?: [any]
     selectPolicy?: str
     stabilizationWindowSeconds?: int
+    [...str]: any
 
 schema ValuesControllerAutoscalingHorizontalScaleUp:
     r"""
@@ -2890,10 +3601,11 @@ schema ValuesControllerAutoscalingHorizontalScaleUp:
     stabilizationWindowSeconds : int, optional
         The duration that the autoscaling mechanism should look back on to make decisions about scaling up.
     """
-    [...str]: any
+
     policies?: [any]
     selectPolicy?: str
     stabilizationWindowSeconds?: int
+    [...str]: any
 
 schema ValuesControllerAutoscalingScaleDown:
     r"""
@@ -2911,10 +3623,11 @@ schema ValuesControllerAutoscalingScaleDown:
     stabilizationWindowSeconds : int, optional
         The duration that the autoscaling mechanism should look back on to make decisions about scaling down.
     """
-    [...str]: any
+
     policies?: [any]
     selectPolicy?: str
     stabilizationWindowSeconds?: int
+    [...str]: any
 
 schema ValuesControllerAutoscalingScaleUp:
     r"""
@@ -2932,10 +3645,11 @@ schema ValuesControllerAutoscalingScaleUp:
     stabilizationWindowSeconds : int, optional
         The duration that the autoscaling mechanism should look back on to make decisions about scaling up.
     """
-    [...str]: any
+
     policies?: [any]
     selectPolicy?: str
     stabilizationWindowSeconds?: int
+    [...str]: any
 
 schema ValuesControllerAutoscalingVertical:
     r"""
@@ -2955,11 +3669,12 @@ schema ValuesControllerAutoscalingVertical:
     updatePolicy : any, optional
         Configures the update policy for the Vertical Pod Autoscaler.
     """
-    [...str]: any
+
     enabled?: bool
     recommenders?: [any]
     resourcePolicy?: ValuesControllerAutoscalingVerticalResourcePolicy
     updatePolicy?: any
+    [...str]: any
 
 schema ValuesControllerAutoscalingVerticalResourcePolicy:
     r"""
@@ -2970,8 +3685,9 @@ schema ValuesControllerAutoscalingVerticalResourcePolicy:
     containerPolicies : [ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0], optional
         Configures the container policies for the Vertical Pod Autoscaler.
     """
-    [...str]: any
+
     containerPolicies?: [ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0]
+    [...str]: any
 
 schema ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0:
     r"""
@@ -2991,17 +3707,19 @@ schema ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0:
         memory: 100Mi
         Defines the min allowed resources for the pod
     """
-    [...str]: any
+
     containerName?: str
     controlledResources?: [str]
     controlledValues?: str
     maxAllowed?: ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0MaxAllowed
     minAllowed?: ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0MinAllowed
+    [...str]: any
 
 schema ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0MaxAllowed:
     r"""
     The maximum allowed values for the pods.
     """
+
     [...str]: any
 
 schema ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0MinAllowed:
@@ -3010,18 +3728,21 @@ schema ValuesControllerAutoscalingVerticalResourcePolicyContainerPoliciesItems0M
     memory: 100Mi
     Defines the min allowed resources for the pod
     """
+
     [...str]: any
 
 schema ValuesControllerExtraAnnotations:
     r"""
     Annotations to add to controller.
     """
+
     [...str]: any
 
 schema ValuesControllerExtraLabels:
     r"""
     Extra labels to add to the controller.
     """
+
     [...str]: any
 
 schema ValuesControllerNodeSelector:
@@ -3032,8 +3753,9 @@ schema ValuesControllerNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesControllerPodAnnotations:
     r"""
@@ -3043,8 +3765,9 @@ schema ValuesControllerPodAnnotations:
     ----------
     "k8s.grafana.com/logs.job" : str, optional
     """
-    [...str]: any
+
     "k8s.grafana.com/logs.job"?: str
+    [...str]: any
 
 schema ValuesControllerPodDisruptionBudget:
     r"""
@@ -3061,21 +3784,24 @@ schema ValuesControllerPodDisruptionBudget:
         Minimum number of pods that must be available during a disruption.
         Note: Only one of minAvailable or maxUnavailable should be set.
     """
-    [...str]: any
+
     enabled?: bool
     maxUnavailable?: any
     minAvailable?: any
+    [...str]: any
 
 schema ValuesControllerPodLabels:
     r"""
     Extra pod labels to add.
     """
+
     [...str]: any
 
 schema ValuesControllerUpdateStrategy:
     r"""
     Update strategy for updating deployed Pods.
     """
+
     [...str]: any
 
 schema ValuesControllerVolumes:
@@ -3087,8 +3813,9 @@ schema ValuesControllerVolumes:
     extra : [any], optional
         Extra volumes to add to the Grafana Alloy pod.
     """
-    [...str]: any
+
     extra?: [any]
+    [...str]: any
 
 schema ValuesCostMetrics:
     r"""
@@ -3099,16 +3826,21 @@ schema ValuesCostMetrics:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where cluster metrics will be sent. If empty, all metrics-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Cost metrics.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesCrds:
     r"""
@@ -3122,10 +3854,11 @@ schema ValuesCrds:
     deployPodLogsCRD : bool, optional, default is False
         Should this chart deploy the PodLogs CRD?
     """
-    [...str]: any
+
     create?: bool
     deployAlloyCRD?: bool
     deployPodLogsCRD?: bool
+    [...str]: any
 
 schema ValuesCri:
     r"""
@@ -3138,13 +3871,15 @@ schema ValuesCri:
         Maximum number of partial lines to hold in memory before forcing a merge.
         Increase this value if logs are being lost due to partial line limits.
     """
-    [...str]: any
+
     maxPartialLines?: int
+    [...str]: any
 
 schema ValuesCustomLabels:
     r"""
     # Additional labels to add to all resources
     """
+
     [...str]: any
 
 schema ValuesCustomResourceState:
@@ -3164,23 +3899,138 @@ schema ValuesCustomResourceState:
     name : str, optional, default is ""
         Name of the ConfigMap that holds the config. If empty, name will be generated based on the release name.
     """
-    [...str]: any
+
     config?: ValuesCustomResourceStateConfig
     create?: bool
     enabled?: bool
     key?: str
     name?: str
+    [...str]: any
 
 schema ValuesCustomResourceStateConfig:
     r"""
     Definition of the CustomResourceStateMetrics. Add (Cluster)Role permissions to list/watch the resources defined in the config to rbac.extraRules.
+
+    Attributes
+    ----------
+    spec : ValuesCustomResourceStateConfigSpec, optional
     """
+
+    spec?: ValuesCustomResourceStateConfigSpec
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpec:
+    r"""
+    ValuesCustomResourceStateConfigSpec
+
+    Attributes
+    ----------
+    resources : [ValuesCustomResourceStateConfigSpecResourcesItems0], optional
+    """
+
+    resources?: [ValuesCustomResourceStateConfigSpecResourcesItems0]
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpecResourcesItems0:
+    r"""
+    ValuesCustomResourceStateConfigSpecResourcesItems0
+
+    Attributes
+    ----------
+    groupVersionKind : ValuesCustomResourceStateConfigSpecResourcesItems0GroupVersionKind, optional
+    metricNamePrefix : str, optional
+    metrics : [ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0], optional
+    """
+
+    groupVersionKind?: ValuesCustomResourceStateConfigSpecResourcesItems0GroupVersionKind
+    metricNamePrefix?: str
+    metrics?: [ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0]
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpecResourcesItems0GroupVersionKind:
+    r"""
+    ValuesCustomResourceStateConfigSpecResourcesItems0GroupVersionKind
+
+    Attributes
+    ----------
+    group : str, optional
+    kind : str, optional
+    version : str, optional
+    """
+
+    group?: str
+    kind?: str
+    version?: str
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0:
+    r"""
+    ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0
+
+    Attributes
+    ----------
+    each : ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0Each, optional
+    help : str, optional
+    name : str, optional
+    """
+
+    each?: ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0Each
+    help?: str
+    name?: str
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0Each:
+    r"""
+    ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0Each
+
+    Attributes
+    ----------
+    info : ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfo, optional
+    $type : str, optional
+    """
+
+    info?: ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfo
+    $type?: str
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfo:
+    r"""
+    ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfo
+
+    Attributes
+    ----------
+    labelsFromPath : ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfoLabelsFromPath, optional
+    """
+
+    labelsFromPath?: ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfoLabelsFromPath
+    [...str]: any
+
+schema ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfoLabelsFromPath:
+    r"""
+    ValuesCustomResourceStateConfigSpecResourcesItems0MetricsItems0EachInfoLabelsFromPath
+
+    Attributes
+    ----------
+    name : [str], optional
+    """
+
+    name?: [str]
     [...str]: any
 
 schema ValuesDaemonsetAnnotations:
     r"""
     Annotations to be added to windows exporter daemonset
     """
+
+    [...str]: any
+
+schema ValuesDataProcessors:
+    r"""
+    Optional processors that sit between features and destinations. A feature can opt in by listing a processor under
+    its `dataProcessors:` key. Data from that feature flows through the processor's pipeline before reaching its
+    destinations. See the [data processors documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/dataProcessors/README.md).
+    """
+
     [...str]: any
 
 schema ValuesDatabaseObservability:
@@ -3196,21 +4046,30 @@ schema ValuesDatabaseObservability:
     collectors : ValuesDatabaseObservabilityCollectors, optional
     enabled : bool, optional
         Whether to gather table, schema, and query information from the database. Requires exporter to be enabled.
+    excludeCurrentUser : bool, optional
+        Exclude the user that Alloy uses to connect to the database from monitoring. The resolved username is
+        automatically appended to `excludeUsers`, if not already present.
     excludeDatabases : [any], optional
         A list of databases to exclude from monitoring.
     excludeSchemas : [any], optional
         A list of schemas to exclude from monitoring.
     excludeUsers : [any], optional
         A list of users to exclude from monitoring.
+    labels : ValuesDatabaseObservabilityLabels, optional
+        Additional static labels to add to both metrics and logs produced by Database Observability for this instance.
+        Keys are label names, values are label values. The reserved labels `job`, `instance`, and `dsn` cannot be overridden.
     """
-    [...str]: any
+
     allowUpdatePerformanceSchemaSettings?: bool
     cloudProvider?: ValuesDatabaseObservabilityCloudProvider
     collectors?: ValuesDatabaseObservabilityCollectors
     enabled?: bool
+    excludeCurrentUser?: bool
     excludeDatabases?: [any]
     excludeSchemas?: [any]
     excludeUsers?: [any]
+    labels?: ValuesDatabaseObservabilityLabels
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCloudProvider:
     r"""
@@ -3222,10 +4081,14 @@ schema ValuesDatabaseObservabilityCloudProvider:
         AWS configuration.
     azure : ValuesDatabaseObservabilityCloudProviderAzure, optional
         Azure configuration.
+    gcp : ValuesDatabaseObservabilityCloudProviderGcp, optional
+        GCP configuration.
     """
-    [...str]: any
+
     aws?: ValuesDatabaseObservabilityCloudProviderAws
     azure?: ValuesDatabaseObservabilityCloudProviderAzure
+    gcp?: ValuesDatabaseObservabilityCloudProviderGcp
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCloudProviderAws:
     r"""
@@ -3236,8 +4099,9 @@ schema ValuesDatabaseObservabilityCloudProviderAws:
     arn : str, optional
         ARN of the AWS RDS instance.
     """
-    [...str]: any
+
     arn?: str
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCloudProviderAzure:
     r"""
@@ -3252,10 +4116,25 @@ schema ValuesDatabaseObservabilityCloudProviderAzure:
     subscriptionId : str, optional
         The Subscription ID for your Azure account.
     """
-    [...str]: any
+
     resourceGroup?: str
     serverName?: str
     subscriptionId?: str
+    [...str]: any
+
+schema ValuesDatabaseObservabilityCloudProviderGcp:
+    r"""
+    GCP configuration.
+
+    Attributes
+    ----------
+    connectionName : str, optional
+        The Cloud SQL instance connection name in the format `project:region:instance`,
+        for example `my-project:us-central1:my-db`.
+    """
+
+    connectionName?: str
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectors:
     r"""
@@ -3277,7 +4156,7 @@ schema ValuesDatabaseObservabilityCollectors:
     setupConsumers : ValuesDatabaseObservabilityCollectorsSetupConsumers, optional
         Collect enabled performance_schema.setup_consumers.
     """
-    [...str]: any
+
     explainPlans?: ValuesDatabaseObservabilityCollectorsExplainPlans
     locks?: ValuesDatabaseObservabilityCollectorsLocks
     queryDetails?: ValuesDatabaseObservabilityCollectorsQueryDetails
@@ -3285,6 +4164,7 @@ schema ValuesDatabaseObservabilityCollectors:
     schemaDetails?: ValuesDatabaseObservabilityCollectorsSchemaDetails
     setupActors?: ValuesDatabaseObservabilityCollectorsSetupActors
     setupConsumers?: ValuesDatabaseObservabilityCollectorsSetupConsumers
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsExplainPlans:
     r"""
@@ -3296,19 +4176,17 @@ schema ValuesDatabaseObservabilityCollectorsExplainPlans:
         How frequently to collect explain plans information from the database.
     enabled : bool, optional
         Enable collection of explain plans information.
-    excludeSchemas : [any], optional
-        List of schemas to exclude from explain plan collection.
     initialLookback : str, optional
         How far back to look for explain plan queries on the first collection interval.
     perCollectRatio : float, optional
         Ratio of explain plan queries to collect per collect interval.
     """
-    [...str]: any
+
     collectInterval?: str
     enabled?: bool
-    excludeSchemas?: [any]
     initialLookback?: str
     perCollectRatio?: float
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsLocks:
     r"""
@@ -3323,10 +4201,11 @@ schema ValuesDatabaseObservabilityCollectorsLocks:
     threshold : str, optional
         Threshold for locks to be considered slow. Locks that exceed this duration are logged.
     """
-    [...str]: any
+
     collectInterval?: str
     enabled?: bool
     threshold?: str
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsQueryDetails:
     r"""
@@ -3339,12 +4218,13 @@ schema ValuesDatabaseObservabilityCollectorsQueryDetails:
     enabled : bool, optional
         Enable collection of query information.
     statementsLimit : any, optional
-        Max number of recent queries to collect details for.
+        (number) Max number of recent queries to collect details for.
     """
-    [...str]: any
+
     collectInterval?: str
     enabled?: bool
     statementsLimit?: any
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsQuerySamples:
     r"""
@@ -3360,18 +4240,28 @@ schema ValuesDatabaseObservabilityCollectorsQuerySamples:
         Collect unredacted SQL query text including parameters.
     enabled : bool, optional
         Enable collection of query samples.
-    excludeCurrentUser : bool, optional
-        Do not collect query samples for the current database user.
+    excludeCurrentUser : any, optional
+        (bool) Deprecated. Use the top-level `databaseObservability.excludeCurrentUser` instead. When set, this
+        takes precedence over the top-level setting.
+    sampleMinDuration : str, optional
+        Minimum duration for query samples to be collected. Set to "0s" to disable
+        filtering and collect all samples regardless of their duration.
     setupConsumersCheckInterval : str, optional
         How frequently to check if setup_consumers are correctly enabled.
+    waitEventMinDuration : str, optional
+        Minimum duration for a wait event to be collected. Set to "0s" to disable
+        filtering and collect all wait events regardless of their duration.
     """
-    [...str]: any
+
     autoEnableSetupConsumers?: bool
     collectInterval?: str
     disableQueryRedaction?: bool
     enabled?: bool
-    excludeCurrentUser?: bool
+    excludeCurrentUser?: any
+    sampleMinDuration?: str
     setupConsumersCheckInterval?: str
+    waitEventMinDuration?: str
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsSchemaDetails:
     r"""
@@ -3380,22 +4270,23 @@ schema ValuesDatabaseObservabilityCollectorsSchemaDetails:
     Attributes
     ----------
     cacheEnabled : bool, optional
-        Whether to enable caching of table definitions.
+        Deprecated. Kept for backwards compatibility.
     cacheSize : int, optional
-        Table definitions cache size.
+        Deprecated. Kept for backwards compatibility.
     cacheTTL : str, optional
-        Table definitions cache TTL.
+        Deprecated. Kept for backwards compatibility.
     collectInterval : str, optional
         How frequently to collect schemas and tables from information_schema.
     enabled : bool, optional
         Enable collection of schemas and tables from information_schema.
     """
-    [...str]: any
+
     cacheEnabled?: bool
     cacheSize?: int
     cacheTTL?: str
     collectInterval?: str
     enabled?: bool
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsSetupActors:
     r"""
@@ -3411,10 +4302,11 @@ schema ValuesDatabaseObservabilityCollectorsSetupActors:
     enabled : bool, optional
         Enable the setup_actors collector.
     """
-    [...str]: any
+
     autoUpdateSetupActors?: bool
     collectInterval?: str
     enabled?: bool
+    [...str]: any
 
 schema ValuesDatabaseObservabilityCollectorsSetupConsumers:
     r"""
@@ -3427,9 +4319,18 @@ schema ValuesDatabaseObservabilityCollectorsSetupConsumers:
     enabled : bool, optional
         Enable collection of performance_schema.setup_consumers information.
     """
-    [...str]: any
+
     collectInterval?: str
     enabled?: bool
+    [...str]: any
+
+schema ValuesDatabaseObservabilityLabels:
+    r"""
+    Additional static labels to add to both metrics and logs produced by Database Observability for this instance.
+    Keys are label names, values are label values. The reserved labels `job`, `instance`, and `dsn` cannot be overridden.
+    """
+
+    [...str]: any
 
 schema ValuesDcgmExporter:
     r"""
@@ -3439,20 +4340,23 @@ schema ValuesDcgmExporter:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesDestinations:
     r"""
     The destinations where telemetry data will be sent.
     See the [destinations documentation](https://github.com/grafana/k8s-monitoring-helm/blob/main/charts/k8s-monitoring/docs/destinations/README.md) for more information.
     """
+
     [...str]: any
 
 schema ValuesDnsConfig:
     r"""
     Custom DNS configuration to be added to prometheus-windows-exporter pods
     """
+
     [...str]: any
 
 schema ValuesEbpf:
@@ -3470,6 +4374,8 @@ schema ValuesEbpf:
         Configure the annotations that will control how the targets are discovered and how profiles are collected.
         All annotations will be `<prefix>/cpu.ebpf.<action>`, for example, to "enable" collecting profiles using eBPF, set
         the annotation `profiles.grafana.com/cpu.ebpf.scrape: "true"` on the pod.
+    collector : str, optional, default is ""
+        The collector to which this profiling type is assigned. When empty, the feature-level `profiling.collector` is used.
     demangle : str, optional, default is "none"
         C++ demangle mode. Available options are: none, simplified, templates, full
     dotnetEnabled : bool, optional, default is True
@@ -3491,7 +4397,12 @@ schema ValuesEbpf:
         Example with multiple values: `app.kubernetes.io/name: [myapp, myapp2]` will select pods with the label
         `app.kubernetes.io/name=myapp` or `app.kubernetes.io/name=myapp2`.
     namespaces : [any], optional
-        Select pods to profile based on their namespaces.
+        Select pods to profile based on their namespaces. Entries may be exact namespace names or regular expressions
+        (e.g. `team-.*`), and the two styles can be mixed. Regexes are fully anchored, so they must match the entire
+        namespace name.
+        Note: When every entry is an exact name, the pod discovery is much more efficient. If any entry is a regular
+        expression, the collector must fetch pods from all namespaces, then filter them internally, which can cause
+        performance issues on large clusters.
     perlEnabled : bool, optional, default is True
         A flag to enable or disable Perl profiling.
     phpEnabled : bool, optional, default is True
@@ -3510,9 +4421,10 @@ schema ValuesEbpf:
     v8Enabled : bool, optional, default is True
         A flag to enable or disable V8 profiling.
     """
-    [...str]: any
+
     annotationSelectors?: ValuesEbpfAnnotationSelectors
     annotations?: ValuesEbpfAnnotations
+    collector?: str
     demangle?: str
     dotnetEnabled?: bool
     enabled?: bool
@@ -3528,6 +4440,7 @@ schema ValuesEbpf:
     sampleRate?: int
     targetingScheme?: str
     v8Enabled?: bool
+    [...str]: any
 
 schema ValuesEbpfAnnotationSelectors:
     r"""
@@ -3536,6 +4449,7 @@ schema ValuesEbpfAnnotationSelectors:
     Example with multiple values: `color: ["blue", "green"]` will select pods with the annotation `color="blue"` or
     `color="green"`.
     """
+
     [...str]: any
 
 schema ValuesEbpfAnnotations:
@@ -3549,8 +4463,9 @@ schema ValuesEbpfAnnotations:
     enable : str, optional, default is "enabled"
         The annotation action for enabling or disabling collecting of profiles with eBPF.
     """
-    [...str]: any
+
     enable?: str
+    [...str]: any
 
 schema ValuesEbpfLabelSelectors:
     r"""
@@ -3559,6 +4474,7 @@ schema ValuesEbpfLabelSelectors:
     Example with multiple values: `app.kubernetes.io/name: [myapp, myapp2]` will select pods with the label
     `app.kubernetes.io/name=myapp` or `app.kubernetes.io/name=myapp2`.
     """
+
     [...str]: any
 
 schema ValuesEnergyMetrics:
@@ -3567,6 +4483,9 @@ schema ValuesEnergyMetrics:
 
     Attributes
     ----------
+    collector : str, optional, default is ""
+        Which collector to assign the energy metrics to. If empty, the feature-level `hostMetrics.collector` is used. Set
+        this to route energy metrics to a different collector than the Linux or Windows host metrics.
     enabled : bool, optional, default is False
         Deploy and scrape energy metrics.
     extraDiscoveryRules : str, optional, default is ""
@@ -3580,24 +4499,26 @@ schema ValuesEnergyMetrics:
     jobLabel : str, optional, default is "integrations/kepler"
         The value for the job label.
     labelMatchers : ValuesEnergyMetricsLabelMatchers, optional
-        Label matchers used to select the Kepler pods. If deploying from telemetry services, this will automatically be
-        populated.
+        Label matchers used to select the Kepler pods. Required when connecting to an existing Kepler; if deploying from
+        telemetry services, this will automatically be populated.
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the prometheus.relabel component for Kepler.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesEnergyMetricsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespace : str, optional, default is ""
         Namespace to locate Kepler pods. If deploying from telemetry services, this will automatically be populated.
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from Kepler.
-        Overrides global.scrapeInterval.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Kepler metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
+    collector?: str
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -3608,12 +4529,14 @@ schema ValuesEnergyMetrics:
     namespace?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesEnergyMetricsLabelMatchers:
     r"""
-    Label matchers used to select the Kepler pods. If deploying from telemetry services, this will automatically be
-    populated.
+    Label matchers used to select the Kepler pods. Required when connecting to an existing Kepler; if deploying from
+    telemetry services, this will automatically be populated.
     """
+
     [...str]: any
 
 schema ValuesEnergyMetricsMetricsTuning:
@@ -3629,21 +4552,24 @@ schema ValuesEnergyMetricsMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of metrics from Kepler to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesEnv:
     r"""
     Additional environment variables that will be passed to the daemonset
     """
+
     [...str]: any
 
 schema ValuesEnvValueFrom:
     r"""
     extra environment variables to be set from resources such as k8s configMaps/secrets
     """
+
     [...str]: any
 
 schema ValuesEtcd:
@@ -3654,8 +4580,9 @@ schema ValuesEtcd:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesExporter:
     r"""
@@ -3684,7 +4611,7 @@ schema ValuesExporter:
     disableSettingsMetrics : bool, optional
         Disables collection of metrics from pg_settings.
     """
-    [...str]: any
+
     autoDiscovery?: ValuesExporterAutoDiscovery
     collectors?: ValuesExporterCollectors
     customQueriesConfigPath?: str
@@ -3693,6 +4620,7 @@ schema ValuesExporter:
     dataSourceNameFrom?: str
     disableDefaultMetrics?: bool
     disableSettingsMetrics?: bool
+    [...str]: any
 
 schema ValuesExporterAutoDiscovery:
     r"""
@@ -3707,10 +4635,11 @@ schema ValuesExporterAutoDiscovery:
     enabled : bool, optional
         Whether to automatically discover other databases.
     """
-    [...str]: any
+
     databaseAllowList?: [any]
     databaseDenyList?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectors:
     r"""
@@ -3747,7 +4676,7 @@ schema ValuesExporterCollectors:
     wal : ValuesExporterCollectorsWal, optional
     xlogLocation : ValuesExporterCollectorsXlogLocation, optional
     """
-    [...str]: any
+
     buffercacheSummary?: ValuesExporterCollectorsBuffercacheSummary
     database?: ValuesExporterCollectorsDatabase
     databaseWraparound?: ValuesExporterCollectorsDatabaseWraparound
@@ -3772,6 +4701,7 @@ schema ValuesExporterCollectors:
     statioUserTables?: ValuesExporterCollectorsStatioUserTables
     wal?: ValuesExporterCollectorsWal
     xlogLocation?: ValuesExporterCollectorsXlogLocation
+    [...str]: any
 
 schema ValuesExporterCollectorsBuffercacheSummary:
     r"""
@@ -3782,8 +4712,9 @@ schema ValuesExporterCollectorsBuffercacheSummary:
     enabled : bool, optional
         Enable the buffercache_summary collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsDatabase:
     r"""
@@ -3794,8 +4725,9 @@ schema ValuesExporterCollectorsDatabase:
     enabled : bool, optional
         Enable the database collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsDatabaseWraparound:
     r"""
@@ -3806,8 +4738,9 @@ schema ValuesExporterCollectorsDatabaseWraparound:
     enabled : bool, optional
         Enable the database_wraparound collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsHeartbeat:
     r"""
@@ -3822,10 +4755,11 @@ schema ValuesExporterCollectorsHeartbeat:
     table : str, optional
         Table to collect heartbeat data from.
     """
-    [...str]: any
+
     database?: str
     enabled?: bool
     table?: str
+    [...str]: any
 
 schema ValuesExporterCollectorsLocks:
     r"""
@@ -3836,8 +4770,9 @@ schema ValuesExporterCollectorsLocks:
     enabled : bool, optional
         Enable the locks collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsLongRunningTransactions:
     r"""
@@ -3848,8 +4783,9 @@ schema ValuesExporterCollectorsLongRunningTransactions:
     enabled : bool, optional
         Enable the long_running_transactions collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsMysqlUser:
     r"""
@@ -3862,9 +4798,10 @@ schema ValuesExporterCollectorsMysqlUser:
     privileges : bool, optional
         Enable collecting user privileges from mysql.user.
     """
-    [...str]: any
+
     enabled?: bool
     privileges?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsPerfSchemaEventsStatements:
     r"""
@@ -3875,17 +4812,18 @@ schema ValuesExporterCollectorsPerfSchemaEventsStatements:
     enabled : bool, optional
         Enable perf_schema.eventsstatements collector.
     limit : any, optional
-        Limit the number of events statements digests, in descending order by last_seen.
+        (number) Limit the number of events statements digests, in descending order by last_seen.
     textLimit : any, optional
-        Maximum length of the normalized statement text.
+        (number) Maximum length of the normalized statement text.
     timeLimit : any, optional
-        Limit how old, in seconds, the last_seen events statements can be.
+        (number) Limit how old, in seconds, the last_seen events statements can be.
     """
-    [...str]: any
+
     enabled?: bool
     limit?: any
     textLimit?: any
     timeLimit?: any
+    [...str]: any
 
 schema ValuesExporterCollectorsPostmaster:
     r"""
@@ -3896,8 +4834,9 @@ schema ValuesExporterCollectorsPostmaster:
     enabled : bool, optional
         Enable the postmaster collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsProcessIdle:
     r"""
@@ -3908,8 +4847,9 @@ schema ValuesExporterCollectorsProcessIdle:
     enabled : bool, optional
         Enable the process_idle collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsReplication:
     r"""
@@ -3920,8 +4860,9 @@ schema ValuesExporterCollectorsReplication:
     enabled : bool, optional
         Enable the replication collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsReplicationSlot:
     r"""
@@ -3932,8 +4873,9 @@ schema ValuesExporterCollectorsReplicationSlot:
     enabled : bool, optional
         Enable the replication_slot collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatActivityAutovacuum:
     r"""
@@ -3944,8 +4886,9 @@ schema ValuesExporterCollectorsStatActivityAutovacuum:
     enabled : bool, optional
         Enable the stat_activity_autovacuum collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatBgwriter:
     r"""
@@ -3956,8 +4899,9 @@ schema ValuesExporterCollectorsStatBgwriter:
     enabled : bool, optional
         Enable the stat_bgwriter collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatCheckpointer:
     r"""
@@ -3968,8 +4912,9 @@ schema ValuesExporterCollectorsStatCheckpointer:
     enabled : bool, optional
         Enable the stat_checkpointer collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatDatabase:
     r"""
@@ -3980,8 +4925,9 @@ schema ValuesExporterCollectorsStatDatabase:
     enabled : bool, optional
         Enable the stat_database collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatProgressVacuum:
     r"""
@@ -3992,8 +4938,9 @@ schema ValuesExporterCollectorsStatProgressVacuum:
     enabled : bool, optional
         Enable the stat_progress_vacuum collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatStatements:
     r"""
@@ -4010,17 +4957,18 @@ schema ValuesExporterCollectorsStatStatements:
     includeQuery : bool, optional
         Enable the selection of query ID and SQL statement.
     limit : any, optional
-        Maximum number of statements to fetch.
+        (number) Maximum number of statements to fetch.
     queryLength : any, optional
-        Maximum length of the statement query text.
+        (number) Maximum length of the statement query text.
     """
-    [...str]: any
+
     enabled?: bool
     excludeDatabases?: [any]
     excludeUsers?: [any]
     includeQuery?: bool
     limit?: any
     queryLength?: any
+    [...str]: any
 
 schema ValuesExporterCollectorsStatUserTables:
     r"""
@@ -4031,8 +4979,9 @@ schema ValuesExporterCollectorsStatUserTables:
     enabled : bool, optional
         Enable the stat_user_tables collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatWalreceiver:
     r"""
@@ -4043,8 +4992,9 @@ schema ValuesExporterCollectorsStatWalreceiver:
     enabled : bool, optional
         Enable the stat_wal_receiver collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatioUserIndexes:
     r"""
@@ -4055,8 +5005,9 @@ schema ValuesExporterCollectorsStatioUserIndexes:
     enabled : bool, optional
         Enable the statio_user_indexes collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsStatioUserTables:
     r"""
@@ -4067,8 +5018,9 @@ schema ValuesExporterCollectorsStatioUserTables:
     enabled : bool, optional
         Enable the statio_user_tables collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsWal:
     r"""
@@ -4079,8 +5031,9 @@ schema ValuesExporterCollectorsWal:
     enabled : bool, optional
         Enable the wal collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterCollectorsXlogLocation:
     r"""
@@ -4091,8 +5044,9 @@ schema ValuesExporterCollectorsXlogLocation:
     enabled : bool, optional
         Enable the xlog_location collector.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesExporterDataSource:
     r"""
@@ -4120,7 +5074,7 @@ schema ValuesExporterDataSource:
         The TLS setting to use. Options are none, "true", "false", "skip-verify", "preferred". See the
         [driver documentation](https://github.com/go-sql-driver/mysql#tls) for details.
     """
-    [...str]: any
+
     allowFallbackToPlaintext?: bool
     auth?: ValuesExporterDataSourceAuth
     database?: str
@@ -4129,6 +5083,7 @@ schema ValuesExporterDataSource:
     $protocol?: str
     sslmode?: str
     tls?: str
+    [...str]: any
 
 schema ValuesExporterDataSourceAuth:
     r"""
@@ -4149,13 +5104,99 @@ schema ValuesExporterDataSourceAuth:
     usernameKey : str, optional
         The key for storing the username in the secret.
     """
-    [...str]: any
+
     password?: str
     passwordFrom?: str
     passwordKey?: str
     username?: str
     usernameFrom?: str
     usernameKey?: str
+    [...str]: any
+
+schema ValuesExternal:
+    r"""
+    External labels allow users to apply custom labels to node assets and
+    allocations.
+
+    The OpenCost deployment can read external labels from an existing ConfigMap.
+
+    Supported ConfigMap formats:
+
+    1. Traditional ConfigMap
+
+       data:
+         cluster: prod
+         env: dev
+         region: nam
+
+       In this case, labels are read directly from ConfigMap.data. The
+       key and route fields are optional and may be omitted.
+
+    2. Block-scalar ConfigMap
+
+       data:
+         config.yaml: |
+           metadata:
+             externalLabels:
+               cluster: prod
+               env: dev
+               region: nam
+
+       In this case, specify the key that contains the YAML document and
+       a dot-separated route to the labels map within it.
+
+    Fields:
+      configMapName - name of the ConfigMap to read.
+      namespace     - namespace of the ConfigMap. Defaults to the agent's
+                      own namespace if left empty.
+      key           - Optional. The ConfigMap data key containing the YAML
+                      document. Required only for block-scalar ConfigMaps.
+      route         - Optional. Dot-separated path to the labels map within
+                      the key's YAML content, e.g. "metadata.externalLabels".
+                      When omitted or empty, labels are read directly from
+                      ConfigMap.data (traditional ConfigMap).
+
+    Traditional ConfigMap example:
+
+    external:
+      nodeLabels:
+        configMapName: external-label-configmap
+        namespace: ""
+
+    Block-scalar ConfigMap example:
+
+    external:
+      nodeLabels:
+        configMapName: external-label-configmap
+        namespace: ""
+        key: config.yaml
+        route: metadata.externalLabels
+
+    Attributes
+    ----------
+    nodeLabels : ValuesExternalNodeLabels, optional
+    """
+
+    nodeLabels?: ValuesExternalNodeLabels
+    [...str]: any
+
+schema ValuesExternalNodeLabels:
+    r"""
+    ValuesExternalNodeLabels
+
+    Attributes
+    ----------
+    configMapName : str, optional, default is ""
+    key : str, optional, default is ""
+    namespace : str, optional, default is ""
+    route : str, optional, default is ""
+    """
+
+    configMapName?: str
+    key?: str
+    namespace?: str
+    route?: str
+    [...str]: any
 
 schema ValuesExtraEnvVars:
     r"""
@@ -4176,7 +5217,7 @@ schema ValuesExtraEnvVars:
     EXPOSE_IRQ_COUNTER_METRICS : str, optional, default is "true"
     KEPLER_LOG_LEVEL : str, optional, default is "1"
     """
-    [...str]: any
+
     CGROUP_METRICS?: str
     CPU_ARCH_OVERRIDE?: str
     ENABLE_EBPF_CGROUPID?: str
@@ -4187,12 +5228,14 @@ schema ValuesExtraEnvVars:
     EXPOSE_HW_COUNTER_METRICS?: str
     EXPOSE_IRQ_COUNTER_METRICS?: str
     KEPLER_LOG_LEVEL?: str
+    [...str]: any
 
 schema ValuesExtraHeaders:
     r"""
     Extra headers to be set when sending data.
     All values are treated as strings and automatically quoted.
     """
+
     [...str]: any
 
 schema ValuesExtraHeadersFrom:
@@ -4200,6 +5243,7 @@ schema ValuesExtraHeadersFrom:
     Extra headers to be set when sending data through a dynamic reference.
     All values are treated as raw strings and not quoted.
     """
+
     [...str]: any
 
 schema ValuesExtraLabels:
@@ -4207,6 +5251,7 @@ schema ValuesExtraLabels:
     Extra labels to be added to all profiles before delivering to the destination.
     All values are treated as strings and automatically quoted.
     """
+
     [...str]: any
 
 schema ValuesExtraLabelsFrom:
@@ -4214,6 +5259,83 @@ schema ValuesExtraLabelsFrom:
     Extra labels to be added to all profiles using a dynamic reference before delivering to the destination.
     All values are treated as raw strings and not quoted.
     """
+
+    [...str]: any
+
+schema ValuesExtraResourceAttributes:
+    r"""
+    Extra resource attributes to be set on all telemetry before delivering to the destination.
+    All values are treated as strings and automatically quoted.
+    """
+
+    [...str]: any
+
+schema ValuesExtraResourceAttributesFrom:
+    r"""
+    Extra resource attributes to be set on all telemetry using a dynamic reference before delivering to the
+    destination. All values are treated as raw strings and not quoted.
+    """
+
+    [...str]: any
+
+schema ValuesExtraService:
+    r"""
+    Deploy an additional Kubernetes Service that points at this collector's Pods, giving applications and SDKs a
+    predictable, stable endpoint regardless of the collector's workload type (DaemonSet, Deployment, or StatefulSet). The
+    Service exposes the Alloy listen port along with any ports opened by presets such as `otel-receiver`. It inherits the
+    collector's `service` settings (type, annotations, and so on).
+
+    Attributes
+    ----------
+    enabled : bool, optional
+        Deploy an additional Kubernetes Service that points at this collector's Pods.
+    fullname : str, optional
+        The exact name for the Service. When set, this value is used verbatim instead of `<release name>-<name>`.
+    name : str, optional
+        The suffix used to build the Service name, which is rendered as `<release name>-<name>`. Ignored when `fullname`
+        is set.
+    """
+
+    enabled?: bool
+    fullname?: str
+    name?: str
+    [...str]: any
+
+schema ValuesFilters:
+    r"""
+    Drop pod logs based on the pod's annotations or labels. A pod's logs are dropped if any of the configured
+    filters match.
+
+    Attributes
+    ----------
+    annotations : ValuesFiltersAnnotations, optional
+        Drop pod logs based on pod annotations. Map of Kubernetes annotation key to the value that drops the
+        pod's logs when matched. Set the value to `null` to drop whenever the annotation is present, regardless of
+        its value.
+    labels : ValuesFiltersLabels, optional
+        Drop pod logs based on pod labels. Map of Kubernetes label key to the value that drops the pod's logs
+        when matched. Set the value to `null` to drop whenever the label is present, regardless of its value.
+    """
+
+    annotations?: ValuesFiltersAnnotations
+    labels?: ValuesFiltersLabels
+    [...str]: any
+
+schema ValuesFiltersAnnotations:
+    r"""
+    Drop pod logs based on pod annotations. Map of Kubernetes annotation key to the value that drops the
+    pod's logs when matched. Set the value to `null` to drop whenever the annotation is present, regardless of
+    its value.
+    """
+
+    [...str]: any
+
+schema ValuesFiltersLabels:
+    r"""
+    Drop pod logs based on pod labels. Map of Kubernetes label key to the value that drops the pod's logs
+    when matched. Set the value to `null` to drop whenever the label is present, regardless of its value.
+    """
+
     [...str]: any
 
 schema ValuesGlobal:
@@ -4224,30 +5346,29 @@ schema ValuesGlobal:
 
     Attributes
     ----------
+    convertClassicHistogramsToNhcb : bool, optional, default is False
+        Whether to convert classic histograms to native histograms with custom buckets (NHCB) at scrape time.
+        Requires scrapeNativeHistograms to be true, send_native_histograms on the destination,
+        and Remote Write v2 (remoteWriteProtocol: 2).
     image : ValuesGlobalImage, optional
+        Global image settings applied to the components deployed directly by this chart (Alloy, the Alloy Operator, the
+        Alloy removal hooks, and Beyla). See the [private image registries example](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/docs/examples/private-image-registries).
+    imagePullPolicy : str, optional, default is ""
+        Global image pull policy for dependent charts that follow the flat `global.imagePullPolicy` convention. Most
+        bundled dependencies do not honor a global pull policy; set `image.pullPolicy` on the individual service instead.
     imagePullSecrets : [any], optional
-        To help compatibility with other charts which use global.imagePullSecrets.
-        Allow either an array of {name: pullSecret} maps (k8s-style), or an array of strings (more common helm-style).
-        global:
-          imagePullSecrets:
-          - name: pullSecret1
-          - name: pullSecret2
-        or
-        global:
-          imagePullSecrets:
-          - pullSecret1
-          - pullSecret2
+        Global image pull secrets used by dependent charts that follow the flat `global.imagePullSecrets` convention
+        (kube-state-metrics, Node Exporter, Windows Exporter).
     imageRegistry : str, optional, default is ""
-
-        Allow parent charts to override registry hostname
+        Global image registry used by dependent charts that follow the flat `global.imageRegistry` convention
+        (kube-state-metrics, Node Exporter, Windows Exporter).
     kubernetesAPIService : str, optional, default is ""
         The Kubernetes service. Change this if your cluster DNS is configured differently than the default.
     maxCacheSize : int, optional, default is 100000
         Sets the max_cache_size for every prometheus.relabel component. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
         This should be at least 2x-5x your largest scrape target or samples appended rate.
     namespaceOverride : str, optional, default is ""
-        Global namespace override. When set, all resources will be deployed to this namespace
-        instead of the Helm release namespace. Takes lower precedence than `namespaceOverride`.
+        Override the namespace for namespaced resources created by this chart and its feature subcharts.
     platform : str, optional, default is ""
         The specific platform for this cluster. Will enable compatibility for some platforms. Supported options: (empty) or "openshift".
     podSecurityContext : ValuesGlobalPodSecurityContext, optional
@@ -4263,8 +5384,10 @@ schema ValuesGlobal:
     scrapeTimeout : str, optional, default is "10s"
         The timeout for scraping metrics.
     """
-    [...str]: any
+
+    convertClassicHistogramsToNhcb?: bool
     image?: ValuesGlobalImage
+    imagePullPolicy?: str
     imagePullSecrets?: [any]
     imageRegistry?: str
     kubernetesAPIService?: str
@@ -4277,26 +5400,33 @@ schema ValuesGlobal:
     scrapeNativeHistograms?: bool
     scrapeProtocols?: [str]
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesGlobalImage:
     r"""
-    ValuesGlobalImage
+    Global image settings applied to the components deployed directly by this chart (Alloy, the Alloy Operator, the
+    Alloy removal hooks, and Beyla). See the [private image registries example](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/docs/examples/private-image-registries).
 
     Attributes
     ----------
+    pullPolicy : str, optional, default is ""
+        Global image pull policy for the Alloy, Alloy Operator, and Alloy removal hook images.
     pullSecrets : [any], optional
-        Optional set of global image pull secrets.
+        Global image pull secrets for the Alloy, Alloy Operator, Beyla, and Alloy removal hook images.
     registry : str, optional, default is ""
-        Global image registry to use if it needs to be overridden for some specific use cases (e.g local registries, custom images, ...)
+        Global image registry to use for the Alloy, Alloy Operator, and Beyla images.
     """
-    [...str]: any
+
+    pullPolicy?: str
     pullSecrets?: [any]
     registry?: str
+    [...str]: any
 
 schema ValuesGlobalPodSecurityContext:
     r"""
     Security context to apply to the Grafana Alloy pod.
     """
+
     [...str]: any
 
 schema ValuesGrafana:
@@ -4307,8 +5437,9 @@ schema ValuesGrafana:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesHostMetrics:
     r"""
@@ -4319,16 +5450,21 @@ schema ValuesHostMetrics:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where cluster metrics will be sent. If empty, all metrics-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Host metrics.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesHostProcFsMount:
     r"""
@@ -4339,8 +5475,9 @@ schema ValuesHostProcFsMount:
     mountPropagation : str, optional, default is ""
         Possible values are None, HostToContainer, and Bidirectional
     """
-    [...str]: any
+
     mountPropagation?: str
+    [...str]: any
 
 schema ValuesHostRootFsMount:
     r"""
@@ -4356,9 +5493,10 @@ schema ValuesHostRootFsMount:
         None is used. More information on:
         https://kubernetes.io/docs/concepts/storage/volumes/#mount-propagation
     """
-    [...str]: any
+
     enabled?: bool
     mountPropagation?: str
+    [...str]: any
 
 schema ValuesHostSysFsMount:
     r"""
@@ -4369,8 +5507,9 @@ schema ValuesHostSysFsMount:
     mountPropagation : str, optional, default is ""
         Possible values are None, HostToContainer, and Bidirectional
     """
-    [...str]: any
+
     mountPropagation?: str
+    [...str]: any
 
 schema ValuesImage:
     r"""
@@ -4382,6 +5521,8 @@ schema ValuesImage:
     ----------
     digest : any, optional, default is ""
         Grafana Alloy image's SHA256 digest (either in format "sha256:XYZ" or "XYZ"). When set, will override `image.tag`.
+    distroless : bool, optional, default is False
+        Use the distroless image variant.
     pullPolicy : str, optional, default is "IfNotPresent"
         Grafana Alloy image pull policy.
     pullSecrets : [any], optional
@@ -4395,14 +5536,16 @@ schema ValuesImage:
         (string) Grafana Alloy image tag. When empty, the Chart's appVersion is
         used.
     """
-    [...str]: any
+
     digest?: any
+    distroless?: bool
     pullPolicy?: str
     pullSecrets?: [any]
     registry?: str
     repository?: str
     sha?: str
     tag?: any
+    [...str]: any
 
 schema ValuesIngress:
     r"""
@@ -4429,7 +5572,7 @@ schema ValuesIngress:
         pathType is only for k8s >= 1.1=
     tls : [any], optional
     """
-    [...str]: any
+
     annotations?: ValuesIngressAnnotations
     enabled?: bool
     extraPaths?: [any]
@@ -4439,6 +5582,7 @@ schema ValuesIngress:
     path?: str
     pathType?: str
     tls?: [any]
+    [...str]: any
 
 schema ValuesIngressAnnotations:
     r"""
@@ -4447,6 +5591,7 @@ schema ValuesIngressAnnotations:
     ingressClassName: nginx
     Values can be templated
     """
+
     [...str]: any
 
 schema ValuesIngressLabels:
@@ -4454,6 +5599,24 @@ schema ValuesIngressLabels:
     kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     """
+
+    [...str]: any
+
+schema ValuesInjector:
+    r"""
+    Configures RBAC for the k8s-injection-controller OpenTelemetry SDK injector, which
+    writes per-node state ConfigMaps consumed by the injection controller.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Whether to grant the DaemonSet permission to create and update the
+        injector state ConfigMaps in its own namespace (via a namespaced Role).
+        Enable this alongside the `injector` settings in the Beyla
+        configuration. Requires `rbac.create` to be true.
+    """
+
+    enabled?: bool
     [...str]: any
 
 schema ValuesIntegrations:
@@ -4465,12 +5628,17 @@ schema ValuesIntegrations:
     ----------
     collector : str, optional, default is ""
         Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where integration metrics will be sent. If empty, all metrics-capable destinations will be used.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
+    [...str]: any
 
 schema ValuesIstio:
     r"""
@@ -4480,8 +5648,9 @@ schema ValuesIstio:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesIstiodMetrics:
     r"""
@@ -4491,6 +5660,10 @@ schema ValuesIstiodMetrics:
     ----------
     enabled : bool, optional
         Whether to enable metrics collection from Istiod.
+    extraDiscoveryRules : str, optional
+        Rule blocks to be added to the discovery.relabel component for discovered Istiod targets.
+        These relabeling rules are applied pre-scrape against the targets from Kubernetes service discovery, so all `__meta*` labels are still present.
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.relabel/#rule-block))
     extraMetricProcessingRules : str, optional
         Rule blocks to be added to the prometheus.relabel component for Istiod.
         These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.
@@ -4500,8 +5673,8 @@ schema ValuesIstiodMetrics:
     maxCacheSize : any, optional
         Sets the max_cache_size for prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     namespace : str, optional
         The namespace where the Istiod Kubernetes service is deployed.
     scrapeInterval : any, optional
@@ -4513,8 +5686,9 @@ schema ValuesIstiodMetrics:
     tuning : ValuesIstiodMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     """
-    [...str]: any
+
     enabled?: bool
+    extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
     labelSelectors?: ValuesIstiodMetricsLabelSelectors
     maxCacheSize?: any
@@ -4523,11 +5697,13 @@ schema ValuesIstiodMetrics:
     scrapeTimeout?: str
     serviceName?: str
     tuning?: ValuesIstiodMetricsTuning
+    [...str]: any
 
 schema ValuesIstiodMetricsLabelSelectors:
     r"""
     Additional Kubernetes label selectors applied to the Istiod service.
     """
+
     [...str]: any
 
 schema ValuesIstiodMetricsTuning:
@@ -4541,9 +5717,10 @@ schema ValuesIstiodMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesJava:
     r"""
@@ -4560,6 +5737,8 @@ schema ValuesJava:
         Configure the annotations that will control how the Java targets are discovered and how profiles are collected.
         All annotations will be `<prefix>/java.<action>`, for example, to "enable" scraping of Java profiles, set the
         annotation `profiles.grafana.com/java.enabled: "true"` on the pod.
+    collector : str, optional, default is ""
+        The collector to which this profiling type is assigned. When empty, the feature-level `profiling.collector` is used.
     enabled : bool, optional, default is False
         Gather profiles by attaching async-profiler to the Java runtime.
     excludeNamespaces : [any], optional
@@ -4573,7 +5752,12 @@ schema ValuesJava:
         Example with multiple values: `app.kubernetes.io/name: [myapp, myapp2]` will select pods with the label
         `app.kubernetes.io/name=myapp` or `app.kubernetes.io/name=myapp2`.
     namespaces : [any], optional
-        Select pods to profile based on their namespaces.
+        Select pods to profile based on their namespaces. Entries may be exact namespace names or regular expressions
+        (e.g. `team-.*`), and the two styles can be mixed. Regexes are fully anchored, so they must match the entire
+        namespace name.
+        Note: When every entry is an exact name, the pod discovery is much more efficient. If any entry is a regular
+        expression, the collector must fetch pods from all namespaces, then filter them internally, which can cause
+        performance issues on large clusters.
     profilingConfig : ValuesJavaProfilingConfig, optional
         Configuration for the async-profiler
     targetingScheme : str, optional, default is "annotation"
@@ -4582,9 +5766,10 @@ schema ValuesJava:
         `profiles.grafana.com/java.enabled="false"` annotation on that pod. If using `annotation`, only pods with the
         `profiles.grafana.com/java.enabled="true"` annotation will collecting Java profiles.
     """
-    [...str]: any
+
     annotationSelectors?: ValuesJavaAnnotationSelectors
     annotations?: ValuesJavaAnnotations
+    collector?: str
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -4592,6 +5777,7 @@ schema ValuesJava:
     namespaces?: [any]
     profilingConfig?: ValuesJavaProfilingConfig
     targetingScheme?: str
+    [...str]: any
 
 schema ValuesJavaAnnotationSelectors:
     r"""
@@ -4600,6 +5786,7 @@ schema ValuesJavaAnnotationSelectors:
     Example with multiple values: `color: ["blue", "green"]` will select pods with the annotation `color="blue"` or
     `color="green"`.
     """
+
     [...str]: any
 
 schema ValuesJavaAnnotations:
@@ -4613,8 +5800,9 @@ schema ValuesJavaAnnotations:
     enable : str, optional, default is "enabled"
         The annotation action for enabling or disabling of Java profile collection.
     """
-    [...str]: any
+
     enable?: str
+    [...str]: any
 
 schema ValuesJavaLabelSelectors:
     r"""
@@ -4623,6 +5811,7 @@ schema ValuesJavaLabelSelectors:
     Example with multiple values: `app.kubernetes.io/name: [myapp, myapp2]` will select pods with the label
     `app.kubernetes.io/name=myapp` or `app.kubernetes.io/name=myapp2`.
     """
+
     [...str]: any
 
 schema ValuesJavaProfilingConfig:
@@ -4644,13 +5833,14 @@ schema ValuesJavaProfilingConfig:
     sampleRate : int, optional, default is 100
         CPU profiling sample rate. It’s converted from Hz to interval and passed as an `-i` argument to async-profiler.
     """
-    [...str]: any
+
     alloc?: str
     cpu?: bool
     event?: str
     interval?: str
     lock?: str
     sampleRate?: int
+    [...str]: any
 
 schema ValuesJournal:
     r"""
@@ -4670,12 +5860,13 @@ schema ValuesJournal:
         The list of systemd units to keep scraped logs from, this can be a valid RE2 regular expression. If empty, all
         units are scraped.
     """
-    [...str]: any
+
     formatAsJson?: bool
     jobLabel?: str
     maxAge?: str
     path?: str
     units?: [any]
+    [...str]: any
 
 schema ValuesJournalLabels:
     r"""
@@ -4686,6 +5877,7 @@ schema ValuesJournalLabels:
     `systemd_unit`, `transport`, `uid`.
     More Info: https://www.freedesktop.org/software/systemd/man/systemd.journal-fields.html
     """
+
     [...str]: any
 
 schema ValuesK8SCache:
@@ -4694,6 +5886,8 @@ schema ValuesK8SCache:
 
     Attributes
     ----------
+    affinity : ValuesK8SCacheAffinity, optional
+        used for scheduling of cache pods based on affinity rules
     annotations : ValuesK8SCacheAnnotations, optional
         Deployment annotations.
     env : ValuesK8SCacheEnv, optional
@@ -4715,6 +5909,8 @@ schema ValuesK8SCache:
           cpu: 100m
           memory: 128Mi
     internalMetrics : ValuesK8SCacheInternalMetrics, optional
+    nodeSelector : ValuesK8SCacheNodeSelector, optional
+        The nodeSelector field allows user to constrain which nodes cache pods are scheduled to based on labels on the node
     podAnnotations : ValuesK8SCachePodAnnotations, optional
         Adds custom annotations to the Beyla Kube Cache Pods.
     podLabels : ValuesK8SCachePodLabels, optional
@@ -4729,24 +5925,38 @@ schema ValuesK8SCache:
              name: secret-name
              key: value_key
     service : ValuesK8SCacheService, optional
+    tolerations : [any], optional
+        Tolerations allow cache pods to be scheduled on nodes with specific taints
     """
-    [...str]: any
+
+    affinity?: ValuesK8SCacheAffinity
     annotations?: ValuesK8SCacheAnnotations
     env?: ValuesK8SCacheEnv
     envValueFrom?: ValuesK8SCacheEnvValueFrom
     image?: ValuesK8SCacheImage
     internalMetrics?: ValuesK8SCacheInternalMetrics
+    nodeSelector?: ValuesK8SCacheNodeSelector
     podAnnotations?: ValuesK8SCachePodAnnotations
     podLabels?: ValuesK8SCachePodLabels
     profilePort?: int
     replicas?: int
     resources?: ValuesK8SCacheResources
     service?: ValuesK8SCacheService
+    tolerations?: [any]
+    [...str]: any
+
+schema ValuesK8SCacheAffinity:
+    r"""
+    used for scheduling of cache pods based on affinity rules
+    """
+
+    [...str]: any
 
 schema ValuesK8SCacheAnnotations:
     r"""
     Deployment annotations.
     """
+
     [...str]: any
 
 schema ValuesK8SCacheEnv:
@@ -4756,12 +5966,14 @@ schema ValuesK8SCacheEnv:
     #   BEYLA_K8S_CACHE_LOG_LEVEL: "debug"
     extra environment variables
     """
+
     [...str]: any
 
 schema ValuesK8SCacheEnvValueFrom:
     r"""
     extra environment variables to be set from resources such as k8s configMaps/secrets
     """
+
     [...str]: any
 
 schema ValuesK8SCacheImage:
@@ -4792,13 +6004,14 @@ schema ValuesK8SCacheImage:
     tag : any, optional, default is "null"
         (string) K8s Cache image tag. When empty, the Chart's appVersion is used.
     """
-    [...str]: any
+
     digest?: any
     pullPolicy?: str
     pullSecrets?: [any]
     registry?: str
     repository?: str
     tag?: any
+    [...str]: any
 
 schema ValuesK8SCacheInternalMetrics:
     r"""
@@ -4811,21 +6024,31 @@ schema ValuesK8SCacheInternalMetrics:
         0: disabled by default
     portName : str, optional, default is "metrics"
     """
-    [...str]: any
+
     path?: str
     port?: int
     portName?: str
+    [...str]: any
+
+schema ValuesK8SCacheNodeSelector:
+    r"""
+    The nodeSelector field allows user to constrain which nodes cache pods are scheduled to based on labels on the node
+    """
+
+    [...str]: any
 
 schema ValuesK8SCachePodAnnotations:
     r"""
     Adds custom annotations to the Beyla Kube Cache Pods.
     """
+
     [...str]: any
 
 schema ValuesK8SCachePodLabels:
     r"""
     Adds custom labels to the Beyla Kube Cache Pods.
     """
+
     [...str]: any
 
 schema ValuesK8SCacheResources:
@@ -4835,6 +6058,7 @@ schema ValuesK8SCacheResources:
          name: secret-name
          key: value_key
     """
+
     [...str]: any
 
 schema ValuesK8SCacheService:
@@ -4852,22 +6076,55 @@ schema ValuesK8SCacheService:
     port : int, optional, default is 50055
         Port of the Kubernetes metadata cache service.
     """
-    [...str]: any
+
     annotations?: ValuesK8SCacheServiceAnnotations
     labels?: ValuesK8SCacheServiceLabels
     name?: str
     port?: int
+    [...str]: any
 
 schema ValuesK8SCacheServiceAnnotations:
     r"""
     Service annotations.
     """
+
     [...str]: any
 
 schema ValuesK8SCacheServiceLabels:
     r"""
     Service labels.
     """
+
+    [...str]: any
+
+schema ValuesK8SManifestTail:
+    r"""
+    k8s-manifest-tail watches and logs Kubernetes manifest changes.
+
+    Attributes
+    ----------
+    deploy : bool, optional, default is False
+        Deploy k8s-manifest-tail to watch and log Kubernetes manifest changes.
+    extraEnv : [any], optional
+        Extra environment variables, required for setting the OTLP destination for the manifests.
+    podAnnotations : ValuesK8SManifestTailPodAnnotations, optional
+    """
+
+    deploy?: bool
+    extraEnv?: [any]
+    podAnnotations?: ValuesK8SManifestTailPodAnnotations
+    [...str]: any
+
+schema ValuesK8SManifestTailPodAnnotations:
+    r"""
+    ValuesK8SManifestTailPodAnnotations
+
+    Attributes
+    ----------
+    "logs.grafana.com/pods.enabled" : str, optional, default is "false"
+    """
+
+    "logs.grafana.com/pods.enabled"?: str
     [...str]: any
 
 schema ValuesKepler:
@@ -4883,12 +6140,13 @@ schema ValuesKepler:
     extraEnvVars : ValuesKeplerExtraEnvVars, optional
     podAnnotations : ValuesKeplerPodAnnotations, optional
     """
-    [...str]: any
+
     affinity?: ValuesKeplerAffinity
     canMount?: ValuesKeplerCanMount
     deploy?: bool
     extraEnvVars?: ValuesKeplerExtraEnvVars
     podAnnotations?: ValuesKeplerPodAnnotations
+    [...str]: any
 
 schema ValuesKeplerAffinity:
     r"""
@@ -4898,8 +6156,9 @@ schema ValuesKeplerAffinity:
     ----------
     nodeAffinity : ValuesKeplerAffinityNodeAffinity, optional
     """
-    [...str]: any
+
     nodeAffinity?: ValuesKeplerAffinityNodeAffinity
+    [...str]: any
 
 schema ValuesKeplerAffinityNodeAffinity:
     r"""
@@ -4909,8 +6168,9 @@ schema ValuesKeplerAffinityNodeAffinity:
     ----------
     requiredDuringSchedulingIgnoredDuringExecution : ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution, optional
     """
-    [...str]: any
+
     requiredDuringSchedulingIgnoredDuringExecution?: ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution
+    [...str]: any
 
 schema ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution:
     r"""
@@ -4920,8 +6180,9 @@ schema ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExec
     ----------
     nodeSelectorTerms : [ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0], optional
     """
-    [...str]: any
+
     nodeSelectorTerms?: [ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0]
+    [...str]: any
 
 schema ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0:
     r"""
@@ -4931,8 +6192,9 @@ schema ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExec
     ----------
     matchExpressions : [ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0], optional
     """
-    [...str]: any
+
     matchExpressions?: [ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0]
+    [...str]: any
 
 schema ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0:
     r"""
@@ -4944,10 +6206,11 @@ schema ValuesKeplerAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExec
     operator : str, optional, default is "NotIn"
     values : [str], optional
     """
-    [...str]: any
+
     key?: str
     operator?: str
     values?: [str]
+    [...str]: any
 
 schema ValuesKeplerCanMount:
     r"""
@@ -4957,8 +6220,9 @@ schema ValuesKeplerCanMount:
     ----------
     usrSrc : bool, optional, default is False
     """
-    [...str]: any
+
     usrSrc?: bool
+    [...str]: any
 
 schema ValuesKeplerExtraEnvVars:
     r"""
@@ -4968,8 +6232,9 @@ schema ValuesKeplerExtraEnvVars:
     ----------
     EXPOSE_ESTIMATED_IDLE_POWER_METRICS : str, optional, default is "true"
     """
-    [...str]: any
+
     EXPOSE_ESTIMATED_IDLE_POWER_METRICS?: str
+    [...str]: any
 
 schema ValuesKeplerPodAnnotations:
     r"""
@@ -4979,8 +6244,9 @@ schema ValuesKeplerPodAnnotations:
     ----------
     "k8s.grafana.com/logs.job" : str, optional, default is "integrations/kepler"
     """
-    [...str]: any
+
     "k8s.grafana.com/logs.job"?: str
+    [...str]: any
 
 schema ValuesKubeControllerManager:
     r"""
@@ -4988,6 +6254,11 @@ schema ValuesKubeControllerManager:
 
     Attributes
     ----------
+    discoveryMode : str, optional, default is "pod"
+        How to discover and scrape the Kube Controller Manager. Options are "pod" (find the component's Pod via the
+        `selectorLabel` in `kube-system`) or "eks-proxy" (scrape the [EKS Control Plane Metrics API](https://docs.aws.amazon.com/eks/latest/userguide/view-raw-metrics.html) on the Kubernetes API server,
+        used by Amazon EKS where the control plane is managed by AWS and has no discoverable Pods). `eks-proxy` requires
+        Kubernetes 1.28+ and additional RBAC; see the EKS platform example.
     enabled : any, optional, default is ""
         (bool) Scrape metrics from the Kube Controller Manager
     extraDiscoveryRules : str, optional, default is ""
@@ -5004,19 +6275,20 @@ schema ValuesKubeControllerManager:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the Kube Controller Manager prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides metrics.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeControllerManagerMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     port : int, optional, default is 10257
-        Port number used by the Kube Controller Manager, set by `--secure-port.`
+        Port number used by the Kube Controller Manager, set by `--secure-port.` Only used when `discoveryMode` is "pod".
     scrapeInterval : str, optional, default is ""
-        How frequently to scrape metrics from the Kube Controller Manager
-        Overrides metrics.scrapeInterval
+        How frequently to scrape metrics from the Kube Controller Manager.
+        Overrides `global.scrapeInterval`.
     selectorLabel : str, optional, default is "component=kube-controller-manager"
-        Selector label.
+        Selector label. Only used when `discoveryMode` is "pod".
     """
-    [...str]: any
+
+    discoveryMode?: str
     enabled?: any
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5026,6 +6298,7 @@ schema ValuesKubeControllerManager:
     port?: int
     scrapeInterval?: str
     selectorLabel?: str
+    [...str]: any
 
 schema ValuesKubeControllerManagerMetricsTuning:
     r"""
@@ -5038,9 +6311,10 @@ schema ValuesKubeControllerManagerMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions. An empty list means keep all.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesKubeDns:
     r"""
@@ -5064,17 +6338,18 @@ schema ValuesKubeDns:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the KubeDNS prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides metrics.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeDnsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     scrapeInterval : str, optional, default is ""
-        How frequently to scrape metrics from KubeDNS
-        Overrides metrics.scrapeInterval
+        How frequently to scrape metrics from KubeDNS.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping KubeDNS metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: any
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5083,6 +6358,7 @@ schema ValuesKubeDns:
     metricsTuning?: ValuesKubeDnsMetricsTuning
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesKubeDnsMetricsTuning:
     r"""
@@ -5095,9 +6371,10 @@ schema ValuesKubeDnsMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions. An empty list means keep all.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesKubeProxy:
     r"""
@@ -5121,21 +6398,22 @@ schema ValuesKubeProxy:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the Kube Proxy prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides metrics.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeProxyMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     port : int, optional, default is 10249
         Port number used by the Kube Proxy, set in `--metrics-bind-address`.
     scrapeInterval : str, optional, default is ""
-        How frequently to scrape metrics from the Kube Proxy
-        Overrides metrics.scrapeInterval
+        How frequently to scrape metrics from the Kube Proxy.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Kube Proxy metrics.
+        Overrides `global.scrapeTimeout`.
     selectorLabel : str, optional, default is "k8s-app=kube-proxy"
         Selector label.
     """
-    [...str]: any
+
     enabled?: any
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5146,6 +6424,7 @@ schema ValuesKubeProxy:
     scrapeInterval?: str
     scrapeTimeout?: str
     selectorLabel?: str
+    [...str]: any
 
 schema ValuesKubeProxyMetricsTuning:
     r"""
@@ -5158,9 +6437,10 @@ schema ValuesKubeProxyMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions. An empty list means keep all.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesKubeRbacproxy:
     r"""
@@ -5208,7 +6488,7 @@ schema ValuesKubeRbacproxy:
         # volumeMounts enables mounting custom volumes in rbac-proxy containers
         # Useful for TLS certificates and keys
     """
-    [...str]: any
+
     containerSecurityContext?: ValuesKubeRbacproxyContainerSecurityContext
     enableHostPort?: bool
     enableProxyEndpointsHostPort?: bool
@@ -5224,6 +6504,7 @@ schema ValuesKubeRbacproxy:
     resources?: ValuesKubeRbacproxyResources
     tls?: ValuesKubeRbacproxyTls
     volumeMounts?: [any]
+    [...str]: any
 
 schema ValuesKubeRbacproxyContainerSecurityContext:
     r"""
@@ -5237,10 +6518,11 @@ schema ValuesKubeRbacproxyContainerSecurityContext:
     capabilities : ValuesKubeRbacproxyContainerSecurityContextCapabilities, optional
     readOnlyRootFilesystem : bool, optional, default is True
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesKubeRbacproxyContainerSecurityContextCapabilities
     readOnlyRootFilesystem?: bool
+    [...str]: any
 
 schema ValuesKubeRbacproxyContainerSecurityContextCapabilities:
     r"""
@@ -5250,13 +6532,15 @@ schema ValuesKubeRbacproxyContainerSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
+
     drop?: [str]
+    [...str]: any
 
 schema ValuesKubeRbacproxyEnv:
     r"""
     # Set environment variables as name/value pairs
     """
+
     [...str]: any
 
 schema ValuesKubeRbacproxyImage:
@@ -5269,19 +6553,21 @@ schema ValuesKubeRbacproxyImage:
     registry : str, optional, default is "quay.io"
     repository : str, optional, default is "brancz/kube-rbac-proxy"
     sha : str, optional, default is ""
-    tag : str, optional, default is "v0.21.1"
+    tag : str, optional, default is "v0.22.1"
     """
-    [...str]: any
+
     pullPolicy?: str
     registry?: str
     repository?: str
     sha?: str
     tag?: str
+    [...str]: any
 
 schema ValuesKubeRbacproxyResources:
     r"""
     ValuesKubeRbacproxyResources
     """
+
     [...str]: any
 
 schema ValuesKubeRbacproxyTls:
@@ -5295,9 +6581,10 @@ schema ValuesKubeRbacproxyTls:
     enabled : bool, optional, default is False
     tlsClientAuth : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
     tlsClientAuth?: bool
+    [...str]: any
 
 schema ValuesKubeScheduler:
     r"""
@@ -5305,6 +6592,11 @@ schema ValuesKubeScheduler:
 
     Attributes
     ----------
+    discoveryMode : str, optional, default is "pod"
+        How to discover and scrape the Kube Scheduler. Options are "pod" (find the component's Pod via the
+        `selectorLabel` in `kube-system`) or "eks-proxy" (scrape the [EKS Control Plane Metrics API](https://docs.aws.amazon.com/eks/latest/userguide/view-raw-metrics.html) on the Kubernetes API server,
+        used by Amazon EKS where the control plane is managed by AWS and has no discoverable Pods). `eks-proxy` requires
+        Kubernetes 1.28+ and additional RBAC; see the EKS platform example.
     enabled : any, optional, default is ""
         (bool) Scrape metrics from the Kube Scheduler
     extraDiscoveryRules : str, optional, default is ""
@@ -5321,21 +6613,23 @@ schema ValuesKubeScheduler:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the Kube Scheduler prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides metrics.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeSchedulerMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     port : int, optional, default is 10259
-        Port number used by the Kube Scheduler, set by `--secure-port`.
+        Port number used by the Kube Scheduler, set by `--secure-port`. Only used when `discoveryMode` is "pod".
     scrapeInterval : str, optional, default is ""
-        How frequently to scrape metrics from the Kube Scheduler
-        Overrides metrics.scrapeInterval
+        How frequently to scrape metrics from the Kube Scheduler.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Kube Scheduler metrics.
+        Overrides `global.scrapeTimeout`.
     selectorLabel : str, optional, default is "component=kube-scheduler"
-        Selector label.
+        Selector label. Only used when `discoveryMode` is "pod".
     """
-    [...str]: any
+
+    discoveryMode?: str
     enabled?: any
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5346,6 +6640,7 @@ schema ValuesKubeScheduler:
     scrapeInterval?: str
     scrapeTimeout?: str
     selectorLabel?: str
+    [...str]: any
 
 schema ValuesKubeSchedulerMetricsTuning:
     r"""
@@ -5358,9 +6653,10 @@ schema ValuesKubeSchedulerMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions. An empty list means keep all.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesKubeStateMetrics:
     r"""
@@ -5393,12 +6689,13 @@ schema ValuesKubeStateMetrics:
     jobLabel : str, optional, default is "integrations/kubernetes/kube-state-metrics"
         The value for the job label.
     labelMatchers : ValuesKubeStateMetricsLabelMatchers, optional
-        Labels used to select the kube-state-metrics service.
+        Labels used to select the kube-state-metrics pods. Required when connecting to an existing kube-state-metrics; if
+        deploying from telemetry services, this will automatically be populated.
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the kube-state-metrics prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricLabelsAllowlist : [str], optional
         `kube_<resource>_labels` metrics to generate.
         The default is to include a useful set for Node labels.
@@ -5420,13 +6717,15 @@ schema ValuesKubeStateMetrics:
     releaseLabel : bool, optional, default is True
     scrapeInterval : str, optional, default is ""
         How frequently to scrape kube-state-metrics metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping kube-state-metrics metrics.
+        Overrides `global.scrapeTimeout`.
     service : ValuesKubeStateMetricsService, optional
         kube-state-metrics service settings
     updateStrategy : str, optional, default is "Recreate"
     """
-    [...str]: any
+
     autosharding?: ValuesKubeStateMetricsAutosharding
     bearerTokenFile?: str
     checkForPotentialServiceMonitorConflicts?: bool
@@ -5451,6 +6750,7 @@ schema ValuesKubeStateMetrics:
     scrapeTimeout?: str
     service?: ValuesKubeStateMetricsService
     updateStrategy?: str
+    [...str]: any
 
 schema ValuesKubeStateMetricsAutosharding:
     r"""
@@ -5460,13 +6760,16 @@ schema ValuesKubeStateMetricsAutosharding:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesKubeStateMetricsLabelMatchers:
     r"""
-    Labels used to select the kube-state-metrics service.
+    Labels used to select the kube-state-metrics pods. Required when connecting to an existing kube-state-metrics; if
+    deploying from telemetry services, this will automatically be populated.
     """
+
     [...str]: any
 
 schema ValuesKubeStateMetricsMetricsTuning:
@@ -5482,10 +6785,11 @@ schema ValuesKubeStateMetricsMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of metrics from Kube State Metrics to a useful, minimal set.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesKubeStateMetricsNodeSelector:
     r"""
@@ -5495,8 +6799,9 @@ schema ValuesKubeStateMetricsNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional, default is "linux"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesKubeStateMetricsPodAnnotations:
     r"""
@@ -5506,8 +6811,9 @@ schema ValuesKubeStateMetricsPodAnnotations:
     ----------
     "k8s.grafana.com/logs.job" : str, optional, default is "integrations/kubernetes/kube-state-metrics"
     """
-    [...str]: any
+
     "k8s.grafana.com/logs.job"?: str
+    [...str]: any
 
 schema ValuesKubeStateMetricsService:
     r"""
@@ -5518,8 +6824,9 @@ schema ValuesKubeStateMetricsService:
     scheme : str, optional, default is "http"
         The scrape scheme used by kube-state-metrics.
     """
-    [...str]: any
+
     scheme?: str
+    [...str]: any
 
 schema ValuesKubeconfig:
     r"""
@@ -5531,9 +6838,10 @@ schema ValuesKubeconfig:
     secret : any, optional, default is ""
         base64 encoded kube-config file
     """
-    [...str]: any
+
     enabled?: bool
     secret?: any
+    [...str]: any
 
 schema ValuesKubelet:
     r"""
@@ -5557,18 +6865,20 @@ schema ValuesKubelet:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the Kubelet prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeletMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     nodeAddressFormat : str, optional, default is "direct"
         How to access the Kubelet to get metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Kubelet metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Kubelet metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5578,6 +6888,7 @@ schema ValuesKubelet:
     nodeAddressFormat?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesKubeletMetricsTuning:
     r"""
@@ -5592,10 +6903,11 @@ schema ValuesKubeletMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of metrics from the Kubelet to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesKubeletProbes:
     r"""
@@ -5619,18 +6931,20 @@ schema ValuesKubeletProbes:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for prometheus.relabel components.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeletProbesMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     nodeAddressFormat : str, optional, default is "direct"
         How to access the Kubelet to get probe metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Kubelet probe metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Kubelet probe metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5640,6 +6954,7 @@ schema ValuesKubeletProbes:
     nodeAddressFormat?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesKubeletProbesMetricsTuning:
     r"""
@@ -5654,10 +6969,11 @@ schema ValuesKubeletProbesMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of probe metrics from the Kubelet to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesKubeletResource:
     r"""
@@ -5681,18 +6997,20 @@ schema ValuesKubeletResource:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for prometheus.relabel components.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesKubeletResourceMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     nodeAddressFormat : str, optional, default is "direct"
         How to access the Kubelet to get resource metrics, either "direct" (use node IP) or "proxy" (uses API Server)
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Kubelet resource metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Kubelet resource metrics.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5702,6 +7020,7 @@ schema ValuesKubeletResource:
     nodeAddressFormat?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesKubeletResourceMetricsTuning:
     r"""
@@ -5716,10 +7035,36 @@ schema ValuesKubeletResourceMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of resource metrics from the Kubelet to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
+
+schema ValuesKubernetesManifests:
+    r"""
+    Kubernetes Manifests enables collecting Kubernetes resource manifest files and modifications as logs.
+    **Experimental**: This feature is subject to change and may be altered or removed in a future release.
+    Requires a logs destination and k8s-manifest-tail deployed via telemetryServices.
+
+    Attributes
+    ----------
+    collector : str, optional, default is ""
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
+    destinations : [any], optional
+        The destinations where Kubernetes manifest logs will be sent. If empty, all logs-capable destinations will be used.
+    enabled : bool, optional, default is False
+        Enable collecting Kubernetes manifest files and modifications.
+    """
+
+    collector?: str
+    dataProcessors?: [any]
+    destinations?: [any]
+    enabled?: bool
+    [...str]: any
 
 schema ValuesLabelSelectors:
     r"""
@@ -5731,8 +7076,9 @@ schema ValuesLabelSelectors:
     ----------
     "app.kubernetes.io/name" : [str], optional
     """
-    [...str]: any
+
     "app.kubernetes.io/name"?: [str]
+    [...str]: any
 
 schema ValuesLabels:
     r"""
@@ -5743,13 +7089,14 @@ schema ValuesLabels:
     app_kubernetes_io_name : str, optional, default is "app.kubernetes.io/name"
     reason : str, optional, default is "reason"
     """
-    [...str]: any
+
     app_kubernetes_io_name?: str
     reason?: str
+    [...str]: any
 
 schema ValuesLeaderElection:
     r"""
-    Leader election settings.
+    Run the controller with leader election enabled.
 
     Attributes
     ----------
@@ -5758,8 +7105,9 @@ schema ValuesLeaderElection:
         when rolling updates. If set to false, you risk having split-brain scenarios where multiple instances of the
         Alloy Operator try to manage the same Alloy instances.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesLinuxHosts:
     r"""
@@ -5769,6 +7117,10 @@ schema ValuesLinuxHosts:
     ----------
     bearerTokenFile : str, optional, default is ""
         The bearer token file to use when scraping metrics from Node Exporter.
+    collector : str, optional, default is ""
+        Which collector to assign the Linux host metrics to. If empty, the feature-level `hostMetrics.collector` is used.
+        Set this to route Linux host metrics to a different collector than the Windows host metrics or energy metrics (for
+        example, a Linux DaemonSet using the Alloy source).
     enabled : bool, optional, default is False
         Scrape Linux host metrics.
     extraDiscoveryRules : str, optional, default is ""
@@ -5783,13 +7135,13 @@ schema ValuesLinuxHosts:
     jobLabel : str, optional, default is "integrations/node_exporter"
         The value for the job label.
     labelMatchers : ValuesLinuxHostsLabelMatchers, optional
-        Labels used to select the Node Exporter pods. If deploying from telemetry services, this will automatically be
-        populated.
+        Labels used to select the Node Exporter pods. Required when connecting to an existing Node Exporter; if deploying
+        from telemetry services, this will automatically be populated.
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the Node Exporter prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesLinuxHostsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespace : str, optional, default is ""
@@ -5799,11 +7151,20 @@ schema ValuesLinuxHosts:
         The scrape scheme for Linux host metrics.
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Linux host metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Linux host metrics.
+        Overrides `global.scrapeTimeout`.
+    source : str, optional, default is "node-exporter"
+        How to collect Linux host metrics. "node-exporter" scrapes a Node Exporter deployment (discovered via
+        telemetryServices or labelMatchers). "alloy" collects host metrics directly using `prometheus.exporter.unix` on the
+        assigned collector, which must be a privileged DaemonSet (use the "linux-host-monitor" and "daemonset" collector
+        presets) and does not require a Node Exporter deployment. Note: the `nodeLabels` enrichment is not yet supported
+        when source is "alloy".
     """
-    [...str]: any
+
     bearerTokenFile?: str
+    collector?: str
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -5815,12 +7176,15 @@ schema ValuesLinuxHosts:
     scheme?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    source?: str
+    [...str]: any
 
 schema ValuesLinuxHostsLabelMatchers:
     r"""
-    Labels used to select the Node Exporter pods. If deploying from telemetry services, this will automatically be
-    populated.
+    Labels used to select the Node Exporter pods. Required when connecting to an existing Node Exporter; if deploying
+    from telemetry services, this will automatically be populated.
     """
+
     [...str]: any
 
 schema ValuesLinuxHostsMetricsTuning:
@@ -5841,12 +7205,13 @@ schema ValuesLinuxHostsMetricsTuning:
         Filter the list of metrics from Node Exporter to the minimal set required for Kubernetes Monitoring as well as
         the Node Exporter integration.
     """
-    [...str]: any
+
     dropMetricsForFilesystem?: [str]
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
     useIntegrationAllowList?: bool
+    [...str]: any
 
 schema ValuesLiveDebugging:
     r"""
@@ -5858,8 +7223,9 @@ schema ValuesLiveDebugging:
         Enable live debugging for the Alloy instance.
         Requires stability level to be set to "experimental".
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesLivenessProbe:
     r"""
@@ -5875,13 +7241,14 @@ schema ValuesLivenessProbe:
     successThreshold : int, optional, default is 1
     timeoutSeconds : int, optional, default is 1
     """
-    [...str]: any
+
     failureThreshold?: int
     httpGet?: ValuesLivenessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesLivenessProbeHttpGet:
     r"""
@@ -5893,10 +7260,11 @@ schema ValuesLivenessProbeHttpGet:
     path : str, optional, default is "/health"
     scheme : str, optional, default is "http"
     """
-    [...str]: any
+
     httpHeaders?: [any]
     path?: str
     scheme?: str
+    [...str]: any
 
 schema ValuesLogging:
     r"""
@@ -5909,13 +7277,14 @@ schema ValuesLogging:
     level : str, optional
         Level at which Alloy log lines should be written.
     """
-    [...str]: any
+
     format?: str
     level?: str
+    [...str]: any
 
 schema ValuesLogs:
     r"""
-    Settings for log gathering using the Pod Logs feature
+    Drop all logs sent to this destination.
 
     Attributes
     ----------
@@ -5926,9 +7295,14 @@ schema ValuesLogs:
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.filter/))
     labelSelectors : ValuesLogsLabelSelectors, optional
         Discover PostgreSQL instances based on label selectors. At least one is required.
+    loki : ValuesLogsLoki, optional
     namespaces : [any], optional
         The namespaces to look for PostgreSQL instances in.
         Will automatically look for PostgreSQL instances in all namespaces unless specified here
+    otlp : ValuesLogsOtlp, optional
+    path : str, optional
+        A custom path to append to the URL when sending logs. Only used when `protocol` is `http`. Overrides the
+        default `/v1/logs` path. For example, set `path: v2/log/otlp` to send logs to `<url>/v2/log/otlp`.
     target : str, optional
         The Alloy component reference for sending logs.
         @ section -- Logs
@@ -5938,14 +7312,18 @@ schema ValuesLogs:
     tuning : ValuesLogsTuning, optional
         Adjustments to the scraped logs to filter the amount of data sent to storage.
     """
-    [...str]: any
+
     enabled?: bool
     filters?: ValuesLogsFilters
     labelSelectors?: ValuesLogsLabelSelectors
+    loki?: ValuesLogsLoki
     namespaces?: [any]
+    otlp?: ValuesLogsOtlp
+    path?: str
     target?: str
     transforms?: ValuesLogsTransforms
     tuning?: ValuesLogsTuning
+    [...str]: any
 
 schema ValuesLogsFilters:
     r"""
@@ -5956,13 +7334,53 @@ schema ValuesLogsFilters:
     ----------
     log_record : [any], optional
     """
-    [...str]: any
+
     log_record?: [any]
+    [...str]: any
 
 schema ValuesLogsLabelSelectors:
     r"""
     Discover PostgreSQL instances based on label selectors. At least one is required.
     """
+
+    [...str]: any
+
+schema ValuesLogsLoki:
+    r"""
+    ValuesLogsLoki
+
+    Attributes
+    ----------
+    config : str, optional
+        Raw Alloy block for the Loki logs pipeline.
+    enabled : bool, optional
+        Enable processing Loki-formatted logs through this processor.
+    input : str, optional
+        Alloy component reference where the chart forwards Loki logs into the user's pipeline.
+    """
+
+    config?: str
+    enabled?: bool
+    input?: str
+    [...str]: any
+
+schema ValuesLogsOtlp:
+    r"""
+    ValuesLogsOtlp
+
+    Attributes
+    ----------
+    config : str, optional
+        Raw Alloy block for the OTLP logs pipeline.
+    enabled : bool, optional
+        Enable processing OTLP-formatted logs through this processor.
+    input : str, optional
+        Alloy component reference where the chart forwards OTLP logs into the user's pipeline.
+    """
+
+    config?: str
+    enabled?: bool
+    input?: str
     [...str]: any
 
 schema ValuesLogsTransforms:
@@ -5977,10 +7395,11 @@ schema ValuesLogsTransforms:
     log : [any], optional
     resource : [any], optional
     """
-    [...str]: any
+
     labels?: [str]
     log?: [any]
     resource?: [any]
+    [...str]: any
 
 schema ValuesLogsTuning:
     r"""
@@ -6002,18 +7421,20 @@ schema ValuesLogsTuning:
         The timestamp format to use for the log line, if not set the default timestamp which is the collection
         will be used for the log line
     """
-    [...str]: any
+
     dropLogLevels?: [str]
     excludeLines?: [any]
     scrubTimestamp?: bool
     structuredMetadata?: ValuesLogsTuningStructuredMetadata
     timestampFormat?: str
+    [...str]: any
 
 schema ValuesLogsTuningStructuredMetadata:
     r"""
     The structured metadata mappings to set.
     To not set any structured metadata, set this to an empty object (e.g. `{}`)
     """
+
     [...str]: any
 
 schema ValuesLoki:
@@ -6024,8 +7445,34 @@ schema ValuesLoki:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
+
+schema ValuesLokiLogsReceiver:
+    r"""
+    Loki Logs Receiver enables receiving logs over the Loki API from applications.
+    Requires a destination that supports logs.
+    To see the valid options, please see the [Loki Logs Receiver feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-loki-logs-receiver).
+
+    Attributes
+    ----------
+    collector : str, optional, default is ""
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
+    destinations : [any], optional
+        The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
+    enabled : bool, optional, default is False
+        Enable receiving logs over the Loki API.
+    """
+
+    collector?: str
+    dataProcessors?: [any]
+    destinations?: [any]
+    enabled?: bool
+    [...str]: any
 
 schema ValuesMetricEnrichment:
     r"""
@@ -6034,24 +7481,31 @@ schema ValuesMetricEnrichment:
     Attributes
     ----------
     namespaceLabels : [any], optional
+        DEPRECATED: Please use the `kubernetesEnrichment` data processor instead.
         Finds kubernetes namespace labels and adds them as labels to matching metrics.
         Applies to metrics that contain the following labels: `namespace`. Note that this can greatly increase the resource
         utilization of Alloy.
     podLabels : [any], optional
+        DEPRECATED: Please use the `kubernetesEnrichment` data processor instead.
         Finds kubernetes pod labels and adds them as labels to matching pod metrics.
         Applies to metrics that contain the following labels: `namespace`, `pod`. Note that this can greatly increase the
         resource utilization of Alloy.
     """
-    [...str]: any
+
     namespaceLabels?: [any]
     podLabels?: [any]
+    [...str]: any
 
 schema ValuesMetrics:
     r"""
-    Settings for metrics collection
+    Drop all metrics sent to this destination.
 
     Attributes
     ----------
+    annotations : ValuesMetricsAnnotations, optional
+        Annotations added to the controller Pod so a Prometheus scraper configured
+        for pod discovery picks it up. Keep `prometheus.io/port` in sync with
+        `metrics.port` above. Set to {} to expose the port without advertising it.
     enabled : bool, optional, default is True
         Whether to send metrics to the OTLP destination.
     extraMetricProcessingRules : str, optional
@@ -6064,13 +7518,17 @@ schema ValuesMetrics:
     maxCacheSize : any, optional
         Sets the max_cache_size for prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
-    port : int, optional
-        The etcd metrics port number to scrape metrics from. Defined on the etcd pod with:
-        `--listen-metrics-urls=http://127.0.0.1:2381`
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
+    otlp : ValuesMetricsOtlp, optional
+    path : str, optional
+        A custom path to append to the URL when sending metrics. Only used when `protocol` is `http`. Overrides the
+        default `/v1/metrics` path. For example, set `path: v2/metric/otlp` to send metrics to `<url>/v2/metric/otlp`.
+    port : int, optional, default is 8080
+        Port the metrics endpoint binds to (plain HTTP).
     portName : str, optional
         Name of the port to scrape metrics from.
+    prometheus : ValuesMetricsPrometheus, optional
     scrapeInterval : any, optional
         How frequently to scrape metrics from Tempo.
     scrapeTimeout : str, optional
@@ -6084,18 +7542,41 @@ schema ValuesMetrics:
     tuning : ValuesMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     """
-    [...str]: any
+
+    annotations?: ValuesMetricsAnnotations
     enabled?: bool
     extraMetricProcessingRules?: str
     filters?: ValuesMetricsFilters
     maxCacheSize?: any
+    otlp?: ValuesMetricsOtlp
+    path?: str
     port?: int
     portName?: str
+    prometheus?: ValuesMetricsPrometheus
     scrapeInterval?: any
     scrapeTimeout?: str
     target?: str
     transforms?: ValuesMetricsTransforms
     tuning?: ValuesMetricsTuning
+    [...str]: any
+
+schema ValuesMetricsAnnotations:
+    r"""
+    Annotations added to the controller Pod so a Prometheus scraper configured
+    for pod discovery picks it up. Keep `prometheus.io/port` in sync with
+    `metrics.port` above. Set to {} to expose the port without advertising it.
+
+    Attributes
+    ----------
+    "prometheus.io/path" : str, optional, default is "/metrics"
+    "prometheus.io/port" : str, optional, default is "8080"
+    "prometheus.io/scrape" : str, optional, default is "true"
+    """
+
+    "prometheus.io/path"?: str
+    "prometheus.io/port"?: str
+    "prometheus.io/scrape"?: str
+    [...str]: any
 
 schema ValuesMetricsFilters:
     r"""
@@ -6107,9 +7588,49 @@ schema ValuesMetricsFilters:
     datapoint : [any], optional
     metric : [any], optional
     """
-    [...str]: any
+
     datapoint?: [any]
     metric?: [any]
+    [...str]: any
+
+schema ValuesMetricsOtlp:
+    r"""
+    ValuesMetricsOtlp
+
+    Attributes
+    ----------
+    config : str, optional
+        Raw Alloy block for the OTLP metrics pipeline.
+    enabled : bool, optional
+        Enable processing OTLP-formatted metrics through this processor.
+    input : str, optional
+        Alloy component reference where the chart forwards OTLP metrics into the user's pipeline.
+    """
+
+    config?: str
+    enabled?: bool
+    input?: str
+    [...str]: any
+
+schema ValuesMetricsPrometheus:
+    r"""
+    ValuesMetricsPrometheus
+
+    Attributes
+    ----------
+    config : str, optional
+        Raw Alloy block for the Prometheus metrics pipeline.
+    enabled : bool, optional
+        Enable processing Prometheus-formatted metrics through this processor.
+    input : str, optional
+        Alloy component reference where the chart forwards Prometheus metrics into the
+        user's pipeline.
+    """
+
+    config?: str
+    enabled?: bool
+    input?: str
+    [...str]: any
 
 schema ValuesMetricsTransforms:
     r"""
@@ -6122,10 +7643,11 @@ schema ValuesMetricsTransforms:
     metric : [any], optional
     resource : [any], optional
     """
-    [...str]: any
+
     datapoint?: [any]
     metric?: [any]
     resource?: [any]
+    [...str]: any
 
 schema ValuesMetricsTuning:
     r"""
@@ -6138,9 +7660,10 @@ schema ValuesMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesMimir:
     r"""
@@ -6150,8 +7673,9 @@ schema ValuesMimir:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesModelServer:
     r"""
@@ -6184,7 +7708,7 @@ schema ValuesModelServer:
     sidecarResources : ValuesModelServerSidecarResources, optional
         resources for the estimator sidecar deployed in the kepler DaemonSet
     """
-    [...str]: any
+
     affinity?: ValuesModelServerAffinity
     annotations?: ValuesModelServerAnnotations
     enabled?: bool
@@ -6201,17 +7725,20 @@ schema ValuesModelServer:
     securityContext?: ValuesModelServerSecurityContext
     service?: ValuesModelServerService
     sidecarResources?: ValuesModelServerSidecarResources
+    [...str]: any
 
 schema ValuesModelServerAffinity:
     r"""
     ValuesModelServerAffinity
     """
+
     [...str]: any
 
 schema ValuesModelServerAnnotations:
     r"""
     additional annotions for the model server Deployment
     """
+
     [...str]: any
 
 schema ValuesModelServerImage:
@@ -6226,11 +7753,12 @@ schema ValuesModelServerImage:
     repository : str, optional, default is "quay.io/sustainable_computing_io/kepler_model_server"
     tag : str, optional, default is "v0.7.12"
     """
-    [...str]: any
+
     digest?: str
     pullPolicy?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesModelServerNodeSelector:
     r"""
@@ -6240,37 +7768,43 @@ schema ValuesModelServerNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional, default is "linux"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesModelServerPodAnnotations:
     r"""
     additional annotions for the model server Pods
     """
+
     [...str]: any
 
 schema ValuesModelServerPodLabels:
     r"""
     additional labels for the model server Pods
     """
+
     [...str]: any
 
 schema ValuesModelServerPodSecurityContext:
     r"""
     ValuesModelServerPodSecurityContext
     """
+
     [...str]: any
 
 schema ValuesModelServerResources:
     r"""
     resources for the model-server containers in the model-server Deployment
     """
+
     [...str]: any
 
 schema ValuesModelServerSecurityContext:
     r"""
     security context for the model-server container in the model-server Deployment
     """
+
     [...str]: any
 
 schema ValuesModelServerService:
@@ -6283,21 +7817,24 @@ schema ValuesModelServerService:
     port : int, optional, default is 8100
     $type : str, optional, default is "ClusterIP"
     """
-    [...str]: any
+
     annotations?: ValuesModelServerServiceAnnotations
     port?: int
     $type?: str
+    [...str]: any
 
 schema ValuesModelServerServiceAnnotations:
     r"""
     ValuesModelServerServiceAnnotations
     """
+
     [...str]: any
 
 schema ValuesModelServerSidecarResources:
     r"""
     resources for the estimator sidecar deployed in the kepler DaemonSet
     """
+
     [...str]: any
 
 schema ValuesMysql:
@@ -6308,21 +7845,43 @@ schema ValuesMysql:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
+
+schema ValuesNamespace:
+    r"""
+    Namespace where the controller and all its namespaced resources are
+    installed. When `namespace.create` is true the chart renders the Namespace
+    object itself; set it to false (and pass `helm install --namespace <ns>`) if
+    you prefer Helm / `--create-namespace` to own the namespace.
+
+    Attributes
+    ----------
+    create : bool, optional, default is True
+    name : str, optional, default is "beyla-k8s-injector"
+    """
+
+    create?: bool
+    name?: str
+    [...str]: any
 
 schema ValuesNamespaceAnnotations:
     r"""
-    Log attributes to set with values copied from the Kubernetes Namespace annotations.
-    Format: `<log_label>: <kubernetes_namespace_annotation>`.
+    Kubernetes namespace annotations to copy to telemetry data, as a map of
+    `<telemetry label>: <namespace annotation name>`. Applies to data carrying a `namespace`
+    label (or Kubernetes resource attributes for OTLP).
     """
+
     [...str]: any
 
 schema ValuesNamespaceLabels:
     r"""
-    Log attributes to set with values copied from the Kubernetes Namespace labels.
-    Format: `<log_label>: <kubernetes_namespace_label>`.
+    Kubernetes namespace labels to copy to telemetry data, as a map of
+    `<telemetry label>: <namespace label name>`. Applies to data carrying a `namespace`
+    label (or Kubernetes resource attributes for OTLP).
     """
+
     [...str]: any
 
 schema ValuesNetworkPolicies:
@@ -6338,10 +7897,11 @@ schema ValuesNetworkPolicies:
     prometheus : ValuesNetworkPoliciesPrometheus, optional
         Internal Prometheus settings related to NetworkPolicies
     """
-    [...str]: any
+
     enabled?: bool
     extraEgress?: [any]
     prometheus?: ValuesNetworkPoliciesPrometheus
+    [...str]: any
 
 schema ValuesNetworkPoliciesPrometheus:
     r"""
@@ -6356,10 +7916,11 @@ schema ValuesNetworkPoliciesPrometheus:
     port : int, optional, default is 9090
         Pod port of in-cluster Prometheus
     """
-    [...str]: any
+
     labels?: ValuesNetworkPoliciesPrometheusLabels
     namespace?: str
     port?: int
+    [...str]: any
 
 schema ValuesNetworkPoliciesPrometheusLabels:
     r"""
@@ -6369,8 +7930,9 @@ schema ValuesNetworkPoliciesPrometheusLabels:
     ----------
     "app.kubernetes.io/name" : str, optional, default is "prometheus"
     """
-    [...str]: any
+
     "app.kubernetes.io/name"?: str
+    [...str]: any
 
 schema ValuesNetworkPolicy:
     r"""
@@ -6390,28 +7952,26 @@ schema ValuesNetworkPolicy:
               - protocol: TCP
                 port: 443
     enabled : bool, optional, default is False
-    flavor : str, optional, default is "kubernetes"
-        networkPolicy.flavor -- Flavor of the network policy to use.
-        Can be:
-        * kubernetes for networking.k8s.io/v1/NetworkPolicy
-        * cilium     for cilium.io/v2/CiliumNetworkPolicy
+    flavor : str, optional
     ingress : [ValuesNetworkPolicyIngressItems0], optional
         Default allow all traffic because Alloy is so configurable
         It is recommended to change this before deploying to production
         To disable each policyType, set value to `null`
     policyTypes : [str], optional
     """
-    [...str]: any
+
     egress?: [ValuesNetworkPolicyEgressItems0]
     enabled?: bool
     flavor?: str
     ingress?: [ValuesNetworkPolicyIngressItems0]
     policyTypes?: [str]
+    [...str]: any
 
 schema ValuesNetworkPolicyEgressItems0:
     r"""
     ValuesNetworkPolicyEgressItems0
     """
+
     [...str]: any
 
 schema ValuesNetworkPolicyIngressItems0:
@@ -6422,8 +7982,9 @@ schema ValuesNetworkPolicyIngressItems0:
     ----------
     ports : [ValuesNetworkPolicyIngressItems0PortsItems0], optional
     """
-    [...str]: any
+
     ports?: [ValuesNetworkPolicyIngressItems0PortsItems0]
+    [...str]: any
 
 schema ValuesNetworkPolicyIngressItems0PortsItems0:
     r"""
@@ -6434,15 +7995,17 @@ schema ValuesNetworkPolicyIngressItems0PortsItems0:
     port : int, optional, default is 9102
     $protocol : str, optional, default is "TCP"
     """
-    [...str]: any
+
     port?: int
     $protocol?: str
+    [...str]: any
 
 schema ValuesNodeAnnotations:
     r"""
     Log attributes to set with values copied from the Kubernetes Node annotations.
     Format: `<log_label>: <kubernetes_node_annotation>`.
     """
+
     [...str]: any
 
 schema ValuesNodeExporter:
@@ -6457,18 +8020,24 @@ schema ValuesNodeExporter:
     extraArgs : [str], optional
     nodeSelector : ValuesNodeExporterNodeSelector, optional
     podAnnotations : ValuesNodeExporterPodAnnotations, optional
+    portConflictCheck : bool, optional, default is True
+        Check for an existing Node Exporter using the same port before deploying.
+        If a conflict is detected, the install fails with guidance to use the existing Node Exporter or pick a unique
+        port. Set to false to skip the check.
     releaseLabel : bool, optional, default is True
     service : ValuesNodeExporterService, optional
         Disable the prometheus.io/scrape annotation
     """
-    [...str]: any
+
     affinity?: ValuesNodeExporterAffinity
     deploy?: bool
     extraArgs?: [str]
     nodeSelector?: ValuesNodeExporterNodeSelector
     podAnnotations?: ValuesNodeExporterPodAnnotations
+    portConflictCheck?: bool
     releaseLabel?: bool
     service?: ValuesNodeExporterService
+    [...str]: any
 
 schema ValuesNodeExporterAffinity:
     r"""
@@ -6478,8 +8047,9 @@ schema ValuesNodeExporterAffinity:
     ----------
     nodeAffinity : ValuesNodeExporterAffinityNodeAffinity, optional
     """
-    [...str]: any
+
     nodeAffinity?: ValuesNodeExporterAffinityNodeAffinity
+    [...str]: any
 
 schema ValuesNodeExporterAffinityNodeAffinity:
     r"""
@@ -6489,8 +8059,9 @@ schema ValuesNodeExporterAffinityNodeAffinity:
     ----------
     requiredDuringSchedulingIgnoredDuringExecution : ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution, optional
     """
-    [...str]: any
+
     requiredDuringSchedulingIgnoredDuringExecution?: ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution
+    [...str]: any
 
 schema ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecution:
     r"""
@@ -6500,8 +8071,9 @@ schema ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuri
     ----------
     nodeSelectorTerms : [ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0], optional
     """
-    [...str]: any
+
     nodeSelectorTerms?: [ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0]
+    [...str]: any
 
 schema ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0:
     r"""
@@ -6511,8 +8083,9 @@ schema ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuri
     ----------
     matchExpressions : [ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0], optional
     """
-    [...str]: any
+
     matchExpressions?: [ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0]
+    [...str]: any
 
 schema ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuringExecutionNodeSelectorTermsItems0MatchExpressionsItems0:
     r"""
@@ -6524,10 +8097,11 @@ schema ValuesNodeExporterAffinityNodeAffinityRequiredDuringSchedulingIgnoredDuri
     operator : str, optional, default is "NotIn"
     values : [str], optional
     """
-    [...str]: any
+
     key?: str
     operator?: str
     values?: [str]
+    [...str]: any
 
 schema ValuesNodeExporterNodeSelector:
     r"""
@@ -6537,8 +8111,9 @@ schema ValuesNodeExporterNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional, default is "linux"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesNodeExporterPodAnnotations:
     r"""
@@ -6548,8 +8123,9 @@ schema ValuesNodeExporterPodAnnotations:
     ----------
     "k8s.grafana.com/logs.job" : str, optional, default is "integrations/node_exporter"
     """
-    [...str]: any
+
     "k8s.grafana.com/logs.job"?: str
+    [...str]: any
 
 schema ValuesNodeExporterService:
     r"""
@@ -6559,8 +8135,9 @@ schema ValuesNodeExporterService:
     ----------
     annotations : ValuesNodeExporterServiceAnnotations, optional
     """
-    [...str]: any
+
     annotations?: ValuesNodeExporterServiceAnnotations
+    [...str]: any
 
 schema ValuesNodeExporterServiceAnnotations:
     r"""
@@ -6570,8 +8147,9 @@ schema ValuesNodeExporterServiceAnnotations:
     ----------
     "prometheus.io/scrape" : str, optional, default is "false"
     """
-    [...str]: any
+
     "prometheus.io/scrape"?: str
+    [...str]: any
 
 schema ValuesNodeLabels:
     r"""
@@ -6595,7 +8173,7 @@ schema ValuesNodeLabels:
     region : bool, optional, default is False
         Whether or not to add the region label
     """
-    [...str]: any
+
     availabilityZone?: bool
     instanceType?: bool
     nodeArchitecture?: bool
@@ -6603,6 +8181,7 @@ schema ValuesNodeLabels:
     nodePool?: bool
     nodeRole?: bool
     region?: bool
+    [...str]: any
 
 schema ValuesNodeLogs:
     r"""
@@ -6613,16 +8192,21 @@ schema ValuesNodeLogs:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Cluster Node logs.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesNodeSelector:
     r"""
@@ -6633,14 +8217,16 @@ schema ValuesNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional, default is "windows"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesNodeSelectors:
     r"""
     Filter the list of discovered nodes by labels. Only for the "volumes" gather method.
     Example: `nodeSelectors: { 'kubernetes.io/os': 'linux' }`
     """
+
     [...str]: any
 
 schema ValuesOpenTelemetryConversion:
@@ -6651,12 +8237,16 @@ schema ValuesOpenTelemetryConversion:
     ----------
     addMetricSuffixes : bool, optional
         Whether to add type and unit suffixes to metrics names.
+    keepIdentifyingResourceAttributes : bool, optional
+        Whether to keep `service.name`, `service.namespace`, and `service.instance.id` as labels on `target_info`.
     resourceToTelemetryConversion : bool, optional
         Whether to convert OTel resource attributes to Prometheus labels.
     """
-    [...str]: any
+
     addMetricSuffixes?: bool
+    keepIdentifyingResourceAttributes?: bool
     resourceToTelemetryConversion?: bool
+    [...str]: any
 
 schema ValuesOpencost:
     r"""
@@ -6669,13 +8259,14 @@ schema ValuesOpencost:
     carbonCost : ValuesOpencostCarbonCost, optional
     cloudCost : ValuesOpencostCloudCost, optional
     cloudIntegrationJSON : str, optional, default is ""
-        Specify the cloud integration information in JSON form. This will create a Secret named
-        "<fullname>-cloud-integration" in the release namespace. Mutually exclusive with
-        opencost.cloudIntegrationSecret.
+        Raw JSON for `cloud-integration.json`. Creates a Secret named
+        `<fullname>-cloud-integration` in the release namespace.
+        Mutually exclusive with `opencost.cloudIntegrationSecret`.
     cloudIntegrationSecret : str, optional, default is ""
-        <SECRET_NAME> for the secret containing the Cloud Costs cloud-integration.json https://www.opencost.io/docs/configuration/#cloud-costs
-        kubectl create secret generic <SECRET_NAME> --from-file=cloud-integration.json -n opencost
-        Mutually exclusive with opencost.cloudIntegrationJSON.
+        Existing Secret containing `cloud-integration.json` for Cloud Costs. See
+        https://www.opencost.io/docs/configuration/#cloud-costs.
+        Create with: `kubectl create secret generic <SECRET_NAME> --from-file=cloud-integration.json -n opencost`.
+        Mutually exclusive with `opencost.cloudIntegrationJSON`.
     customPricing : ValuesOpencostCustomPricing, optional
     deploy : bool, optional, default is False
         Deploy OpenCost.
@@ -6691,16 +8282,22 @@ schema ValuesOpencost:
         Rule blocks to be added to the prometheus.relabel component for OpenCost. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#rule-block))
         These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no __meta* labels are present.
     extraVolumes : [ValuesOpencostExtraVolumesItems0], optional
+        On GCP/GKE, OpenCost's GCP provider writes ${CONFIG_PATH}/gcp.json on startup. CONFIG_PATH
+        defaults to /var/configs, which is not writable by the non-root container user, causing the
+        pod to panic. Mount an emptyDir there so the default path is writable. This is preferred over
+        setting CONFIG_PATH via extraEnv, which collides with the CONFIG_PATH the OpenCost chart sets
+        when customPricing is enabled (duplicate env var). The upstream chart only mounts at
+        /var/configs when cloud integration is enabled, so this does not conflict by default.
     jobLabel : str, optional, default is "integrations/opencost"
         The value for the job label.
     labelMatchers : ValuesOpencostLabelMatchers, optional
-        Labels used to select the OpenCost pods. If deploying from telemetry services, this will automatically be
-        populated.
+        Labels used to select the OpenCost pods. Required when connecting to an existing OpenCost; if deploying from
+        telemetry services, this will automatically be populated.
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the prometheus.relabel component for OpenCost.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     mcp : ValuesOpencostMcp, optional
         MCP (Model Context Protocol) Server Configuration
         The MCP server provides AI agents with access to cost allocation and asset data
@@ -6722,9 +8319,10 @@ schema ValuesOpencost:
     retention1h : int, optional, default is 49
     scrapeInterval : str, optional, default is ""
         How frequently to scrape metrics from Kepler.
-        Overrides global.scrapeInterval.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping OpenCost metrics.
+        Overrides `global.scrapeTimeout`.
     sigV4Proxy : ValuesOpencostSigV4Proxy, optional
     tolerations : [any], optional
         Toleration labels for pod assignment
@@ -6733,7 +8331,7 @@ schema ValuesOpencost:
     ui : ValuesOpencostUi, optional
     updateCaTrust : ValuesOpencostUpdateCaTrust, optional
     """
-    [...str]: any
+
     affinity?: ValuesOpencostAffinity
     carbonCost?: ValuesOpencostCarbonCost
     cloudCost?: ValuesOpencostCloudCost
@@ -6767,11 +8365,13 @@ schema ValuesOpencost:
     topologySpreadConstraints?: [any]
     ui?: ValuesOpencostUi
     updateCaTrust?: ValuesOpencostUpdateCaTrust
+    [...str]: any
 
 schema ValuesOpencostAffinity:
     r"""
     Affinity settings for pod assignment
     """
+
     [...str]: any
 
 schema ValuesOpencostCarbonCost:
@@ -6783,8 +8383,9 @@ schema ValuesOpencostCarbonCost:
     enabled : bool, optional, default is False
         Enable carbon cost exposed in the API
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostCloudCost:
     r"""
@@ -6803,12 +8404,13 @@ schema ValuesOpencostCloudCost:
     runWindowDays : int, optional, default is 3
         Number of days into the past that a Cloud Cost standard run will query for
     """
-    [...str]: any
+
     enabled?: bool
     monthToDateInterval?: int
     queryWindowDays?: int
     refreshRateHours?: int
     runWindowDays?: int
+    [...str]: any
 
 schema ValuesOpencostCustomPricing:
     r"""
@@ -6829,13 +8431,14 @@ schema ValuesOpencostCustomPricing:
     provider : str, optional, default is "custom"
         Sets the provider type for the custom pricing file.
     """
-    [...str]: any
+
     configPath?: str
     configmapName?: str
     costModel?: ValuesOpencostCustomPricingCostModel
     createConfigmap?: bool
     enabled?: bool
     provider?: str
+    [...str]: any
 
 schema ValuesOpencostCustomPricingCostModel:
     r"""
@@ -6854,7 +8457,7 @@ schema ValuesOpencostCustomPricingCostModel:
     storage : float, optional, default is 0.25
     zoneNetworkEgress : float, optional, default is 0.01
     """
-    [...str]: any
+
     CPU?: float
     GPU?: float
     RAM?: float
@@ -6865,6 +8468,7 @@ schema ValuesOpencostCustomPricingCostModel:
     spotRAM?: float
     storage?: float
     zoneNetworkEgress?: float
+    [...str]: any
 
 schema ValuesOpencostExporter:
     r"""
@@ -6909,6 +8513,8 @@ schema ValuesOpencostExporter:
         If clusterIdConfigmap is defined, use user-generated ConfigMap with key CLUSTER_ID as default cluster ID.
         This overrides the above defaultClusterId. Ensure the ConfigMap exists and contains the required CLUSTER_ID key.
         clusterIdConfigmap: cluster-id-configmap
+    inferenceCostTracking : ValuesOpencostExporterInferenceCostTracking, optional
+        Inference cost tracking configuration for LLM workloads (e.g., vLLM via llm-d)
     livenessProbe : ValuesOpencostExporterLivenessProbe, optional
         Liveness probe configuration
     persistence : ValuesOpencostExporterPersistence, optional
@@ -6924,7 +8530,7 @@ schema ValuesOpencostExporter:
     startupProbe : ValuesOpencostExporterStartupProbe, optional
         Startup probe configuration
     """
-    [...str]: any
+
     adminToken?: ValuesOpencostExporterAdminToken
     apiHttpRoute?: ValuesOpencostExporterApiHttpRoute
     apiIngress?: ValuesOpencostExporterApiIngress
@@ -6940,6 +8546,7 @@ schema ValuesOpencostExporter:
     extraEnv?: ValuesOpencostExporterExtraEnv
     extraVolumeMounts?: [any]
     image?: ValuesOpencostExporterImage
+    inferenceCostTracking?: ValuesOpencostExporterInferenceCostTracking
     livenessProbe?: ValuesOpencostExporterLivenessProbe
     persistence?: ValuesOpencostExporterPersistence
     prometheusDataSource?: ValuesOpencostExporterPrometheusDataSource
@@ -6948,6 +8555,7 @@ schema ValuesOpencostExporter:
     resources?: ValuesOpencostExporterResources
     securityContext?: ValuesOpencostExporterSecurityContext
     startupProbe?: ValuesOpencostExporterStartupProbe
+    [...str]: any
 
 schema ValuesOpencostExporterAdminToken:
     r"""
@@ -6968,11 +8576,12 @@ schema ValuesOpencostExporterAdminToken:
     value : str, optional, default is ""
         If set, the chart creates a Secret with this value and sets ADMIN_TOKEN from it (not recommended for production; use existingSecret instead).
     """
-    [...str]: any
+
     enabled?: bool
     existingSecret?: str
     secretKey?: str
     value?: str
+    [...str]: any
 
 schema ValuesOpencostExporterApiHttpRoute:
     r"""
@@ -6992,27 +8601,32 @@ schema ValuesOpencostExporterApiHttpRoute:
     parentRefs : [ValuesOpencostExporterApiHttpRouteParentRefsItems0], optional
         Gateway API parent references
     rules : [ValuesOpencostExporterApiHttpRouteRulesItems0], optional
-        HTTPRoute rules
+        HTTPRoute rules. Each rule supports an optional `filters` list at the rule level
+        and per-backendRef `filters` for Gateway API filter configuration (e.g. basic auth
+        via `ExtensionRef`, header modification via `RequestHeaderModifier`, etc.).
     """
-    [...str]: any
+
     annotations?: ValuesOpencostExporterApiHttpRouteAnnotations
     enabled?: bool
     hostnames?: [any]
     labels?: ValuesOpencostExporterApiHttpRouteLabels
     parentRefs?: [ValuesOpencostExporterApiHttpRouteParentRefsItems0]
     rules?: [ValuesOpencostExporterApiHttpRouteRulesItems0]
+    [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteAnnotations:
     r"""
     - api.example.local
     Annotations for HTTPRoute resource
     """
+
     [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteLabels:
     r"""
     Labels for HTTPRoute resource
     """
+
     [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteParentRefsItems0:
@@ -7025,10 +8639,11 @@ schema ValuesOpencostExporterApiHttpRouteParentRefsItems0:
     namespace : str, optional, default is ""
     sectionName : str, optional, default is ""
     """
-    [...str]: any
+
     name?: str
     namespace?: str
     sectionName?: str
+    [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteRulesItems0:
     r"""
@@ -7037,11 +8652,18 @@ schema ValuesOpencostExporterApiHttpRouteRulesItems0:
     Attributes
     ----------
     backendRefs : [ValuesOpencostExporterApiHttpRouteRulesItems0BackendRefsItems0], optional
+        filters:
+          - type: ExtensionRef
+            extensionRef:
+              group: gateway.envoyproxy.io
+              kind: SecurityPolicy
+              name: basic-auth-policy
     matches : [ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0], optional
     """
-    [...str]: any
+
     backendRefs?: [ValuesOpencostExporterApiHttpRouteRulesItems0BackendRefsItems0]
     matches?: [ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0]
+    [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteRulesItems0BackendRefsItems0:
     r"""
@@ -7052,9 +8674,10 @@ schema ValuesOpencostExporterApiHttpRouteRulesItems0BackendRefsItems0:
     name : str, optional, default is ""
     port : int, optional, default is 9003
     """
-    [...str]: any
+
     name?: str
     port?: int
+    [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0:
     r"""
@@ -7064,8 +8687,9 @@ schema ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0:
     ----------
     path : ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0Path, optional
     """
-    [...str]: any
+
     path?: ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0Path
+    [...str]: any
 
 schema ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0Path:
     r"""
@@ -7076,9 +8700,10 @@ schema ValuesOpencostExporterApiHttpRouteRulesItems0MatchesItems0Path:
     $type : str, optional, default is "PathPrefix"
     value : str, optional, default is "/"
     """
-    [...str]: any
+
     $type?: str
     value?: str
+    [...str]: any
 
 schema ValuesOpencostExporterApiIngress:
     r"""
@@ -7101,18 +8726,20 @@ schema ValuesOpencostExporterApiIngress:
         servicePort: oauth-proxy
         Ingress TLS configuration
     """
-    [...str]: any
+
     annotations?: ValuesOpencostExporterApiIngressAnnotations
     enabled?: bool
     hosts?: [ValuesOpencostExporterApiIngressHostsItems0]
     ingressClassName?: str
     servicePort?: str
     tls?: [any]
+    [...str]: any
 
 schema ValuesOpencostExporterApiIngressAnnotations:
     r"""
     Annotations for Ingress resource
     """
+
     [...str]: any
 
 schema ValuesOpencostExporterApiIngressHostsItems0:
@@ -7124,9 +8751,10 @@ schema ValuesOpencostExporterApiIngressHostsItems0:
     host : str, optional, default is "example.local"
     paths : [ValuesOpencostExporterApiIngressHostsItems0PathsItems0], optional
     """
-    [...str]: any
+
     host?: str
     paths?: [ValuesOpencostExporterApiIngressHostsItems0PathsItems0]
+    [...str]: any
 
 schema ValuesOpencostExporterApiIngressHostsItems0PathsItems0:
     r"""
@@ -7137,9 +8765,10 @@ schema ValuesOpencostExporterApiIngressHostsItems0PathsItems0:
     path : str, optional, default is "/"
     pathType : str, optional, default is "Prefix"
     """
-    [...str]: any
+
     path?: str
     pathType?: str
+    [...str]: any
 
 schema ValuesOpencostExporterAws:
     r"""
@@ -7152,9 +8781,10 @@ schema ValuesOpencostExporterAws:
     secret_access_key : str, optional, default is ""
         AWS secret access key
     """
-    [...str]: any
+
     access_key_id?: str
     secret_access_key?: str
+    [...str]: any
 
 schema ValuesOpencostExporterCollectorDataSource:
     r"""
@@ -7176,18 +8806,20 @@ schema ValuesOpencostExporterCollectorDataSource:
     scrapeInterval : str, optional, default is "30s"
         define the interval at which the collector scrapes for data points (10s, 15s, 1m)
     """
-    [...str]: any
+
     enabled?: bool
     networkPort?: int
     retention10m?: int
     retention1d?: int
     retention1h?: int
     scrapeInterval?: str
+    [...str]: any
 
 schema ValuesOpencostExporterExtraEnv:
     r"""
     Any extra environment variables you would like to pass on to the pod
     """
+
     [...str]: any
 
 schema ValuesOpencostExporterImage:
@@ -7206,15 +8838,41 @@ schema ValuesOpencostExporterImage:
         Exporter container image registry
     repository : str, optional, default is "opencost/opencost"
         Exporter container image name
-    tag : str, optional, default is "1.119.2@sha256:4b8de6e029b9dc1f7e68bdf1cf02fca7649614c23812e51a63820f113ca97b89"
+    tag : str, optional, default is "1.121.1@sha256:50052694785db32174332670920faf7b7f55d32a91ba3caec1e9207a58338ff5"
         Exporter container image tag
     """
-    [...str]: any
+
     fullImageName?: any
     pullPolicy?: str
     registry?: str
     repository?: str
     tag?: str
+    [...str]: any
+
+schema ValuesOpencostExporterInferenceCostTracking:
+    r"""
+    Inference cost tracking configuration for LLM workloads (e.g., vLLM via llm-d)
+
+    Attributes
+    ----------
+    collectionInterval : str, optional, default is "2m"
+        Background collection interval
+    enabled : bool, optional, default is False
+        Enable inference cost tracking
+    modelLabel : str, optional, default is "llm-d.ai/model"
+        Pod label whose value is the vLLM model name. Must match the model_name label on vLLM Prometheus metrics
+    sharedInfraLabel : str, optional, default is "llm-d.ai/inference-shared"
+        Pod label key identifying shared infra pods (EPP, gateway)
+    sharedInfraLabelValue : str, optional, default is "true"
+        Label value that marks a pod as shared infra
+    """
+
+    collectionInterval?: str
+    enabled?: bool
+    modelLabel?: str
+    sharedInfraLabel?: str
+    sharedInfraLabelValue?: str
+    [...str]: any
 
 schema ValuesOpencostExporterLivenessProbe:
     r"""
@@ -7232,13 +8890,17 @@ schema ValuesOpencostExporterLivenessProbe:
         Probe path
     periodSeconds : int, optional, default is 20
         Probe frequency in seconds
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the probe times out
     """
-    [...str]: any
+
     enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     path?: str
     periodSeconds?: int
+    timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesOpencostExporterPersistence:
     r"""
@@ -7258,18 +8920,20 @@ schema ValuesOpencostExporterPersistence:
     storageClass : str, optional, default is ""
         Storage class for persistent volume
     """
-    [...str]: any
+
     accessMode?: str
     annotations?: ValuesOpencostExporterPersistenceAnnotations
     enabled?: bool
     mountPath?: str
     size?: str
     storageClass?: str
+    [...str]: any
 
 schema ValuesOpencostExporterPersistenceAnnotations:
     r"""
     Annotations for persistent volume
     """
+
     [...str]: any
 
 schema ValuesOpencostExporterPrometheusDataSource:
@@ -7281,8 +8945,9 @@ schema ValuesOpencostExporterPrometheusDataSource:
     queryResolutionSeconds : int, optional, default is 300
         Set the resolution in second that prometheus queries will be performed at
     """
-    [...str]: any
+
     queryResolutionSeconds?: int
+    [...str]: any
 
 schema ValuesOpencostExporterReadinessProbe:
     r"""
@@ -7300,13 +8965,20 @@ schema ValuesOpencostExporterReadinessProbe:
         Probe path
     periodSeconds : int, optional, default is 10
         Probe frequency in seconds
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the probe to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the probe times out
     """
-    [...str]: any
+
     enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     path?: str
     periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesOpencostExporterResources:
     r"""
@@ -7319,9 +8991,10 @@ schema ValuesOpencostExporterResources:
     requests : ValuesOpencostExporterResourcesRequests, optional
         CPU/Memory resource requests
     """
-    [...str]: any
+
     limits?: ValuesOpencostExporterResourcesLimits
     requests?: ValuesOpencostExporterResourcesRequests
+    [...str]: any
 
 schema ValuesOpencostExporterResourcesLimits:
     r"""
@@ -7331,8 +9004,9 @@ schema ValuesOpencostExporterResourcesLimits:
     ----------
     memory : str, optional, default is "1Gi"
     """
-    [...str]: any
+
     memory?: str
+    [...str]: any
 
 schema ValuesOpencostExporterResourcesRequests:
     r"""
@@ -7343,14 +9017,16 @@ schema ValuesOpencostExporterResourcesRequests:
     cpu : str, optional, default is "10m"
     memory : str, optional, default is "55Mi"
     """
-    [...str]: any
+
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesOpencostExporterSecurityContext:
     r"""
     The security options the container should be run with
     """
+
     [...str]: any
 
 schema ValuesOpencostExporterStartupProbe:
@@ -7369,13 +9045,17 @@ schema ValuesOpencostExporterStartupProbe:
         Probe path
     periodSeconds : int, optional, default is 5
         Probe frequency in seconds
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the probe times out
     """
-    [...str]: any
+
     enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     path?: str
     periodSeconds?: int
+    timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesOpencostExtraVolumesItems0:
     r"""
@@ -7386,21 +9066,24 @@ schema ValuesOpencostExtraVolumesItems0:
     emptyDir : ValuesOpencostExtraVolumesItems0EmptyDir, optional
     name : str, optional, default is "configs"
     """
-    [...str]: any
+
     emptyDir?: ValuesOpencostExtraVolumesItems0EmptyDir
     name?: str
+    [...str]: any
 
 schema ValuesOpencostExtraVolumesItems0EmptyDir:
     r"""
     ValuesOpencostExtraVolumesItems0EmptyDir
     """
+
     [...str]: any
 
 schema ValuesOpencostLabelMatchers:
     r"""
-    Labels used to select the OpenCost pods. If deploying from telemetry services, this will automatically be
-    populated.
+    Labels used to select the OpenCost pods. Required when connecting to an existing OpenCost; if deploying from
+    telemetry services, this will automatically be populated.
     """
+
     [...str]: any
 
 schema ValuesOpencostMcp:
@@ -7420,11 +9103,12 @@ schema ValuesOpencostMcp:
         HTTP port for MCP server (default: 8081)
         Change this if port 8081 conflicts with other services
     """
-    [...str]: any
+
     enabled?: bool
     httpRoute?: ValuesOpencostMcpHttpRoute
     ingress?: ValuesOpencostMcpIngress
     port?: int
+    [...str]: any
 
 schema ValuesOpencostMcpHttpRoute:
     r"""
@@ -7444,27 +9128,32 @@ schema ValuesOpencostMcpHttpRoute:
     parentRefs : [ValuesOpencostMcpHttpRouteParentRefsItems0], optional
         Gateway API parent references
     rules : [ValuesOpencostMcpHttpRouteRulesItems0], optional
-        HTTPRoute rules
+        HTTPRoute rules. Each rule supports an optional `filters` list at the rule level
+        and per-backendRef `filters` for Gateway API filter configuration (e.g. basic auth
+        via `ExtensionRef`, header modification via `RequestHeaderModifier`, etc.).
     """
-    [...str]: any
+
     annotations?: ValuesOpencostMcpHttpRouteAnnotations
     enabled?: bool
     hostnames?: [any]
     labels?: ValuesOpencostMcpHttpRouteLabels
     parentRefs?: [ValuesOpencostMcpHttpRouteParentRefsItems0]
     rules?: [ValuesOpencostMcpHttpRouteRulesItems0]
+    [...str]: any
 
 schema ValuesOpencostMcpHttpRouteAnnotations:
     r"""
     - mcp.example.local
     Annotations for HTTPRoute resource
     """
+
     [...str]: any
 
 schema ValuesOpencostMcpHttpRouteLabels:
     r"""
     Labels for HTTPRoute resource
     """
+
     [...str]: any
 
 schema ValuesOpencostMcpHttpRouteParentRefsItems0:
@@ -7477,10 +9166,11 @@ schema ValuesOpencostMcpHttpRouteParentRefsItems0:
     namespace : str, optional, default is ""
     sectionName : str, optional, default is ""
     """
-    [...str]: any
+
     name?: str
     namespace?: str
     sectionName?: str
+    [...str]: any
 
 schema ValuesOpencostMcpHttpRouteRulesItems0:
     r"""
@@ -7489,11 +9179,18 @@ schema ValuesOpencostMcpHttpRouteRulesItems0:
     Attributes
     ----------
     backendRefs : [ValuesOpencostMcpHttpRouteRulesItems0BackendRefsItems0], optional
+        filters:
+          - type: ExtensionRef
+            extensionRef:
+              group: gateway.envoyproxy.io
+              kind: SecurityPolicy
+              name: basic-auth-policy
     matches : [ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0], optional
     """
-    [...str]: any
+
     backendRefs?: [ValuesOpencostMcpHttpRouteRulesItems0BackendRefsItems0]
     matches?: [ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0]
+    [...str]: any
 
 schema ValuesOpencostMcpHttpRouteRulesItems0BackendRefsItems0:
     r"""
@@ -7504,9 +9201,10 @@ schema ValuesOpencostMcpHttpRouteRulesItems0BackendRefsItems0:
     name : str, optional, default is ""
     port : int, optional, default is 8081
     """
-    [...str]: any
+
     name?: str
     port?: int
+    [...str]: any
 
 schema ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0:
     r"""
@@ -7516,8 +9214,9 @@ schema ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0:
     ----------
     path : ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0Path, optional
     """
-    [...str]: any
+
     path?: ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0Path
+    [...str]: any
 
 schema ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0Path:
     r"""
@@ -7528,9 +9227,10 @@ schema ValuesOpencostMcpHttpRouteRulesItems0MatchesItems0Path:
     $type : str, optional, default is "PathPrefix"
     value : str, optional, default is "/"
     """
-    [...str]: any
+
     $type?: str
     value?: str
+    [...str]: any
 
 schema ValuesOpencostMcpIngress:
     r"""
@@ -7550,17 +9250,19 @@ schema ValuesOpencostMcpIngress:
     tls : [any], optional
         Ingress TLS configuration
     """
-    [...str]: any
+
     annotations?: ValuesOpencostMcpIngressAnnotations
     enabled?: bool
     hosts?: [ValuesOpencostMcpIngressHostsItems0]
     ingressClassName?: str
     tls?: [any]
+    [...str]: any
 
 schema ValuesOpencostMcpIngressAnnotations:
     r"""
     Annotations for Ingress resource
     """
+
     [...str]: any
 
 schema ValuesOpencostMcpIngressHostsItems0:
@@ -7572,9 +9274,10 @@ schema ValuesOpencostMcpIngressHostsItems0:
     host : str, optional, default is "example.local"
     paths : [ValuesOpencostMcpIngressHostsItems0PathsItems0], optional
     """
-    [...str]: any
+
     host?: str
     paths?: [ValuesOpencostMcpIngressHostsItems0PathsItems0]
+    [...str]: any
 
 schema ValuesOpencostMcpIngressHostsItems0PathsItems0:
     r"""
@@ -7585,9 +9288,10 @@ schema ValuesOpencostMcpIngressHostsItems0PathsItems0:
     path : str, optional, default is "/"
     pathType : str, optional, default is "Prefix"
     """
-    [...str]: any
+
     path?: str
     pathType?: str
+    [...str]: any
 
 schema ValuesOpencostMetrics:
     r"""
@@ -7599,10 +9303,11 @@ schema ValuesOpencostMetrics:
     kubeStateMetrics : ValuesOpencostMetricsKubeStateMetrics, optional
     serviceMonitor : ValuesOpencostMetricsServiceMonitor, optional
     """
-    [...str]: any
+
     config?: ValuesOpencostMetricsConfig
     kubeStateMetrics?: ValuesOpencostMetricsKubeStateMetrics
     serviceMonitor?: ValuesOpencostMetricsServiceMonitor
+    [...str]: any
 
 schema ValuesOpencostMetricsConfig:
     r"""
@@ -7617,10 +9322,11 @@ schema ValuesOpencostMetricsConfig:
     enabled : bool, optional, default is False
         Enables creating the metrics.json configuration as a ConfigMap
     """
-    [...str]: any
+
     configmapName?: str
     disabledMetrics?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostMetricsKubeStateMetrics:
     r"""
@@ -7637,11 +9343,12 @@ schema ValuesOpencostMetricsKubeStateMetrics:
     emitPodAnnotations : any, optional, default is "~"
         (bool) Enable emission of pod annotations
     """
-    [...str]: any
+
     emitKsmV1Metrics?: any
     emitKsmV1MetricsOnly?: any
     emitNamespaceAnnotations?: any
     emitPodAnnotations?: any
+    [...str]: any
 
 schema ValuesOpencostMetricsServiceMonitor:
     r"""
@@ -7674,7 +9381,7 @@ schema ValuesOpencostMetricsServiceMonitor:
     tlsConfig : ValuesOpencostMetricsServiceMonitorTlsConfig, optional
         TLS configuration for scraping metrics
     """
-    [...str]: any
+
     additionalLabels?: ValuesOpencostMetricsServiceMonitorAdditionalLabels
     enabled?: bool
     extraEndpoints?: [any]
@@ -7686,17 +9393,20 @@ schema ValuesOpencostMetricsServiceMonitor:
     scrapeInterval?: str
     scrapeTimeout?: str
     tlsConfig?: ValuesOpencostMetricsServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesOpencostMetricsServiceMonitorAdditionalLabels:
     r"""
     Additional labels to add to the ServiceMonitor
     """
+
     [...str]: any
 
 schema ValuesOpencostMetricsServiceMonitorTlsConfig:
     r"""
     TLS configuration for scraping metrics
     """
+
     [...str]: any
 
 schema ValuesOpencostMetricsTuning:
@@ -7712,15 +9422,17 @@ schema ValuesOpencostMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of metrics from OpenCost to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesOpencostNodeSelector:
     r"""
     Node labels for pod assignment
     """
+
     [...str]: any
 
 schema ValuesOpencostOpencost:
@@ -7739,7 +9451,7 @@ schema ValuesOpencostOpencost:
     tolerations : [ValuesOpencostOpencostTolerationsItems0], optional
     ui : ValuesOpencostOpencostUi, optional
     """
-    [...str]: any
+
     carbonCost?: ValuesOpencostOpencostCarbonCost
     cloudCost?: ValuesOpencostOpencostCloudCost
     exporter?: ValuesOpencostOpencostExporter
@@ -7749,6 +9461,7 @@ schema ValuesOpencostOpencost:
     prometheus?: ValuesOpencostOpencostPrometheus
     tolerations?: [ValuesOpencostOpencostTolerationsItems0]
     ui?: ValuesOpencostOpencostUi
+    [...str]: any
 
 schema ValuesOpencostOpencostCarbonCost:
     r"""
@@ -7758,8 +9471,9 @@ schema ValuesOpencostOpencostCarbonCost:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostOpencostCloudCost:
     r"""
@@ -7769,8 +9483,9 @@ schema ValuesOpencostOpencostCloudCost:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostOpencostExporter:
     r"""
@@ -7783,10 +9498,11 @@ schema ValuesOpencostOpencostExporter:
     extraEnv : ValuesOpencostOpencostExporterExtraEnv, optional
     extraVolumeMounts : [ValuesOpencostOpencostExporterExtraVolumeMountsItems0], optional
     """
-    [...str]: any
+
     defaultClusterId?: str
     extraEnv?: ValuesOpencostOpencostExporterExtraEnv
     extraVolumeMounts?: [ValuesOpencostOpencostExporterExtraVolumeMountsItems0]
+    [...str]: any
 
 schema ValuesOpencostOpencostExporterExtraEnv:
     r"""
@@ -7794,16 +9510,18 @@ schema ValuesOpencostOpencostExporterExtraEnv:
 
     Attributes
     ----------
-    CLOUD_PROVIDER_API_KEY : str, optional, default is "AIzaSyD29bGxmHAVEOBYtgd8sYM2gM2ekfxQX4U"
-        Trial API Key used only with GCP.
-        See https://www.opencost.io/docs/configuration/gcp-opencost for how to set for your environment
+    CLOUD_PROVIDER_API_KEY : str, optional, default is "disabled"
+        CLOUD_PROVIDER_API_KEY must be non-empty so OpenCost's NewProvider() does not refuse
+        to construct the GCP provider on GKE; the value itself is unused (pricing falls back
+        to defaults).
     CURRENT_CLUSTER_ID_FILTER_ENABLED : str, optional, default is "true"
     PROM_CLUSTER_ID_LABEL : str, optional, default is "cluster"
     """
-    [...str]: any
+
     CLOUD_PROVIDER_API_KEY?: str
     CURRENT_CLUSTER_ID_FILTER_ENABLED?: str
     PROM_CLUSTER_ID_LABEL?: str
+    [...str]: any
 
 schema ValuesOpencostOpencostExporterExtraVolumeMountsItems0:
     r"""
@@ -7815,10 +9533,11 @@ schema ValuesOpencostOpencostExporterExtraVolumeMountsItems0:
     name : str, optional, default is "configs"
     readOnly : bool, optional, default is False
     """
-    [...str]: any
+
     mountPath?: str
     name?: str
     readOnly?: bool
+    [...str]: any
 
 schema ValuesOpencostOpencostMcp:
     r"""
@@ -7828,8 +9547,9 @@ schema ValuesOpencostOpencostMcp:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostOpencostMetrics:
     r"""
@@ -7839,8 +9559,9 @@ schema ValuesOpencostOpencostMetrics:
     ----------
     kubeStateMetrics : ValuesOpencostOpencostMetricsKubeStateMetrics, optional
     """
-    [...str]: any
+
     kubeStateMetrics?: ValuesOpencostOpencostMetricsKubeStateMetrics
+    [...str]: any
 
 schema ValuesOpencostOpencostMetricsKubeStateMetrics:
     r"""
@@ -7851,9 +9572,10 @@ schema ValuesOpencostOpencostMetricsKubeStateMetrics:
     emitKsmV1Metrics : bool, optional, default is False
     emitKsmV1MetricsOnly : bool, optional, default is True
     """
-    [...str]: any
+
     emitKsmV1Metrics?: bool
     emitKsmV1MetricsOnly?: bool
+    [...str]: any
 
 schema ValuesOpencostOpencostNodeSelector:
     r"""
@@ -7863,8 +9585,9 @@ schema ValuesOpencostOpencostNodeSelector:
     ----------
     "kubernetes.io/os" : str, optional, default is "linux"
     """
-    [...str]: any
+
     "kubernetes.io/os"?: str
+    [...str]: any
 
 schema ValuesOpencostOpencostPrometheus:
     r"""
@@ -7881,12 +9604,13 @@ schema ValuesOpencostOpencostPrometheus:
     username_key : str, optional, default is "username"
         The key for the username property in the secret.
     """
-    [...str]: any
+
     existingSecretName?: str
     external?: ValuesOpencostOpencostPrometheusExternal
     internal?: ValuesOpencostOpencostPrometheusInternal
     password_key?: str
     username_key?: str
+    [...str]: any
 
 schema ValuesOpencostOpencostPrometheusExternal:
     r"""
@@ -7896,11 +9620,15 @@ schema ValuesOpencostOpencostPrometheusExternal:
     ----------
     enabled : bool, optional, default is True
     url : str, optional, default is ""
-        The URL for Prometheus queries. It should match externalServices.prometheus.host + "/api/prom"
+        The URL where OpenCost queries for the metrics it needs. Required when `metricsSource` is set to a metrics
+        destination: the guided setup fails the install with the exact URL to use if this is left empty. It should
+        point at the query endpoint of the destination named by `metricsSource` (e.g. that destination's URL with the
+        remote-write path replaced by the query path, such as `/api/prom` or `/api/v1/query`).
     """
-    [...str]: any
+
     enabled?: bool
     url?: str
+    [...str]: any
 
 schema ValuesOpencostOpencostPrometheusInternal:
     r"""
@@ -7910,8 +9638,9 @@ schema ValuesOpencostOpencostPrometheusInternal:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostOpencostTolerationsItems0:
     r"""
@@ -7924,11 +9653,12 @@ schema ValuesOpencostOpencostTolerationsItems0:
     operator : str, optional, default is "Equal"
     value : str, optional, default is "arm64"
     """
-    [...str]: any
+
     effect?: str
     key?: str
     operator?: str
     value?: str
+    [...str]: any
 
 schema ValuesOpencostOpencostUi:
     r"""
@@ -7938,8 +9668,9 @@ schema ValuesOpencostOpencostUi:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesOpencostPlatforms:
     r"""
@@ -7949,8 +9680,9 @@ schema ValuesOpencostPlatforms:
     ----------
     openshift : ValuesOpencostPlatformsOpenshift, optional
     """
-    [...str]: any
+
     openshift?: ValuesOpencostPlatformsOpenshift
+    [...str]: any
 
 schema ValuesOpencostPlatformsOpenshift:
     r"""
@@ -7974,7 +9706,7 @@ schema ValuesOpencostPlatformsOpenshift:
     monitoringServiceAccountNamespace : str, optional, default is "openshift-monitoring"
         Namespace of the Prometheus serviceaccount to bind to the Resource Reader Role Binding.
     """
-    [...str]: any
+
     createMonitoringClusterRoleBinding?: bool
     createMonitoringResourceReaderRoleBinding?: bool
     enablePromAccess?: bool
@@ -7982,6 +9714,7 @@ schema ValuesOpencostPlatformsOpenshift:
     enabled?: bool
     monitoringServiceAccountName?: str
     monitoringServiceAccountNamespace?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheus:
     r"""
@@ -8013,7 +9746,7 @@ schema ValuesOpencostPrometheus:
     username_key : str, optional, default is "DB_BASIC_AUTH_USERNAME"
         Key in the secret that references the username
     """
-    [...str]: any
+
     amp?: ValuesOpencostPrometheusAmp
     bearer_token?: str
     bearer_token_key?: str
@@ -8028,6 +9761,7 @@ schema ValuesOpencostPrometheus:
     thanos?: ValuesOpencostPrometheusThanos
     username?: str
     username_key?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheusAmp:
     r"""
@@ -8040,9 +9774,10 @@ schema ValuesOpencostPrometheusAmp:
     workspaceId : str, optional, default is ""
         Workspace ID for AMP
     """
-    [...str]: any
+
     enabled?: bool
     workspaceId?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheusExternal:
     r"""
@@ -8055,9 +9790,10 @@ schema ValuesOpencostPrometheusExternal:
     url : str, optional, default is "https://prometheus.example.com/prometheus"
         External Prometheus url
     """
-    [...str]: any
+
     enabled?: bool
     url?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheusInternal:
     r"""
@@ -8078,13 +9814,14 @@ schema ValuesOpencostPrometheusInternal:
     serviceName : str, optional, default is "prometheus-server"
         Service name of in-cluster Prometheus
     """
-    [...str]: any
+
     enabled?: bool
     namespaceName?: str
     path?: str
     port?: int
     scheme?: str
     serviceName?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheusThanos:
     r"""
@@ -8098,12 +9835,13 @@ schema ValuesOpencostPrometheusThanos:
     maxSourceResolution : str, optional, default is ""
     queryOffset : str, optional, default is ""
     """
-    [...str]: any
+
     enabled?: bool
     external?: ValuesOpencostPrometheusThanosExternal
     internal?: ValuesOpencostPrometheusThanosInternal
     maxSourceResolution?: str
     queryOffset?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheusThanosExternal:
     r"""
@@ -8114,9 +9852,10 @@ schema ValuesOpencostPrometheusThanosExternal:
     enabled : bool, optional, default is False
     url : str, optional, default is "https://thanos-query.example.com/thanos"
     """
-    [...str]: any
+
     enabled?: bool
     url?: str
+    [...str]: any
 
 schema ValuesOpencostPrometheusThanosInternal:
     r"""
@@ -8130,12 +9869,13 @@ schema ValuesOpencostPrometheusThanosInternal:
     scheme : str, optional, default is "http"
     serviceName : str, optional, default is "my-thanos-query"
     """
-    [...str]: any
+
     enabled?: bool
     namespaceName?: str
     port?: int
     scheme?: str
     serviceName?: str
+    [...str]: any
 
 schema ValuesOpencostSigV4Proxy:
     r"""
@@ -8164,7 +9904,7 @@ schema ValuesOpencostSigV4Proxy:
           cpu: 20m
           memory: 32Mi
     """
-    [...str]: any
+
     extraEnv?: any
     host?: str
     image?: str
@@ -8174,6 +9914,7 @@ schema ValuesOpencostSigV4Proxy:
     region?: str
     resources?: ValuesOpencostSigV4ProxyResources
     securityContext?: ValuesOpencostSigV4ProxySecurityContext
+    [...str]: any
 
 schema ValuesOpencostSigV4ProxyResources:
     r"""
@@ -8182,6 +9923,7 @@ schema ValuesOpencostSigV4ProxyResources:
     - name: AWS_SECRET_ACCESS_KEY
       value: <secret_key>
     """
+
     [...str]: any
 
 schema ValuesOpencostSigV4ProxySecurityContext:
@@ -8193,6 +9935,7 @@ schema ValuesOpencostSigV4ProxySecurityContext:
       cpu: 20m
       memory: 32Mi
     """
+
     [...str]: any
 
 schema ValuesOpencostUi:
@@ -8234,7 +9977,7 @@ schema ValuesOpencostUi:
     useIPv6 : bool, optional, default is True
         Set to true to use IPv6
     """
-    [...str]: any
+
     enabled?: bool
     extraEnv?: [any]
     extraVolumeMounts?: [any]
@@ -8251,6 +9994,7 @@ schema ValuesOpencostUi:
     uiPort?: int
     useDefaultFqdn?: bool
     useIPv6?: bool
+    [...str]: any
 
 schema ValuesOpencostUiHttpRoute:
     r"""
@@ -8270,27 +10014,32 @@ schema ValuesOpencostUiHttpRoute:
     parentRefs : [ValuesOpencostUiHttpRouteParentRefsItems0], optional
         Gateway API parent references
     rules : [ValuesOpencostUiHttpRouteRulesItems0], optional
-        HTTPRoute rules
+        HTTPRoute rules. Each rule supports an optional `filters` list at the rule level
+        and per-backendRef `filters` for Gateway API filter configuration (e.g. basic auth
+        via `ExtensionRef`, header modification via `RequestHeaderModifier`, etc.).
     """
-    [...str]: any
+
     annotations?: ValuesOpencostUiHttpRouteAnnotations
     enabled?: bool
     hostnames?: [any]
     labels?: ValuesOpencostUiHttpRouteLabels
     parentRefs?: [ValuesOpencostUiHttpRouteParentRefsItems0]
     rules?: [ValuesOpencostUiHttpRouteRulesItems0]
+    [...str]: any
 
 schema ValuesOpencostUiHttpRouteAnnotations:
     r"""
     - example.local
     Annotations for HTTPRoute resource
     """
+
     [...str]: any
 
 schema ValuesOpencostUiHttpRouteLabels:
     r"""
     Labels for HTTPRoute resource
     """
+
     [...str]: any
 
 schema ValuesOpencostUiHttpRouteParentRefsItems0:
@@ -8303,10 +10052,11 @@ schema ValuesOpencostUiHttpRouteParentRefsItems0:
     namespace : str, optional, default is ""
     sectionName : str, optional, default is ""
     """
-    [...str]: any
+
     name?: str
     namespace?: str
     sectionName?: str
+    [...str]: any
 
 schema ValuesOpencostUiHttpRouteRulesItems0:
     r"""
@@ -8315,11 +10065,18 @@ schema ValuesOpencostUiHttpRouteRulesItems0:
     Attributes
     ----------
     backendRefs : [ValuesOpencostUiHttpRouteRulesItems0BackendRefsItems0], optional
+        filters:
+          - type: ExtensionRef
+            extensionRef:
+              group: gateway.envoyproxy.io
+              kind: SecurityPolicy
+              name: basic-auth-policy
     matches : [ValuesOpencostUiHttpRouteRulesItems0MatchesItems0], optional
     """
-    [...str]: any
+
     backendRefs?: [ValuesOpencostUiHttpRouteRulesItems0BackendRefsItems0]
     matches?: [ValuesOpencostUiHttpRouteRulesItems0MatchesItems0]
+    [...str]: any
 
 schema ValuesOpencostUiHttpRouteRulesItems0BackendRefsItems0:
     r"""
@@ -8330,9 +10087,10 @@ schema ValuesOpencostUiHttpRouteRulesItems0BackendRefsItems0:
     name : str, optional, default is ""
     port : int, optional, default is 9090
     """
-    [...str]: any
+
     name?: str
     port?: int
+    [...str]: any
 
 schema ValuesOpencostUiHttpRouteRulesItems0MatchesItems0:
     r"""
@@ -8342,8 +10100,9 @@ schema ValuesOpencostUiHttpRouteRulesItems0MatchesItems0:
     ----------
     path : ValuesOpencostUiHttpRouteRulesItems0MatchesItems0Path, optional
     """
-    [...str]: any
+
     path?: ValuesOpencostUiHttpRouteRulesItems0MatchesItems0Path
+    [...str]: any
 
 schema ValuesOpencostUiHttpRouteRulesItems0MatchesItems0Path:
     r"""
@@ -8354,9 +10113,10 @@ schema ValuesOpencostUiHttpRouteRulesItems0MatchesItems0Path:
     $type : str, optional, default is "PathPrefix"
     value : str, optional, default is "/"
     """
-    [...str]: any
+
     $type?: str
     value?: str
+    [...str]: any
 
 schema ValuesOpencostUiImage:
     r"""
@@ -8372,15 +10132,16 @@ schema ValuesOpencostUiImage:
         UI container image registry
     repository : str, optional, default is "opencost/opencost-ui"
         UI container image name
-    tag : str, optional, default is "1.119.2@sha256:0dba1a93db7ae88e956556caf9a9240879d7fcb1d5a7cb9fec0b83970c0ce50c"
+    tag : str, optional, default is "1.121.1@sha256:a2eaa7f585f418deba878e81cf571bdcb7ead07becf18a158138e2a39d28dc5c"
         UI container image tag
     """
-    [...str]: any
+
     fullImageName?: any
     pullPolicy?: str
     registry?: str
     repository?: str
     tag?: str
+    [...str]: any
 
 schema ValuesOpencostUiIngress:
     r"""
@@ -8404,18 +10165,20 @@ schema ValuesOpencostUiIngress:
         servicePort: oauth-proxy
         Ingress TLS configuration
     """
-    [...str]: any
+
     annotations?: ValuesOpencostUiIngressAnnotations
     enabled?: bool
     hosts?: [ValuesOpencostUiIngressHostsItems0]
     ingressClassName?: str
     servicePort?: str
     tls?: [any]
+    [...str]: any
 
 schema ValuesOpencostUiIngressAnnotations:
     r"""
     Annotations for Ingress resource
     """
+
     [...str]: any
 
 schema ValuesOpencostUiIngressHostsItems0:
@@ -8427,9 +10190,10 @@ schema ValuesOpencostUiIngressHostsItems0:
     host : str, optional, default is "example.local"
     paths : [str], optional
     """
-    [...str]: any
+
     host?: str
     paths?: [str]
+    [...str]: any
 
 schema ValuesOpencostUiLivenessProbe:
     r"""
@@ -8448,12 +10212,13 @@ schema ValuesOpencostUiLivenessProbe:
     periodSeconds : int, optional, default is 10
         Probe frequency in seconds
     """
-    [...str]: any
+
     enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     path?: str
     periodSeconds?: int
+    [...str]: any
 
 schema ValuesOpencostUiNginx:
     r"""
@@ -8468,10 +10233,11 @@ schema ValuesOpencostUiNginx:
     proxySendTimeout : int, optional, default is 180
         Timeout for transmitting a request to the proxied server
     """
-    [...str]: any
+
     proxyConnectTimeout?: int
     proxyReadTimeout?: int
     proxySendTimeout?: int
+    [...str]: any
 
 schema ValuesOpencostUiReadinessProbe:
     r"""
@@ -8490,12 +10256,13 @@ schema ValuesOpencostUiReadinessProbe:
     periodSeconds : int, optional, default is 10
         Probe frequency in seconds
     """
-    [...str]: any
+
     enabled?: bool
     failureThreshold?: int
     initialDelaySeconds?: int
     path?: str
     periodSeconds?: int
+    [...str]: any
 
 schema ValuesOpencostUiResources:
     r"""
@@ -8508,9 +10275,10 @@ schema ValuesOpencostUiResources:
     requests : ValuesOpencostUiResourcesRequests, optional
         CPU/Memory resource requests
     """
-    [...str]: any
+
     limits?: ValuesOpencostUiResourcesLimits
     requests?: ValuesOpencostUiResourcesRequests
+    [...str]: any
 
 schema ValuesOpencostUiResourcesLimits:
     r"""
@@ -8520,8 +10288,9 @@ schema ValuesOpencostUiResourcesLimits:
     ----------
     memory : str, optional, default is "1Gi"
     """
-    [...str]: any
+
     memory?: str
+    [...str]: any
 
 schema ValuesOpencostUiResourcesRequests:
     r"""
@@ -8532,9 +10301,10 @@ schema ValuesOpencostUiResourcesRequests:
     cpu : str, optional, default is "10m"
     memory : str, optional, default is "55Mi"
     """
-    [...str]: any
+
     cpu?: str
     memory?: str
+    [...str]: any
 
 schema ValuesOpencostUiRoute:
     r"""
@@ -8551,28 +10321,39 @@ schema ValuesOpencostUiRoute:
     path : any, optional, default is ""
     targetPort : str, optional, default is "http-ui"
         Redirect ingress to an extraPort defined on the service such as oauth-proxy
-    tls : [any], optional
+    tls : ValuesOpencostUiRouteTls, optional
         targetPort: oauth-proxy
-        Ingress TLS configuration
+        Route TLS configuration as a map (e.g. with `termination` and `insecureEdgeTerminationPolicy` fields)
     """
-    [...str]: any
+
     annotations?: ValuesOpencostUiRouteAnnotations
     enabled?: bool
     host?: str
     path?: any
     targetPort?: str
-    tls?: [any]
+    tls?: ValuesOpencostUiRouteTls
+    [...str]: any
 
 schema ValuesOpencostUiRouteAnnotations:
     r"""
     Annotations for Ingress resource
     """
+
+    [...str]: any
+
+schema ValuesOpencostUiRouteTls:
+    r"""
+    targetPort: oauth-proxy
+    Route TLS configuration as a map (e.g. with `termination` and `insecureEdgeTerminationPolicy` fields)
+    """
+
     [...str]: any
 
 schema ValuesOpencostUiSecurityContext:
     r"""
     The security options the container should be run with
     """
+
     [...str]: any
 
 schema ValuesOpencostUpdateCaTrust:
@@ -8588,16 +10369,18 @@ schema ValuesOpencostUpdateCaTrust:
     securityContext : ValuesOpencostUpdateCaTrustSecurityContext, optional
         # Security context settings for the init container.
     """
-    [...str]: any
+
     caCertsSecret?: str
     enabled?: bool
     resources?: ValuesOpencostUpdateCaTrustResources
     securityContext?: ValuesOpencostUpdateCaTrustSecurityContext
+    [...str]: any
 
 schema ValuesOpencostUpdateCaTrustResources:
     r"""
     caCertsConfig: ca-certs-config  # The name of the ConfigMap containing the CA trust configuration.
     """
+
     [...str]: any
 
 schema ValuesOpencostUpdateCaTrustSecurityContext:
@@ -8613,13 +10396,14 @@ schema ValuesOpencostUpdateCaTrustSecurityContext:
     runAsUser : int, optional, default is 0
     seccompProfile : ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile, optional
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     readOnlyRootFilesystem?: bool
     runAsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
     seccompProfile?: ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile:
     r"""
@@ -8629,8 +10413,9 @@ schema ValuesOpencostUpdateCaTrustSecurityContextSeccompProfile:
     ----------
     $type : str, optional, default is "RuntimeDefault"
     """
-    [...str]: any
+
     $type?: str
+    [...str]: any
 
 schema ValuesPdb:
     r"""
@@ -8644,10 +10429,11 @@ schema ValuesPdb:
     minAvailable : any, optional, default is "~"
         Minimum number of pods that must be available after the eviction
     """
-    [...str]: any
+
     enabled?: bool
     maxUnavailable?: any
     minAvailable?: any
+    [...str]: any
 
 schema ValuesPermissionInitContainer:
     r"""
@@ -8661,11 +10447,12 @@ schema ValuesPermissionInitContainer:
     image : ValuesPermissionInitContainerImage, optional
     securityContext : ValuesPermissionInitContainerSecurityContext, optional
     """
-    [...str]: any
+
     extraCommands?: [any]
     fixes?: ValuesPermissionInitContainerFixes
     image?: ValuesPermissionInitContainerImage
     securityContext?: ValuesPermissionInitContainerSecurityContext
+    [...str]: any
 
 schema ValuesPermissionInitContainerFixes:
     r"""
@@ -8680,9 +10467,10 @@ schema ValuesPermissionInitContainerFixes:
         Fixes /proc/slabinfo
         Collector disabled by default
     """
-    [...str]: any
+
     rapl?: bool
     slabinfo?: bool
+    [...str]: any
 
 schema ValuesPermissionInitContainerImage:
     r"""
@@ -8696,12 +10484,13 @@ schema ValuesPermissionInitContainerImage:
     sha : str, optional, default is ""
     tag : str, optional, default is "latest"
     """
-    [...str]: any
+
     pullPolicy?: str
     registry?: str
     repository?: str
     sha?: str
     tag?: str
+    [...str]: any
 
 schema ValuesPermissionInitContainerSecurityContext:
     r"""
@@ -8713,10 +10502,11 @@ schema ValuesPermissionInitContainerSecurityContext:
     runAsNonRoot : bool, optional, default is False
     runAsUser : int, optional, default is 0
     """
-    [...str]: any
+
     runAsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
+    [...str]: any
 
 schema ValuesPlugins:
     r"""
@@ -8725,17 +10515,32 @@ schema ValuesPlugins:
     Attributes
     ----------
     configs : any, optional, default is ""
+    enabled : bool, optional, default is False
+    existingSecret : str, optional, default is ""
         leave this commented to always download most recent version of plugins
         version: <INSERT_SPECIFIC_PLUGINS_VERSION>
-    enabled : bool, optional, default is False
+        Use an existing Secret for plugin configuration instead of generating
+        one from `plugins.configs`. The referenced Secret MUST contain a
+        `<plugin>_config.json` key for every entry in `plugins.install.plugins`
+        (and for every plugin whose configs key would otherwise drive the
+        install/mount list) -- the Deployment mounts those files via subPath and
+        missing keys cause Pod startup failures. This is useful when using
+        ExternalSecrets, Vault, or other secret-management tools so that plugin
+        credentials do not have to be committed via `plugins.configs`. Mutually
+        exclusive with `plugins.configs`: when `existingSecret` is set, the chart
+        does not render a generated Secret and any `plugins.configs` entries would
+        be silently ignored, so the chart will `fail` template rendering in that
+        case.
     folder : str, optional, default is "/opt/opencost/plugin"
     install : ValuesPluginsInstall, optional
     """
-    [...str]: any
+
     configs?: any
     enabled?: bool
+    existingSecret?: str
     folder?: str
     install?: ValuesPluginsInstall
+    [...str]: any
 
 schema ValuesPluginsInstall:
     r"""
@@ -8745,12 +10550,30 @@ schema ValuesPluginsInstall:
     ----------
     enabled : bool, optional, default is True
     fullImageName : str, optional, default is "curlimages/curl:latest"
+    plugins : [any], optional
+        List of plugins to download, independent of `plugins.configs`.
+        When specified, these plugins are downloaded regardless of what's in configs,
+        which enables using `plugins.existingSecret` for credentials while still
+        downloading plugin binaries. This list also drives which `<plugin>_config.json`
+        subPaths the Deployment mounts, so each listed plugin MUST have a matching
+        config source -- either a `plugins.configs.<plugin>` entry (when
+        `plugins.existingSecret` is empty) or a `<plugin>_config.json` key in the
+        Secret referenced by `plugins.existingSecret`. Missing entries cause Pod
+        startup failures because the mounted subPath will not exist. When
+        `plugins.existingSecret` is empty, the chart validates this at
+        template-render time and fails with an actionable error; the check is
+        skipped when `plugins.existingSecret` is set because the contents of an
+        externally-managed Secret cannot be introspected from Helm.
+        Example: ["datadog", "mongodb"].
+        If empty, falls back to downloading plugins based on keys in configs (legacy behavior).
     securityContext : ValuesPluginsInstallSecurityContext, optional
     """
-    [...str]: any
+
     enabled?: bool
     fullImageName?: str
+    plugins?: [any]
     securityContext?: ValuesPluginsInstallSecurityContext
+    [...str]: any
 
 schema ValuesPluginsInstallSecurityContext:
     r"""
@@ -8765,13 +10588,14 @@ schema ValuesPluginsInstallSecurityContext:
     runAsUser : int, optional, default is 1000
     seccompProfile : ValuesPluginsInstallSecurityContextSeccompProfile, optional
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesPluginsInstallSecurityContextCapabilities
     readOnlyRootFilesystem?: bool
     runAsNonRoot?: bool
     runAsUser?: int
     seccompProfile?: ValuesPluginsInstallSecurityContextSeccompProfile
+    [...str]: any
 
 schema ValuesPluginsInstallSecurityContextCapabilities:
     r"""
@@ -8781,8 +10605,9 @@ schema ValuesPluginsInstallSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
+
     drop?: [str]
+    [...str]: any
 
 schema ValuesPluginsInstallSecurityContextSeccompProfile:
     r"""
@@ -8792,31 +10617,39 @@ schema ValuesPluginsInstallSecurityContextSeccompProfile:
     ----------
     $type : str, optional, default is "RuntimeDefault"
     """
-    [...str]: any
+
     $type?: str
+    [...str]: any
 
 schema ValuesPodAnnotations:
     r"""
-    Annotations to be added to windows exporter pods
+    Kubernetes pod annotations to copy to telemetry data, as a map of
+    `<telemetry label>: <pod annotation name>`. Applies to data carrying `namespace` and
+    `pod` labels (or Kubernetes resource attributes for OTLP).
 
     Attributes
     ----------
     "cluster-autoscaler.kubernetes.io/safe-to-evict" : str, optional, default is "true"
         Fix for very slow GKE cluster upgrades
     """
-    [...str]: any
+
     "cluster-autoscaler.kubernetes.io/safe-to-evict"?: str
+    [...str]: any
 
 schema ValuesPodDisruptionBudget:
     r"""
     Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
     """
+
     [...str]: any
 
 schema ValuesPodLabels:
     r"""
-    Extra labels to be added to windows exporter pods
+    Kubernetes pod labels to copy to telemetry data, as a map of
+    `<telemetry label>: <pod label name>`. Applies to data carrying `namespace` and `pod`
+    labels (or Kubernetes resource attributes for OTLP).
     """
+
     [...str]: any
 
 schema ValuesPodLogsObjects:
@@ -8828,16 +10661,21 @@ schema ValuesPodLogsObjects:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Pod logs via PodLogs objects.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesPodLogsViaKubernetesApi:
     r"""
@@ -8848,56 +10686,71 @@ schema ValuesPodLogsViaKubernetesApi:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Pod logs.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesPodLogsViaLoki:
     r"""
     Pod logs in Loki format.
     Requires a destination that supports logs.
-    To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).
+    To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-loki).
 
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Pod logs.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesPodLogsViaOpenTelemetry:
     r"""
     Pod logs in OpenTelemetry format.
     Requires a destination that supports logs.
-    To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs).
+    To see the valid options, please see the [Pod Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-pod-logs-via-opentelemetry).
 
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering Kubernetes Pod logs.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesPodMonitors:
     r"""
@@ -8928,8 +10781,8 @@ schema ValuesPodMonitors:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for cadvisor prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesPodMonitorsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespaces : [any], optional
@@ -8937,12 +10790,13 @@ schema ValuesPodMonitors:
     scrapeInterval : str, optional, default is ""
         The default interval between scraping targets. Used as the default if the target resource doesn’t provide a
         scrape interval.
-        Overrides global.scrapeInterval
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape
         timeout.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -8954,12 +10808,14 @@ schema ValuesPodMonitors:
     namespaces?: [any]
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesPodMonitorsLabelSelectors:
     r"""
     Label selectors to filter which PodMonitor objects to use.
     Example: `app.kubernetes.io/name: my-app`
     """
+
     [...str]: any
 
 schema ValuesPodMonitorsMetricsTuning:
@@ -8973,9 +10829,10 @@ schema ValuesPodMonitorsMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesPodSecurityContext:
     r"""
@@ -8984,9 +10841,24 @@ schema ValuesPodSecurityContext:
     Attributes
     ----------
     runAsNonRoot : bool, optional, default is True
+    seccompProfile : ValuesPodSecurityContextSeccompProfile, optional
     """
-    [...str]: any
+
     runAsNonRoot?: bool
+    seccompProfile?: ValuesPodSecurityContextSeccompProfile
+    [...str]: any
+
+schema ValuesPodSecurityContextSeccompProfile:
+    r"""
+    ValuesPodSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+
+    $type?: str
+    [...str]: any
 
 schema ValuesPods:
     r"""
@@ -9009,12 +10881,13 @@ schema ValuesPods:
     staticLabelsFrom : ValuesPodsStaticLabelsFrom, optional
         Static labels to set on metrics from discovered Pods, not quoted so it can reference config components.
     """
-    [...str]: any
+
     enabled?: bool
     labelSelectors?: ValuesPodsLabelSelectors
     labels?: ValuesPodsLabels
     staticLabels?: ValuesPodsStaticLabels
     staticLabelsFrom?: ValuesPodsStaticLabelsFrom
+    [...str]: any
 
 schema ValuesPodsLabelSelectors:
     r"""
@@ -9022,6 +10895,7 @@ schema ValuesPodsLabelSelectors:
     Example: `labelSelectors: { 'app': 'myapp' }` will only discover Pods with the label `app=myapp`.
     Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover Pods with the label `app=myapp` or `app=myotherapp`.
     """
+
     [...str]: any
 
 schema ValuesPodsLabels:
@@ -9030,18 +10904,21 @@ schema ValuesPodsLabels:
     [documentation](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.kubernetes/#pod-role)
     for the full list of meta labels.
     """
+
     [...str]: any
 
 schema ValuesPodsStaticLabels:
     r"""
     Metric labels to set with static data for discovered Pods.
     """
+
     [...str]: any
 
 schema ValuesPodsStaticLabelsFrom:
     r"""
     Static labels to set on metrics from discovered Pods, not quoted so it can reference config components.
     """
+
     [...str]: any
 
 schema ValuesPostgresql:
@@ -9052,8 +10929,9 @@ schema ValuesPostgresql:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesPprof:
     r"""
@@ -9073,6 +10951,8 @@ schema ValuesPprof:
         annotation `profiles.grafana.com/memory.path: "/debug/pprof/mem"` on the pod.
     bearerTokenFile : str, optional, default is "/var/run/secrets/kubernetes.io/serviceaccount/token"
         The bearer token file to use when scraping profiles.
+    collector : str, optional, default is ""
+        The collector to which this profiling type is assigned. When empty, the feature-level `profiling.collector` is used.
     enabled : bool, optional, default is False
         Gather profiles by scraping pprof HTTP endpoints
     excludeNamespaces : [any], optional
@@ -9088,7 +10968,12 @@ schema ValuesPprof:
         Example with multiple values: `app.kubernetes.io/name: [myapp, myapp2]` will select pods with the label
         `app.kubernetes.io/name=myapp` or `app.kubernetes.io/name=myapp2`.
     namespaces : [any], optional
-        Select pods to profile based on their namespaces.
+        Select pods to profile based on their namespaces. Entries may be exact namespace names or regular expressions
+        (e.g. `team-.*`), and the two styles can be mixed. Regexes are fully anchored, so they must match the entire
+        namespace name.
+        Note: When every entry is an exact name, the pod discovery is much more efficient. If any entry is a regular
+        expression, the collector must fetch pods from all namespaces, then filter them internally, which can cause
+        performance issues on large clusters.
     scrapeInterval : str, optional, default is "15s"
         How frequently to collect profiles.
     scrapeTimeout : str, optional, default is "18s"
@@ -9097,10 +10982,11 @@ schema ValuesPprof:
     types : ValuesPprofTypes, optional
         Profile types to gather
     """
-    [...str]: any
+
     annotationSelectors?: ValuesPprofAnnotationSelectors
     annotations?: ValuesPprofAnnotations
     bearerTokenFile?: str
+    collector?: str
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -9109,6 +10995,7 @@ schema ValuesPprof:
     scrapeInterval?: str
     scrapeTimeout?: str
     types?: ValuesPprofTypes
+    [...str]: any
 
 schema ValuesPprofAnnotationSelectors:
     r"""
@@ -9117,6 +11004,7 @@ schema ValuesPprofAnnotationSelectors:
     Example with multiple values: `color: ["blue", "green"]` will select pods with the annotation `color="blue"` or
     `color="green"`.
     """
+
     [...str]: any
 
 schema ValuesPprofAnnotations:
@@ -9141,13 +11029,14 @@ schema ValuesPprofAnnotations:
     scheme : str, optional, default is "scheme"
         The annotation action for choosing the scheme for scraping profiles of a given type.
     """
-    [...str]: any
+
     container?: str
     enable?: str
     path?: str
     portName?: str
     portNumber?: str
     scheme?: str
+    [...str]: any
 
 schema ValuesPprofLabelSelectors:
     r"""
@@ -9156,6 +11045,7 @@ schema ValuesPprofLabelSelectors:
     Example with multiple values: `app.kubernetes.io/name: [myapp, myapp2]` will select pods with the label
     `app.kubernetes.io/name=myapp` or `app.kubernetes.io/name=myapp2`.
     """
+
     [...str]: any
 
 schema ValuesPprofTypes:
@@ -9174,7 +11064,7 @@ schema ValuesPprofTypes:
     memory : bool, optional, default is True
     mutex : bool, optional, default is True
     """
-    [...str]: any
+
     block?: bool
     cpu?: bool
     fgprof?: bool
@@ -9184,6 +11074,7 @@ schema ValuesPprofTypes:
     goroutine?: bool
     memory?: bool
     mutex?: bool
+    [...str]: any
 
 schema ValuesProbes:
     r"""
@@ -9214,8 +11105,8 @@ schema ValuesProbes:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for cadvisor prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesProbesMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespaces : [any], optional
@@ -9223,12 +11114,13 @@ schema ValuesProbes:
     scrapeInterval : str, optional, default is ""
         The default interval between scraping targets. Used as the default if the target resource doesn’t provide a
         scrape interval.
-        Overrides global.scrapeInterval
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape
         timeout.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -9240,12 +11132,14 @@ schema ValuesProbes:
     namespaces?: [any]
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesProbesLabelSelectors:
     r"""
     Label selectors to filter which Probe objects to use.
     Example: `app.kubernetes.io/name: my-app`
     """
+
     [...str]: any
 
 schema ValuesProbesMetricsTuning:
@@ -9259,9 +11153,10 @@ schema ValuesProbesMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesProcessors:
     r"""
@@ -9293,7 +11188,7 @@ schema ValuesProcessors:
         Transform processor settings.
         To set individual transforms, use `metrics.transforms`, `logs.transforms`, or `traces.transforms`.
     """
-    [...str]: any
+
     attributes?: ValuesProcessorsAttributes
     batch?: ValuesProcessorsBatch
     $filter?: ValuesProcessorsFilter
@@ -9306,6 +11201,7 @@ schema ValuesProcessors:
     serviceGraphMetrics?: ValuesProcessorsServiceGraphMetrics
     tailSampling?: ValuesProcessorsTailSampling
     transform?: ValuesProcessorsTransform
+    [...str]: any
 
 schema ValuesProcessorsAttributes:
     r"""
@@ -9318,8 +11214,9 @@ schema ValuesProcessorsAttributes:
         Format: { key: "", value: "", action: "", pattern: "", fromAttribute: "", fromContext: "", convertedType: "" }
         Can also use `valueFrom` instead of value to use a raw reference.
     """
-    [...str]: any
+
     actions?: [any]
+    [...str]: any
 
 schema ValuesProcessorsBatch:
     r"""
@@ -9339,11 +11236,12 @@ schema ValuesProcessorsBatch:
     timeout : str, optional, default is "2s"
         How long to wait before flushing the batch.
     """
-    [...str]: any
+
     enabled?: bool
     maxSize?: int
     size?: int
     timeout?: str
+    [...str]: any
 
 schema ValuesProcessorsFilter:
     r"""
@@ -9356,8 +11254,9 @@ schema ValuesProcessorsFilter:
         How to react to errors if they occur while processing a statement. Valid options are "ignore", "silent", and
         "propagate".
     """
-    [...str]: any
+
     errorMode?: str
+    [...str]: any
 
 schema ValuesProcessorsFilters:
     r"""
@@ -9377,12 +11276,13 @@ schema ValuesProcessorsFilters:
     traces : ValuesProcessorsFiltersTraces, optional
         Trace filters
     """
-    [...str]: any
+
     enabled?: bool
     errorMode?: str
     logs?: ValuesProcessorsFiltersLogs
     metrics?: ValuesProcessorsFiltersMetrics
     traces?: ValuesProcessorsFiltersTraces
+    [...str]: any
 
 schema ValuesProcessorsFiltersLogs:
     r"""
@@ -9392,8 +11292,9 @@ schema ValuesProcessorsFiltersLogs:
     ----------
     logRecord : [any], optional
     """
-    [...str]: any
+
     logRecord?: [any]
+    [...str]: any
 
 schema ValuesProcessorsFiltersMetrics:
     r"""
@@ -9404,9 +11305,10 @@ schema ValuesProcessorsFiltersMetrics:
     datapoint : [any], optional
     metric : [any], optional
     """
-    [...str]: any
+
     datapoint?: [any]
     metric?: [any]
+    [...str]: any
 
 schema ValuesProcessorsFiltersTraces:
     r"""
@@ -9417,9 +11319,10 @@ schema ValuesProcessorsFiltersTraces:
     span : [any], optional
     spanevent : [any], optional
     """
-    [...str]: any
+
     span?: [any]
     spanevent?: [any]
+    [...str]: any
 
 schema ValuesProcessorsInterval:
     r"""
@@ -9434,10 +11337,11 @@ schema ValuesProcessorsInterval:
         The interval at which to emit aggregated metrics.
     passthrough : ValuesProcessorsIntervalPassthrough, optional
     """
-    [...str]: any
+
     enabled?: bool
     interval?: str
     passthrough?: ValuesProcessorsIntervalPassthrough
+    [...str]: any
 
 schema ValuesProcessorsIntervalPassthrough:
     r"""
@@ -9450,9 +11354,10 @@ schema ValuesProcessorsIntervalPassthrough:
     summary : bool, optional, default is False
         Determines whether summary metrics should be passed through as they are or aggregated.
     """
-    [...str]: any
+
     gauge?: bool
     summary?: bool
+    [...str]: any
 
 schema ValuesProcessorsK8Sattributes:
     r"""
@@ -9476,12 +11381,14 @@ schema ValuesProcessorsK8Sattributes:
     otelAnnotations : bool, optional, default is False
         Whether to automatically set the recommended OpenTelemetry
         [resource attributes](https://opentelemetry.io/docs/specs/semconv/non-normative/k8s-attributes/).
+        This translates pod annotations like `resource.opentelemetry.io/service.name` into resource attributes.
+        Automatically enabled when `alignServiceNameWithOTelSemConv` is true.
     passthrough : bool, optional, default is False
         Pass through signals as-is, only adding a `k8s.pod.ip` resource attribute.
     podAssociation : [ValuesProcessorsK8SattributesPodAssociationItems0], optional
         Defines the rules on how to associate logs/traces/metrics to Pods.
     """
-    [...str]: any
+
     annotations?: [any]
     filters?: ValuesProcessorsK8SattributesFilters
     labels?: [any]
@@ -9489,6 +11396,7 @@ schema ValuesProcessorsK8Sattributes:
     otelAnnotations?: bool
     passthrough?: bool
     podAssociation?: [ValuesProcessorsK8SattributesPodAssociationItems0]
+    [...str]: any
 
 schema ValuesProcessorsK8SattributesFilters:
     r"""
@@ -9509,12 +11417,13 @@ schema ValuesProcessorsK8SattributesFilters:
     ownNode : bool, optional, default is False
         Only extract Kubernetes attributes for telemetry data coming from the same node as this Alloy instance.
     """
-    [...str]: any
+
     byField?: [any]
     byLabel?: [any]
     byNamespace?: str
     byNode?: str
     ownNode?: bool
+    [...str]: any
 
 schema ValuesProcessorsK8SattributesPodAssociationItems0:
     r"""
@@ -9525,9 +11434,10 @@ schema ValuesProcessorsK8SattributesPodAssociationItems0:
     from : str, optional, default is "connection"
     name : str, optional, default is "k8s.pod.uid"
     """
-    [...str]: any
+
     from?: str
     name?: str
+    [...str]: any
 
 schema ValuesProcessorsMemoryLimiter:
     r"""
@@ -9542,10 +11452,11 @@ schema ValuesProcessorsMemoryLimiter:
     limit : str, optional, default is "0MiB"
         Maximum amount of memory targeted to be allocated by the process heap.
     """
-    [...str]: any
+
     checkInterval?: str
     enabled?: bool
     limit?: str
+    [...str]: any
 
 schema ValuesProcessorsResourceAttributes:
     r"""
@@ -9559,9 +11470,10 @@ schema ValuesProcessorsResourceAttributes:
     useDefaultRemoveList : bool, optional
         Whether to use the default remove list for resource attributes
     """
-    [...str]: any
+
     removeList?: [any]
     useDefaultRemoveList?: bool
+    [...str]: any
 
 schema ValuesProcessorsResourceDetection:
     r"""
@@ -9581,11 +11493,12 @@ schema ValuesProcessorsResourceDetection:
         Configures whether existing resource attributes should be overridden or preserved.
     system : ValuesProcessorsResourceDetectionSystem, optional
     """
-    [...str]: any
+
     env?: ValuesProcessorsResourceDetectionEnv
     kubernetesNode?: ValuesProcessorsResourceDetectionKubernetesNode
     override?: bool
     system?: ValuesProcessorsResourceDetectionSystem
+    [...str]: any
 
 schema ValuesProcessorsResourceDetectionEnv:
     r"""
@@ -9596,8 +11509,9 @@ schema ValuesProcessorsResourceDetectionEnv:
     enabled : bool, optional, default is True
         Enable getting resource attributes from the OTEL_RESOURCE_ATTRIBUTES environment variable.
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesProcessorsResourceDetectionKubernetesNode:
     r"""
@@ -9612,10 +11526,11 @@ schema ValuesProcessorsResourceDetectionKubernetesNode:
     nodeFromEnvVar : str, optional, default is "K8S_NODE_NAME"
         The name of an environment variable from which to retrieve the node name.
     """
-    [...str]: any
+
     authType?: str
     enabled?: bool
     nodeFromEnvVar?: str
+    [...str]: any
 
 schema ValuesProcessorsResourceDetectionSystem:
     r"""
@@ -9633,10 +11548,11 @@ schema ValuesProcessorsResourceDetectionSystem:
         [Alloy documentation](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.resourcedetection/#system--resource_attributes)
         for a list of available attributes.
     """
-    [...str]: any
+
     enabled?: bool
     hostnameSources?: [str]
     resourceAttributes?: ValuesProcessorsResourceDetectionSystemResourceAttributes
+    [...str]: any
 
 schema ValuesProcessorsResourceDetectionSystemResourceAttributes:
     r"""
@@ -9644,6 +11560,7 @@ schema ValuesProcessorsResourceDetectionSystemResourceAttributes:
     [Alloy documentation](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.resourcedetection/#system--resource_attributes)
     for a list of available attributes.
     """
+
     [...str]: any
 
 schema ValuesProcessorsServiceGraphMetrics:
@@ -9663,15 +11580,17 @@ schema ValuesProcessorsServiceGraphMetrics:
     databaseNameAttributes : [str], optional
         The attribute names used to identify the database name from span attributes.
     destinations : [any], optional
-        The destinations where service graph metrics will be sent. If empty, all metrics-capable destinations will be used.
+        The destinations where service graph metrics will be sent. If empty, all metrics-capable destinations will be
+        used.
     dimensions : [str], optional
         A list of dimensions to add with the default dimensions.
     enabled : bool, optional
-        Generate service graph metrics from traces. This will deploy an additional Alloy
-        instance to handle service graph metrics generation. Traces sent to this destination will
-        be aumatically forwarded, using a load balancer component, to this Alloy instance.
+        Generate service graph metrics from traces. This will deploy an additional Alloy instance to handle service
+        graph metrics generation. Traces sent to this destination will be automatically forwarded, using a load balancer
+        component, to this Alloy instance.
     latencyHistogramBuckets : [str], optional
         Buckets for latency histogram metrics.
+    loadBalancer : ValuesProcessorsServiceGraphMetricsLoadBalancer, optional
     metricsFlushInterval : str, optional
         The interval at which metrics are flushed to downstream components.
     receiver : ValuesProcessorsServiceGraphMetricsReceiver, optional
@@ -9679,7 +11598,7 @@ schema ValuesProcessorsServiceGraphMetrics:
     storeExpirationLoop : str, optional
         The time to expire old entries from the store periodically.
     """
-    [...str]: any
+
     cacheLoop?: str
     collector?: ValuesProcessorsServiceGraphMetricsCollector
     databaseNameAttribute?: str
@@ -9688,9 +11607,11 @@ schema ValuesProcessorsServiceGraphMetrics:
     dimensions?: [str]
     enabled?: bool
     latencyHistogramBuckets?: [str]
+    loadBalancer?: ValuesProcessorsServiceGraphMetricsLoadBalancer
     metricsFlushInterval?: str
     receiver?: ValuesProcessorsServiceGraphMetricsReceiver
     storeExpirationLoop?: str
+    [...str]: any
 
 schema ValuesProcessorsServiceGraphMetricsCollector:
     r"""
@@ -9701,14 +11622,16 @@ schema ValuesProcessorsServiceGraphMetricsCollector:
     alloy : ValuesProcessorsServiceGraphMetricsCollectorAlloy, optional
     controller : ValuesProcessorsServiceGraphMetricsCollectorController, optional
     """
-    [...str]: any
+
     alloy?: ValuesProcessorsServiceGraphMetricsCollectorAlloy
     controller?: ValuesProcessorsServiceGraphMetricsCollectorController
+    [...str]: any
 
 schema ValuesProcessorsServiceGraphMetricsCollectorAlloy:
     r"""
     ValuesProcessorsServiceGraphMetricsCollectorAlloy
     """
+
     [...str]: any
 
 schema ValuesProcessorsServiceGraphMetricsCollectorController:
@@ -9720,9 +11643,36 @@ schema ValuesProcessorsServiceGraphMetricsCollectorController:
     replicas : int, optional
     $type : str, optional
     """
-    [...str]: any
+
     replicas?: int
     $type?: str
+    [...str]: any
+
+schema ValuesProcessorsServiceGraphMetricsLoadBalancer:
+    r"""
+    ValuesProcessorsServiceGraphMetricsLoadBalancer
+
+    Attributes
+    ----------
+    resolver : str, optional
+        Which resolver the load balancer uses to route traces to the service graph Alloy instances. Options are:
+           - "kubernetes" (default), which opens a watch on the Kubernetes API server to track the pods.
+           - "dns", which periodically resolves the instances' headless Service DNS to the pod IPs.
+           - "static", which addresses each pod by its stable, ordinal hostname. The controller *must* be a StatefulSet.
+        The "dns" and "static" resolvers avoid the Kubernetes API watch, which can overwhelm the API server on very
+        large clusters. Both make the service graph Alloy Service headless so its DNS resolves to individual pods.
+    timeout : str, optional
+        The timeout for the load balancer's backend resolution requests. Its meaning depends on the resolver:
+           - "kubernetes": how long the Kubernetes API server holds the watch open before closing it. The watch is
+             re-established after each timeout. Larger value means fewer reconnections and less load on the API server.
+           - "dns": the deadline for each periodic DNS lookup, after which that resolution attempt is abandoned and
+             retried on the next interval.
+           It is unused by the "static" resolver, which computes its backends ahead of time and makes no requests.
+    """
+
+    resolver?: str
+    timeout?: str
+    [...str]: any
 
 schema ValuesProcessorsServiceGraphMetricsReceiver:
     r"""
@@ -9732,8 +11682,9 @@ schema ValuesProcessorsServiceGraphMetricsReceiver:
     ----------
     otlp : ValuesProcessorsServiceGraphMetricsReceiverOtlp, optional
     """
-    [...str]: any
+
     otlp?: ValuesProcessorsServiceGraphMetricsReceiverOtlp
+    [...str]: any
 
 schema ValuesProcessorsServiceGraphMetricsReceiverOtlp:
     r"""
@@ -9743,8 +11694,9 @@ schema ValuesProcessorsServiceGraphMetricsReceiverOtlp:
     ----------
     grpc : ValuesProcessorsServiceGraphMetricsReceiverOtlpGrpc, optional
     """
-    [...str]: any
+
     grpc?: ValuesProcessorsServiceGraphMetricsReceiverOtlpGrpc
+    [...str]: any
 
 schema ValuesProcessorsServiceGraphMetricsReceiverOtlpGrpc:
     r"""
@@ -9754,8 +11706,9 @@ schema ValuesProcessorsServiceGraphMetricsReceiverOtlpGrpc:
     ----------
     maxReceivedMessageSize : str, optional
     """
-    [...str]: any
+
     maxReceivedMessageSize?: str
+    [...str]: any
 
 schema ValuesProcessorsTailSampling:
     r"""
@@ -9784,7 +11737,7 @@ schema ValuesProcessorsTailSampling:
     receiver : ValuesProcessorsTailSamplingReceiver, optional
         The tail sampling otlp receiver configuration.
     """
-    [...str]: any
+
     collector?: ValuesProcessorsTailSamplingCollector
     decisionCache?: ValuesProcessorsTailSamplingDecisionCache
     decisionWait?: str
@@ -9793,6 +11746,7 @@ schema ValuesProcessorsTailSampling:
     numTraces?: int
     policies?: [any]
     receiver?: ValuesProcessorsTailSamplingReceiver
+    [...str]: any
 
 schema ValuesProcessorsTailSamplingCollector:
     r"""
@@ -9803,14 +11757,16 @@ schema ValuesProcessorsTailSamplingCollector:
     alloy : ValuesProcessorsTailSamplingCollectorAlloy, optional
     controller : ValuesProcessorsTailSamplingCollectorController, optional
     """
-    [...str]: any
+
     alloy?: ValuesProcessorsTailSamplingCollectorAlloy
     controller?: ValuesProcessorsTailSamplingCollectorController
+    [...str]: any
 
 schema ValuesProcessorsTailSamplingCollectorAlloy:
     r"""
     ValuesProcessorsTailSamplingCollectorAlloy
     """
+
     [...str]: any
 
 schema ValuesProcessorsTailSamplingCollectorController:
@@ -9822,9 +11778,10 @@ schema ValuesProcessorsTailSamplingCollectorController:
     replicas : int, optional
     $type : str, optional
     """
-    [...str]: any
+
     replicas?: int
     $type?: str
+    [...str]: any
 
 schema ValuesProcessorsTailSamplingDecisionCache:
     r"""
@@ -9840,9 +11797,10 @@ schema ValuesProcessorsTailSamplingDecisionCache:
         Configures amount of trace IDs to be kept in an LRU cache, persisting the "keep" decisions for traces that
         may have already been released from memory. By default, the size is 0 and the cache is inactive.
     """
-    [...str]: any
+
     nonSampledCacheSize?: int
     sampledCacheSize?: int
+    [...str]: any
 
 schema ValuesProcessorsTailSamplingReceiver:
     r"""
@@ -9852,8 +11810,9 @@ schema ValuesProcessorsTailSamplingReceiver:
     ----------
     otlp : ValuesProcessorsTailSamplingReceiverOtlp, optional
     """
-    [...str]: any
+
     otlp?: ValuesProcessorsTailSamplingReceiverOtlp
+    [...str]: any
 
 schema ValuesProcessorsTailSamplingReceiverOtlp:
     r"""
@@ -9863,8 +11822,9 @@ schema ValuesProcessorsTailSamplingReceiverOtlp:
     ----------
     grpc : ValuesProcessorsTailSamplingReceiverOtlpGrpc, optional
     """
-    [...str]: any
+
     grpc?: ValuesProcessorsTailSamplingReceiverOtlpGrpc
+    [...str]: any
 
 schema ValuesProcessorsTailSamplingReceiverOtlpGrpc:
     r"""
@@ -9874,8 +11834,9 @@ schema ValuesProcessorsTailSamplingReceiverOtlpGrpc:
     ----------
     maxReceivedMessageSize : str, optional
     """
-    [...str]: any
+
     maxReceivedMessageSize?: str
+    [...str]: any
 
 schema ValuesProcessorsTransform:
     r"""
@@ -9894,11 +11855,12 @@ schema ValuesProcessorsTransform:
     traces : ValuesProcessorsTransformTraces, optional
         Trace transforms
     """
-    [...str]: any
+
     errorMode?: str
     logs?: ValuesProcessorsTransformLogs
     metrics?: ValuesProcessorsTransformMetrics
     traces?: ValuesProcessorsTransformTraces
+    [...str]: any
 
 schema ValuesProcessorsTransformLogs:
     r"""
@@ -9920,12 +11882,13 @@ schema ValuesProcessorsTransformLogs:
     resourceFrom : [any], optional
         Raw log resource transforms
     """
-    [...str]: any
+
     log?: [any]
     logFrom?: [any]
     logToResource?: ValuesProcessorsTransformLogsLogToResource
     resource?: [any]
     resourceFrom?: [any]
+    [...str]: any
 
 schema ValuesProcessorsTransformLogsLogToResource:
     r"""
@@ -9950,7 +11913,7 @@ schema ValuesProcessorsTransformLogsLogToResource:
     service_namespace : str, optional
     statefulset : str, optional
     """
-    [...str]: any
+
     container?: str
     cronjob?: str
     daemonset?: str
@@ -9964,6 +11927,7 @@ schema ValuesProcessorsTransformLogsLogToResource:
     service_name?: str
     service_namespace?: str
     statefulset?: str
+    [...str]: any
 
 schema ValuesProcessorsTransformMetrics:
     r"""
@@ -9989,7 +11953,7 @@ schema ValuesProcessorsTransformMetrics:
     resourceFrom : [any], optional
         Raw metric resource transforms
     """
-    [...str]: any
+
     datapoint?: [any]
     datapointFrom?: [any]
     datapointToResource?: ValuesProcessorsTransformMetricsDatapointToResource
@@ -9997,6 +11961,7 @@ schema ValuesProcessorsTransformMetrics:
     metricFrom?: [any]
     resource?: [any]
     resourceFrom?: [any]
+    [...str]: any
 
 schema ValuesProcessorsTransformMetricsDatapointToResource:
     r"""
@@ -10012,11 +11977,12 @@ schema ValuesProcessorsTransformMetricsDatapointToResource:
     service_name : str, optional
     service_namespace : str, optional
     """
-    [...str]: any
+
     deployment_environment?: str
     deployment_environment_name?: str
     service_name?: str
     service_namespace?: str
+    [...str]: any
 
 schema ValuesProcessorsTransformTraces:
     r"""
@@ -10037,30 +12003,52 @@ schema ValuesProcessorsTransformTraces:
     spaneventFrom : [any], optional
         Raw trace spanevent transforms
     """
-    [...str]: any
+
     resource?: [any]
     resourceFrom?: [any]
     span?: [any]
     spanFrom?: [any]
     spanevent?: [any]
     spaneventFrom?: [any]
+    [...str]: any
 
 schema ValuesProfiles:
     r"""
-    ValuesProfiles
+    Drop all profiles sent to this destination.
 
     Attributes
     ----------
     enabled : bool, optional
-        Enable sending profiles to this destination.
-        @ section -- Profiles
+        Whether this destination will accept and drop profiles.
+    pyroscope : ValuesProfilesPyroscope, optional
     target : str, optional
         The Alloy component reference for sending profiles.
         @ section -- Profiles
     """
-    [...str]: any
+
     enabled?: bool
+    pyroscope?: ValuesProfilesPyroscope
     target?: str
+    [...str]: any
+
+schema ValuesProfilesPyroscope:
+    r"""
+    ValuesProfilesPyroscope
+
+    Attributes
+    ----------
+    config : str, optional
+        Raw Alloy block for the Pyroscope profiles pipeline.
+    enabled : bool, optional
+        Enable processing Pyroscope profiles through this processor.
+    input : str, optional
+        Alloy component reference where the chart forwards profiles into the user's pipeline.
+    """
+
+    config?: str
+    enabled?: bool
+    input?: str
+    [...str]: any
 
 schema ValuesProfilesReceiver:
     r"""
@@ -10071,16 +12059,21 @@ schema ValuesProfilesReceiver:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where profiles will be sent. If empty, all profiles-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering profiles from applications.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesProfiling:
     r"""
@@ -10091,16 +12084,21 @@ schema ValuesProfiling:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where profiles will be sent. If empty, all profiles-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering profiles from applications.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesPrometheus:
     r"""
@@ -10122,10 +12120,36 @@ schema ValuesPrometheus:
         # Create a scrapeConfig resource for scraping the kube-state-metrics service. Use this instead of serviceMonitor
         # to have more instances of kube-state-metrics safety.
     """
-    [...str]: any
+
     monitor?: ValuesPrometheusMonitor
     podMonitor?: ValuesPrometheusPodMonitor
     scrapeconfig?: ValuesPrometheusScrapeconfig
+    [...str]: any
+
+schema ValuesPrometheusMetricsReceiver:
+    r"""
+    Prometheus Metrics Receiver enables receiving Prometheus metrics from applications via remote write.
+    Requires a destination that supports metrics.
+    To see the valid options, please see the [Prometheus Metrics Receiver feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-prometheus-metrics-receiver).
+
+    Attributes
+    ----------
+    collector : str, optional, default is ""
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
+    destinations : [any], optional
+        The destinations where metrics will be sent. If empty, all metrics-capable destinations will be used.
+    enabled : bool, optional, default is False
+        Enable receiving Prometheus metrics from applications.
+    """
+
+    collector?: str
+    dataProcessors?: [any]
+    destinations?: [any]
+    enabled?: bool
+    [...str]: any
 
 schema ValuesPrometheusMonitor:
     r"""
@@ -10176,7 +12200,7 @@ schema ValuesPrometheusMonitor:
     selectorOverride : ValuesPrometheusMonitorSelectorOverride, optional
         # Override serviceMonitor selector
         #
-    targetLabels : [any], optional
+    targetLabels : [str], optional
         List of target labels to add to node exporter metrics
         https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#servicemonitor
     targetLimit : int, optional, default is 0
@@ -10184,7 +12208,7 @@ schema ValuesPrometheusMonitor:
         #
     tlsConfig : ValuesPrometheusMonitorTlsConfig, optional
     """
-    [...str]: any
+
     additionalLabels?: ValuesPrometheusMonitorAdditionalLabels
     annotations?: ValuesPrometheusMonitorAnnotations
     apiVersion?: str
@@ -10209,20 +12233,28 @@ schema ValuesPrometheusMonitor:
     scheme?: str
     scrapeTimeout?: str
     selectorOverride?: ValuesPrometheusMonitorSelectorOverride
-    targetLabels?: [any]
+    targetLabels?: [str]
     targetLimit?: int
     tlsConfig?: ValuesPrometheusMonitorTlsConfig
+    [...str]: any
 
 schema ValuesPrometheusMonitorAdditionalLabels:
     r"""
     ValuesPrometheusMonitorAdditionalLabels
+
+    Attributes
+    ----------
+    release : str, optional
     """
+
+    release?: str
     [...str]: any
 
 schema ValuesPrometheusMonitorAnnotations:
     r"""
     ValuesPrometheusMonitorAnnotations
     """
+
     [...str]: any
 
 schema ValuesPrometheusMonitorAttachMetadata:
@@ -10234,13 +12266,15 @@ schema ValuesPrometheusMonitorAttachMetadata:
     ----------
     node : bool, optional, default is False
     """
-    [...str]: any
+
     node?: bool
+    [...str]: any
 
 schema ValuesPrometheusMonitorBasicAuth:
     r"""
     ValuesPrometheusMonitorBasicAuth
     """
+
     [...str]: any
 
 schema ValuesPrometheusMonitorHttp:
@@ -10259,27 +12293,28 @@ schema ValuesPrometheusMonitorHttp:
         # Whether to enable HTTP2 for servicemonitor
     honorLabels : bool, optional, default is False
     interval : str, optional, default is ""
-    metricRelabelings : [any], optional
+    metricRelabelings : [ValuesPrometheusMonitorHttpMetricRelabelingsItems0], optional
     proxyUrl : str, optional, default is ""
-    relabelings : [any], optional
+    relabelings : [ValuesPrometheusMonitorHttpRelabelingsItems0], optional
     scheme : str, optional, default is ""
     scrapeTimeout : str, optional, default is ""
     tlsConfig : ValuesPrometheusMonitorHttpTlsConfig, optional
         name: secret-name
         key:  key-name
     """
-    [...str]: any
+
     bearerTokenFile?: str
     bearerTokenSecret?: ValuesPrometheusMonitorHttpBearerTokenSecret
     enableHttp2?: bool
     honorLabels?: bool
     interval?: str
-    metricRelabelings?: [any]
+    metricRelabelings?: [ValuesPrometheusMonitorHttpMetricRelabelingsItems0]
     proxyUrl?: str
-    relabelings?: [any]
+    relabelings?: [ValuesPrometheusMonitorHttpRelabelingsItems0]
     scheme?: str
     scrapeTimeout?: str
     tlsConfig?: ValuesPrometheusMonitorHttpTlsConfig
+    [...str]: any
 
 schema ValuesPrometheusMonitorHttpBearerTokenSecret:
     r"""
@@ -10287,6 +12322,37 @@ schema ValuesPrometheusMonitorHttpBearerTokenSecret:
     # to be in the same namespace as the service monitor and accessible by the
     # Prometheus Operator
     """
+
+    [...str]: any
+
+schema ValuesPrometheusMonitorHttpMetricRelabelingsItems0:
+    r"""
+    ValuesPrometheusMonitorHttpMetricRelabelingsItems0
+
+    Attributes
+    ----------
+    action : str, optional
+    regex : str, optional
+    sourceLabels : [str], optional
+    """
+
+    action?: str
+    regex?: str
+    sourceLabels?: [str]
+    [...str]: any
+
+schema ValuesPrometheusMonitorHttpRelabelingsItems0:
+    r"""
+    ValuesPrometheusMonitorHttpRelabelingsItems0
+
+    Attributes
+    ----------
+    sourceLabels : [str], optional
+    targetLabel : str, optional
+    """
+
+    sourceLabels?: [str]
+    targetLabel?: str
     [...str]: any
 
 schema ValuesPrometheusMonitorHttpTlsConfig:
@@ -10294,6 +12360,7 @@ schema ValuesPrometheusMonitorHttpTlsConfig:
     name: secret-name
     key:  key-name
     """
+
     [...str]: any
 
 schema ValuesPrometheusMonitorMetrics:
@@ -10321,7 +12388,7 @@ schema ValuesPrometheusMonitorMetrics:
         name: secret-name
         key:  key-name
     """
-    [...str]: any
+
     bearerTokenFile?: str
     bearerTokenSecret?: ValuesPrometheusMonitorMetricsBearerTokenSecret
     enableHttp2?: bool
@@ -10333,6 +12400,7 @@ schema ValuesPrometheusMonitorMetrics:
     scheme?: str
     scrapeTimeout?: str
     tlsConfig?: ValuesPrometheusMonitorMetricsTlsConfig
+    [...str]: any
 
 schema ValuesPrometheusMonitorMetricsBearerTokenSecret:
     r"""
@@ -10340,6 +12408,7 @@ schema ValuesPrometheusMonitorMetricsBearerTokenSecret:
     # to be in the same namespace as the service monitor and accessible by the
     # Prometheus Operator
     """
+
     [...str]: any
 
 schema ValuesPrometheusMonitorMetricsTlsConfig:
@@ -10347,6 +12416,7 @@ schema ValuesPrometheusMonitorMetricsTlsConfig:
     name: secret-name
     key:  key-name
     """
+
     [...str]: any
 
 schema ValuesPrometheusMonitorSelectorOverride:
@@ -10354,12 +12424,14 @@ schema ValuesPrometheusMonitorSelectorOverride:
     # Override serviceMonitor selector
     #
     """
+
     [...str]: any
 
 schema ValuesPrometheusMonitorTlsConfig:
     r"""
     ValuesPrometheusMonitorTlsConfig
     """
+
     [...str]: any
 
 schema ValuesPrometheusOperatorObjects:
@@ -10371,16 +12443,21 @@ schema ValuesPrometheusOperatorObjects:
     Attributes
     ----------
     collector : str, optional, default is ""
-        Which collector to assign this feature to. Do not change this unless you are sure of what you are doing.
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where metrics will be sent. If empty, all metrics-capable destinations will be used.
     enabled : bool, optional, default is False
         Enable gathering metrics from Prometheus Operator Objects.
     """
-    [...str]: any
+
     collector?: str
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
+    [...str]: any
 
 schema ValuesPrometheusPodMonitor:
     r"""
@@ -10470,7 +12547,7 @@ schema ValuesPrometheusPodMonitor:
     tlsConfig : ValuesPrometheusPodMonitorTlsConfig, optional
         TLS configuration to use when scraping the endpoint.
     """
-    [...str]: any
+
     additionalLabels?: ValuesPrometheusPodMonitorAdditionalLabels
     apiVersion?: str
     attachMetadata?: ValuesPrometheusPodMonitorAttachMetadata
@@ -10502,11 +12579,13 @@ schema ValuesPrometheusPodMonitor:
     selectorOverride?: ValuesPrometheusPodMonitorSelectorOverride
     targetLimit?: int
     tlsConfig?: ValuesPrometheusPodMonitorTlsConfig
+    [...str]: any
 
 schema ValuesPrometheusPodMonitorAdditionalLabels:
     r"""
     Additional labels, e.g. setting a label for pod monitor selector as set in prometheus
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorAttachMetadata:
@@ -10517,14 +12596,16 @@ schema ValuesPrometheusPodMonitorAttachMetadata:
     ----------
     node : bool, optional, default is False
     """
-    [...str]: any
+
     node?: bool
+    [...str]: any
 
 schema ValuesPrometheusPodMonitorAuthorization:
     r"""
     Authorization section for this endpoint.
     https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#safeauthorization
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorBasicAuth:
@@ -10532,6 +12613,7 @@ schema ValuesPrometheusPodMonitorBasicAuth:
     BasicAuth allow an endpoint to authenticate over basic authentication.
     More info: https://prometheus.io/docs/operating/configuration/#endpoint
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorBearerTokenSecret:
@@ -10540,6 +12622,7 @@ schema ValuesPrometheusPodMonitorBearerTokenSecret:
     The secret needs to be in the same namespace as the pod monitor and accessible by the Prometheus Operator.
     https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#secretkeyselector-v1-core
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorOauth2:
@@ -10547,24 +12630,28 @@ schema ValuesPrometheusPodMonitorOauth2:
     OAuth2 for the URL. Only valid in Prometheus versions 2.27.0 and newer.
     https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api-reference/api.md#oauth2
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorParams:
     r"""
     Optional HTTP URL parameters
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorSelectorOverride:
     r"""
     Override pod selector to select pod objects.
     """
+
     [...str]: any
 
 schema ValuesPrometheusPodMonitorTlsConfig:
     r"""
     TLS configuration to use when scraping the endpoint.
     """
+
     [...str]: any
 
 schema ValuesPrometheusScrapeconfig:
@@ -10607,7 +12694,7 @@ schema ValuesPrometheusScrapeconfig:
         #
     tlsConfig : ValuesPrometheusScrapeconfigTlsConfig, optional
     """
-    [...str]: any
+
     additionalLabels?: ValuesPrometheusScrapeconfigAdditionalLabels
     annotations?: ValuesPrometheusScrapeconfigAnnotations
     enableHttp2?: bool
@@ -10627,35 +12714,41 @@ schema ValuesPrometheusScrapeconfig:
     staticConfigLabels?: ValuesPrometheusScrapeconfigStaticConfigLabels
     targetLimit?: int
     tlsConfig?: ValuesPrometheusScrapeconfigTlsConfig
+    [...str]: any
 
 schema ValuesPrometheusScrapeconfigAdditionalLabels:
     r"""
     ValuesPrometheusScrapeconfigAdditionalLabels
     """
+
     [...str]: any
 
 schema ValuesPrometheusScrapeconfigAnnotations:
     r"""
     ValuesPrometheusScrapeconfigAnnotations
     """
+
     [...str]: any
 
 schema ValuesPrometheusScrapeconfigStaticConfigLabels:
     r"""
     # StaticConfigLabels defines the labels to be used in the Prometheus static configuration for scraping.
     """
+
     [...str]: any
 
 schema ValuesPrometheusScrapeconfigTlsConfig:
     r"""
     ValuesPrometheusScrapeconfigTlsConfig
     """
+
     [...str]: any
 
 schema ValuesProxyConnectHeader:
     r"""
     Specifies headers to send to proxies during CONNECT requests.
     """
+
     [...str]: any
 
 schema ValuesQueueConfig:
@@ -10683,7 +12776,7 @@ schema ValuesQueueConfig:
     sampleAgeLimit : str, optional
         Maximum age of samples to send.
     """
-    [...str]: any
+
     batchSendDeadline?: str
     capacity?: int
     maxBackoff?: str
@@ -10693,6 +12786,7 @@ schema ValuesQueueConfig:
     minShards?: int
     retryOnHttp429?: bool
     sampleAgeLimit?: str
+    [...str]: any
 
 schema ValuesRbac:
     r"""
@@ -10700,6 +12794,16 @@ schema ValuesRbac:
 
     Attributes
     ----------
+    clusterRoleSelectors : [any], optional
+        Aggregate ClusterRoles using label selectors (only applies when useClusterRole: true).
+        When set, this ClusterRole aggregates matching ClusterRoles instead of defining rules
+        directly, so the built-in collector rules above are NOT included. Make sure the
+        aggregated ClusterRoles grant the permissions kube-state-metrics needs.
+        ref: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#aggregated-clusterroles
+        Example:
+        clusterRoleSelectors:
+          - matchLabels:
+              rbac.example.com/aggregate-to-monitoring: "true"
     clusterRules : [ValuesRbacClusterRulesItems0], optional
         The rules to create for the ClusterRole objects.
     create : bool, optional, default is True
@@ -10707,6 +12811,11 @@ schema ValuesRbac:
     createClusterRoles : bool, optional, default is True
         Create ClusterRoles for the Alloy Operator. If set to false, only Roles and RoleBindings will be created. This
         setting requires the use of `namespaces` or `ownNamespaceOnly` to be set.
+    customResourceState : ValuesRbacCustomResourceState, optional
+        Set to false only when the customresourcedefinitions list/watch permission is
+        granted to the ServiceAccount by other means (e.g. a cluster-scoped ClusterRole
+        managed outside this chart). kube-state-metrics always needs it for
+        customResourceState; this only controls whether the chart creates the rule.
     enabled : bool, optional, default is True
     extraClusterRoleRules : [any], optional
         Extra cluster roles to be created for Beyla
@@ -10725,16 +12834,19 @@ schema ValuesRbac:
     useClusterRole : bool, optional, default is True
         If set to false - Run without Cluteradmin privs needed - ONLY works if namespace is also set (if useExistingRole is set this name is used as ClusterRole or Role to bind to)
     """
-    [...str]: any
+
+    clusterRoleSelectors?: [any]
     clusterRules?: [ValuesRbacClusterRulesItems0]
     create?: bool
     createClusterRoles?: bool
+    customResourceState?: ValuesRbacCustomResourceState
     enabled?: bool
     extraClusterRoleRules?: [any]
     extraRules?: [any]
     namespaces?: [any]
     rules?: [ValuesRbacRulesItems0]
     useClusterRole?: bool
+    [...str]: any
 
 schema ValuesRbacClusterRulesItems0:
     r"""
@@ -10747,11 +12859,27 @@ schema ValuesRbacClusterRulesItems0:
     resources : [str], optional
     verbs : [str], optional
     """
-    [...str]: any
+
     apiGroups?: [str]
     nonResourceURLs?: [str]
     resources?: [str]
     verbs?: [str]
+    [...str]: any
+
+schema ValuesRbacCustomResourceState:
+    r"""
+    Set to false only when the customresourcedefinitions list/watch permission is
+    granted to the ServiceAccount by other means (e.g. a cluster-scoped ClusterRole
+    managed outside this chart). kube-state-metrics always needs it for
+    customResourceState; this only controls whether the chart creates the rule.
+
+    Attributes
+    ----------
+    createClusterRoleRules : bool, optional, default is True
+    """
+
+    createClusterRoleRules?: bool
+    [...str]: any
 
 schema ValuesRbacRulesItems0:
     r"""
@@ -10763,10 +12891,11 @@ schema ValuesRbacRulesItems0:
     resources : [str], optional
     verbs : [str], optional
     """
-    [...str]: any
+
     apiGroups?: [str]
     resources?: [str]
     verbs?: [str]
+    [...str]: any
 
 schema ValuesReadinessProbe:
     r"""
@@ -10782,13 +12911,14 @@ schema ValuesReadinessProbe:
     successThreshold : int, optional, default is 1
     timeoutSeconds : int, optional, default is 1
     """
-    [...str]: any
+
     failureThreshold?: int
     httpGet?: ValuesReadinessProbeHttpGet
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesReadinessProbeHttpGet:
     r"""
@@ -10800,10 +12930,11 @@ schema ValuesReadinessProbeHttpGet:
     path : str, optional, default is "/health"
     scheme : str, optional, default is "http"
     """
-    [...str]: any
+
     httpHeaders?: [any]
     path?: str
     scheme?: str
+    [...str]: any
 
 schema ValuesReceivers:
     r"""
@@ -10816,10 +12947,11 @@ schema ValuesReceivers:
     zipkin : ValuesReceiversZipkin, optional
         The Zipkin receiver configuration.
     """
-    [...str]: any
+
     jaeger?: ValuesReceiversJaeger
     otlp?: ValuesReceiversOtlp
     zipkin?: ValuesReceiversZipkin
+    [...str]: any
 
 schema ValuesReceiversJaeger:
     r"""
@@ -10838,12 +12970,13 @@ schema ValuesReceiversJaeger:
     thriftHttp : ValuesReceiversJaegerThriftHttp, optional
         Configuration for the Jaeger receiver using the Thrift HTTP protocol.
     """
-    [...str]: any
+
     grpc?: ValuesReceiversJaegerGrpc
     includeDebugMetrics?: bool
     thriftBinary?: ValuesReceiversJaegerThriftBinary
     thriftCompact?: ValuesReceiversJaegerThriftCompact
     thriftHttp?: ValuesReceiversJaegerThriftHttp
+    [...str]: any
 
 schema ValuesReceiversJaegerGrpc:
     r"""
@@ -10854,9 +12987,10 @@ schema ValuesReceiversJaegerGrpc:
     enabled : bool, optional, default is False
     port : int, optional, default is 14250
     """
-    [...str]: any
+
     enabled?: bool
     port?: int
+    [...str]: any
 
 schema ValuesReceiversJaegerThriftBinary:
     r"""
@@ -10867,9 +13001,10 @@ schema ValuesReceiversJaegerThriftBinary:
     enabled : bool, optional, default is False
     port : int, optional, default is 6832
     """
-    [...str]: any
+
     enabled?: bool
     port?: int
+    [...str]: any
 
 schema ValuesReceiversJaegerThriftCompact:
     r"""
@@ -10880,9 +13015,10 @@ schema ValuesReceiversJaegerThriftCompact:
     enabled : bool, optional, default is False
     port : int, optional, default is 6831
     """
-    [...str]: any
+
     enabled?: bool
     port?: int
+    [...str]: any
 
 schema ValuesReceiversJaegerThriftHttp:
     r"""
@@ -10893,9 +13029,10 @@ schema ValuesReceiversJaegerThriftHttp:
     enabled : bool, optional, default is False
     port : int, optional, default is 14268
     """
-    [...str]: any
+
     enabled?: bool
     port?: int
+    [...str]: any
 
 schema ValuesReceiversOtlp:
     r"""
@@ -10910,10 +13047,11 @@ schema ValuesReceiversOtlp:
     includeDebugMetrics : bool, optional, default is False
         Whether to include high-cardinality debug metrics.
     """
-    [...str]: any
+
     grpc?: ValuesReceiversOtlpGrpc
     http?: ValuesReceiversOtlpHttp
     includeDebugMetrics?: bool
+    [...str]: any
 
 schema ValuesReceiversOtlpGrpc:
     r"""
@@ -10937,7 +13075,7 @@ schema ValuesReceiversOtlpGrpc:
     writeBufferSize : str, optional, default is "32KiB"
         Size of the write buffer the gRPC server will use for writing to clients.
     """
-    [...str]: any
+
     enabled?: bool
     includeMetadata?: bool
     keepalive?: ValuesReceiversOtlpGrpcKeepalive
@@ -10946,6 +13084,7 @@ schema ValuesReceiversOtlpGrpc:
     port?: int
     readBufferSize?: str
     writeBufferSize?: str
+    [...str]: any
 
 schema ValuesReceiversOtlpGrpcKeepalive:
     r"""
@@ -10956,9 +13095,10 @@ schema ValuesReceiversOtlpGrpcKeepalive:
     enforcementPolicy : ValuesReceiversOtlpGrpcKeepaliveEnforcementPolicy, optional
     serverParameters : ValuesReceiversOtlpGrpcKeepaliveServerParameters, optional
     """
-    [...str]: any
+
     enforcementPolicy?: ValuesReceiversOtlpGrpcKeepaliveEnforcementPolicy
     serverParameters?: ValuesReceiversOtlpGrpcKeepaliveServerParameters
+    [...str]: any
 
 schema ValuesReceiversOtlpGrpcKeepaliveEnforcementPolicy:
     r"""
@@ -10971,9 +13111,10 @@ schema ValuesReceiversOtlpGrpcKeepaliveEnforcementPolicy:
     permitWithoutStream : bool, optional, default is False
         Allow clients to send keepalive pings when there are no active streams.
     """
-    [...str]: any
+
     minTime?: str
     permitWithoutStream?: bool
+    [...str]: any
 
 schema ValuesReceiversOtlpGrpcKeepaliveServerParameters:
     r"""
@@ -10993,12 +13134,13 @@ schema ValuesReceiversOtlpGrpcKeepaliveServerParameters:
         Time to wait before closing inactive clients that don’t respond to liveness checks.
         Default is 20 seconds.
     """
-    [...str]: any
+
     maxConnectionAge?: str
     maxConnectionAgeGrace?: str
     maxConnectionIdle?: str
     time?: str
     timeout?: str
+    [...str]: any
 
 schema ValuesReceiversOtlpHttp:
     r"""
@@ -11015,11 +13157,12 @@ schema ValuesReceiversOtlpHttp:
     port : int, optional, default is 4318
         The port to listen on for OTLP HTTP requests.
     """
-    [...str]: any
+
     enabled?: bool
     includeMetadata?: bool
     maxRequestBodySize?: str
     port?: int
+    [...str]: any
 
 schema ValuesReceiversZipkin:
     r"""
@@ -11032,10 +13175,11 @@ schema ValuesReceiversZipkin:
         Whether to include high-cardinality debug metrics.
     port : int, optional, default is 9411
     """
-    [...str]: any
+
     enabled?: bool
     includeDebugMetrics?: bool
     port?: int
+    [...str]: any
 
 schema ValuesRedfish:
     r"""
@@ -11049,23 +13193,26 @@ schema ValuesRedfish:
     labels : ValuesRedfishLabels, optional
     name : str, optional, default is "redfish"
     """
-    [...str]: any
+
     annotations?: ValuesRedfishAnnotations
     enabled?: bool
     fileContent?: str
     labels?: ValuesRedfishLabels
     name?: str
+    [...str]: any
 
 schema ValuesRedfishAnnotations:
     r"""
     ValuesRedfishAnnotations
     """
+
     [...str]: any
 
 schema ValuesRedfishLabels:
     r"""
     ValuesRedfishLabels
     """
+
     [...str]: any
 
 schema ValuesRemoteConfig:
@@ -11083,6 +13230,8 @@ schema ValuesRemoteConfig:
         Comma-separated list of IP addresses, CIDR notations, and domain names to exclude from proxying.
     pollFrequency : str, optional
         The frequency at which to poll the remote config server for updates.
+    presetsAttribute : bool, optional
+        Sent a `presets` attribute which is a comma-separated list of this Alloy instance's presets.
     proxyConnectHeader : ValuesRemoteConfigProxyConnectHeader, optional
         Specifies headers to send to proxies during CONNECT requests.
     proxyFromEnvironment : bool, optional
@@ -11097,12 +13246,13 @@ schema ValuesRemoteConfig:
         Raw config for accessing the URL. Lets you insert raw Alloy references so you can load the URL from any number of
         places, such as loading values from environment variables or config maps. For example: `urlFrom: sys.env("ALLOY_REMOTE_CONFIG_URL")`
     """
-    [...str]: any
+
     auth?: ValuesRemoteConfigAuth
     enabled?: bool
     extraAttributes?: ValuesRemoteConfigExtraAttributes
     noProxy?: str
     pollFrequency?: str
+    presetsAttribute?: bool
     proxyConnectHeader?: ValuesRemoteConfigProxyConnectHeader
     proxyFromEnvironment?: bool
     proxyURL?: str
@@ -11110,6 +13260,7 @@ schema ValuesRemoteConfig:
     tls?: ValuesRemoteConfigTls
     url?: str
     urlFrom?: str
+    [...str]: any
 
 schema ValuesRemoteConfigAuth:
     r"""
@@ -11124,7 +13275,8 @@ schema ValuesRemoteConfigAuth:
     passwordKey : str, optional
         The key for storing the password in the secret.
     $type : str, optional
-        The type of authentication to use for the remote config server.
+        The type of authentication to use for the remote config server. When unset, defaults to `basic` if a username
+        and password are provided, otherwise `none`.
     username : str, optional
         The username to use for the remote config server.
     usernameFrom : str, optional
@@ -11132,7 +13284,7 @@ schema ValuesRemoteConfigAuth:
     usernameKey : str, optional
         The key for storing the username in the secret.
     """
-    [...str]: any
+
     password?: str
     passwordFrom?: str
     passwordKey?: str
@@ -11140,17 +13292,20 @@ schema ValuesRemoteConfigAuth:
     username?: str
     usernameFrom?: str
     usernameKey?: str
+    [...str]: any
 
 schema ValuesRemoteConfigExtraAttributes:
     r"""
     Attributes to be added to this collector when requesting configuration.
     """
+
     [...str]: any
 
 schema ValuesRemoteConfigProxyConnectHeader:
     r"""
     Specifies headers to send to proxies during CONNECT requests.
     """
+
     [...str]: any
 
 schema ValuesRemoteConfigSecret:
@@ -11168,11 +13323,12 @@ schema ValuesRemoteConfigSecret:
     namespace : str, optional
         The namespace for the secret.
     """
-    [...str]: any
+
     create?: bool
     embed?: bool
     name?: str
     namespace?: str
+    [...str]: any
 
 schema ValuesRemoteConfigTls:
     r"""
@@ -11201,7 +13357,7 @@ schema ValuesRemoteConfigTls:
     keyFrom : str, optional
         Raw config for accessing the client key.
     """
-    [...str]: any
+
     ca?: str
     caFile?: str
     caFrom?: str
@@ -11212,6 +13368,7 @@ schema ValuesRemoteConfigTls:
     key?: str
     keyFile?: str
     keyFrom?: str
+    [...str]: any
 
 schema ValuesResources:
     r"""
@@ -11224,20 +13381,37 @@ schema ValuesResources:
     requests : ValuesResourcesRequests, optional
         Set the resource requests for the Alloy Operator pods.
     """
-    [...str]: any
+
     limits?: ValuesResourcesLimits
     requests?: ValuesResourcesRequests
+    [...str]: any
 
 schema ValuesResourcesLimits:
     r"""
     Set the resource limits for the Alloy Operator pods.
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    memory : str, optional, default is "128Mi"
     """
+
+    cpu?: str
+    memory?: str
     [...str]: any
 
 schema ValuesResourcesRequests:
     r"""
     Set the resource requests for the Alloy Operator pods.
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "10m"
+    memory : str, optional, default is "64Mi"
     """
+
+    cpu?: str
+    memory?: str
     [...str]: any
 
 schema ValuesRetryOnFailure:
@@ -11255,11 +13429,88 @@ schema ValuesRetryOnFailure:
     maxInterval : str, optional
         The maximum time to wait before retrying a failed request to the OTLP destination.
     """
-    [...str]: any
+
     enabled?: bool
     initialInterval?: str
     maxElapsedTime?: str
     maxInterval?: str
+    [...str]: any
+
+schema ValuesRules:
+    r"""
+    Discover PrometheusRule objects in the cluster and synchronize them with this destination's Ruler API. Uses the
+    Alloy [`mimir.rules.kubernetes`](https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/)
+    component. Authentication, tenant ID, and TLS are reused from the destination's other settings.
+
+    Attributes
+    ----------
+    address : str, optional
+        The base URL of the Ruler API. If empty, falls back to the destination's `url`.
+        Set this when `url` is the remote-write push URL (e.g. ends in `/api/prom/push` or `/api/v1/push`):
+        `mimir.rules.kubernetes` expects the Mimir base URL, not the push path.
+    addressFrom : str, optional
+        Raw config for accessing the Ruler API base URL. Equivalent to `urlFrom` but for rule synchronization.
+    collector : str, optional
+        Which collector hosts rule synchronization. Exactly one collector must own this; otherwise multiple Alloy
+        instances will race when writing to the Ruler API. If empty, the first enabled collector is used.
+    enabled : bool, optional
+        Enable discovery and synchronization of PrometheusRule objects with this destination's Ruler API.
+    extraArguments : str, optional
+        Extra arguments to add to the mimir.rules.kubernetes component. ([docs](https://grafana.com/docs/alloy/latest/reference/components/mimir/mimir.rules.kubernetes/))
+        Use this to set arguments not exposed elsewhere in this block.
+    labelExpressions : [any], optional
+        Complex label selectors for filtering which PrometheusRule objects to use.
+        Example: `[{key: "app.kubernetes.io/name", operator: "NotIn", values: ["secret-app", "admin-app"]}]`
+    labelSelectors : ValuesRulesLabelSelectors, optional
+        Label selectors for filtering which PrometheusRule objects to use.
+        Example: `app.kubernetes.io/name: my-app`
+    mimirNamespacePrefix : str, optional
+        Prefix added to the namespace of each PrometheusRule when sent to the Ruler API. Distinguishes rules created
+        by this Alloy instance from rules created by other tools.
+    namespaceLabelExpressions : [any], optional
+        Complex label selectors for filtering which Kubernetes namespaces to look for PrometheusRule objects in.
+    namespaceLabelSelectors : ValuesRulesNamespaceLabelSelectors, optional
+        Label selectors for filtering which Kubernetes namespaces to look for PrometheusRule objects in.
+    namespaces : [any], optional
+        Which namespaces to look for PrometheusRule objects in. An empty list means all namespaces.
+    prometheusHttpPrefix : str, optional
+        The HTTP path prefix for the Prometheus HTTP API on the Ruler endpoint.
+    syncInterval : str, optional
+        How often to sync the discovered PrometheusRule objects with the Ruler API.
+    useLegacyRoutes : bool, optional
+        Use the legacy `/api/v1/rules` Ruler endpoints instead of the newer `/config/v1/rules` endpoints.
+    """
+
+    address?: str
+    addressFrom?: str
+    collector?: str
+    enabled?: bool
+    extraArguments?: str
+    labelExpressions?: [any]
+    labelSelectors?: ValuesRulesLabelSelectors
+    mimirNamespacePrefix?: str
+    namespaceLabelExpressions?: [any]
+    namespaceLabelSelectors?: ValuesRulesNamespaceLabelSelectors
+    namespaces?: [any]
+    prometheusHttpPrefix?: str
+    syncInterval?: str
+    useLegacyRoutes?: bool
+    [...str]: any
+
+schema ValuesRulesLabelSelectors:
+    r"""
+    Label selectors for filtering which PrometheusRule objects to use.
+    Example: `app.kubernetes.io/name: my-app`
+    """
+
+    [...str]: any
+
+schema ValuesRulesNamespaceLabelSelectors:
+    r"""
+    Label selectors for filtering which Kubernetes namespaces to look for PrometheusRule objects in.
+    """
+
+    [...str]: any
 
 schema ValuesScrapeConfigs:
     r"""
@@ -11290,8 +13541,8 @@ schema ValuesScrapeConfigs:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for cadvisor prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesScrapeConfigsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespaces : [any], optional
@@ -11299,12 +13550,13 @@ schema ValuesScrapeConfigs:
     scrapeInterval : str, optional, default is ""
         The default interval between scraping targets. Used as the default if the target resource doesn’t provide a
         scrape interval.
-        Overrides global.scrapeInterval
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape
         timeout.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -11316,12 +13568,14 @@ schema ValuesScrapeConfigs:
     namespaces?: [any]
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesScrapeConfigsLabelSelectors:
     r"""
     Label selectors to filter which ScrapeConfig objects to use.
     Example: `app.kubernetes.io/name: my-app`
     """
+
     [...str]: any
 
 schema ValuesScrapeConfigsMetricsTuning:
@@ -11335,9 +13589,100 @@ schema ValuesScrapeConfigsMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
+
+schema ValuesSdkConfig:
+    r"""
+    SDK auto-instrumentation defaults mounted into the controller (the
+    `config.SDKInject` document passed via --config). When disabled the
+    controller still selects matching workloads but performs no mutation.
+
+    Attributes
+    ----------
+    debug : bool, optional, default is False
+    enabled : bool, optional, default is True
+    enabledSDKs : [str], optional
+        Languages whose auto-instrumentation should run.
+    export : ValuesSdkConfigExport, optional
+    imageVersion : str, optional, default is "0.0.13"
+    imageVolumeRoot : str, optional, default is "ghcr.io/grafana/beyla/inject-sdk-image"
+        OCI image carrying the SDK auto-instrumentation payload.
+    injectionMode : str, optional, default is "auto"
+        How the SDK payload is delivered into instrumented pods:
+          image          - mount the OCI image via ImageVolumeSource (k8s 1.35+)
+          init_container - copy the payload via an init container (k8s < 1.35)
+          auto           - "image" on k8s 1.35+, "init_container" otherwise
+    propagators : [str], optional
+    """
+
+    debug?: bool
+    enabled?: bool
+    enabledSDKs?: [str]
+    export?: ValuesSdkConfigExport
+    imageVersion?: str
+    imageVolumeRoot?: str
+    injectionMode?: str
+    propagators?: [str]
+    [...str]: any
+
+schema ValuesSdkConfigExport:
+    r"""
+    ValuesSdkConfigExport
+
+    Attributes
+    ----------
+    logs : bool, optional, default is False
+    metrics : bool, optional, default is True
+    traces : bool, optional, default is True
+    """
+
+    logs?: bool
+    metrics?: bool
+    traces?: bool
+    [...str]: any
+
+schema ValuesSdkInjector:
+    r"""
+    SDK Injector deploys the Grafana Kubernetes Injection Controller for Beyla SDK auto-instrumentation.
+    To see all valid settings, run `helm show values grafana/k8s-injection-controller`.
+
+    Attributes
+    ----------
+    allowedConfigMapWriters : str, optional, default is ""
+        Comma-separated allowlist of usernames permitted to create or update annotated injection ConfigMaps. By default,
+        Kubernetes expands `$(POD_NAMESPACE)` to the namespace where the SDK Injector pod is running.
+    deploy : bool, optional, default is False
+        Deploy the SDK Injector and render namespace-scoped RoleBindings granting Alloy collectors permission to write injection ConfigMaps.
+    nameOverride : str, optional, default is "k8s-injection-controller"
+        Set a proper name to avoid RELEASE-NAME-sdkInjector
+    namespace : ValuesSdkInjectorNamespace, optional
+        Namespace where the SDK Injector is installed. By default it uses the Helm release namespace.
+    """
+
+    allowedConfigMapWriters?: str
+    deploy?: bool
+    nameOverride?: str
+    namespace?: ValuesSdkInjectorNamespace
+    [...str]: any
+
+schema ValuesSdkInjectorNamespace:
+    r"""
+    Namespace where the SDK Injector is installed. By default it uses the Helm release namespace.
+
+    Attributes
+    ----------
+    create : bool, optional, default is False
+        Render a Namespace object for `namespace.name`.
+    name : str, optional, default is ""
+        Namespace where the SDK Injector is installed. Leave empty to use the Helm release namespace.
+    """
+
+    create?: bool
+    name?: str
+    [...str]: any
 
 schema ValuesSecret:
     r"""
@@ -11356,17 +13701,19 @@ schema ValuesSecret:
     sigv4 : ValuesSecretSigv4, optional
         Authentication using AWS Signature Version 4
     """
-    [...str]: any
+
     create?: bool
     embed?: bool
     name?: str
     namespace?: str
     sigv4?: ValuesSecretSigv4
+    [...str]: any
 
 schema ValuesSecretAnnotations:
     r"""
      Annotations to add to the Secret
     """
+
     [...str]: any
 
 schema ValuesSecretFilter:
@@ -11391,7 +13738,7 @@ schema ValuesSecretFilter:
     redactWith : any, optional, default is ""
         Template for the redaction placeholder. Use $SECRET_NAME and $SECRET_HASH. E.g.: "<$SECRET_NAME:$SECRET_HASH>"
     """
-    [...str]: any
+
     allowlist?: [any]
     enabled?: bool
     gitleaksConfigPath?: str
@@ -11399,6 +13746,7 @@ schema ValuesSecretFilter:
     inclusionSelector?: str
     redactPercent?: int
     redactWith?: any
+    [...str]: any
 
 schema ValuesSecretSigv4:
     r"""
@@ -11412,10 +13760,11 @@ schema ValuesSecretSigv4:
     service : str, optional
         The AWS service for sigv4 authentication.
     """
-    [...str]: any
+
     assumeRole?: ValuesSecretSigv4AssumeRole
     region?: str
     service?: str
+    [...str]: any
 
 schema ValuesSecretSigv4AssumeRole:
     r"""
@@ -11430,10 +13779,11 @@ schema ValuesSecretSigv4AssumeRole:
     stsRegion : str, optional
         The AWS region where STS is used to assume the configured role.
     """
-    [...str]: any
+
     arn?: str
     sessionName?: str
     stsRegion?: str
+    [...str]: any
 
 schema ValuesSecurityContext:
     r"""
@@ -11453,7 +13803,7 @@ schema ValuesSecurityContext:
     seccompProfile : ValuesSecurityContextSeccompProfile, optional
     windowsOptions : ValuesSecurityContextWindowsOptions, optional
     """
-    [...str]: any
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesSecurityContextCapabilities
     enabled?: bool
@@ -11465,6 +13815,7 @@ schema ValuesSecurityContext:
     runAsUser?: int
     seccompProfile?: ValuesSecurityContextSeccompProfile
     windowsOptions?: ValuesSecurityContextWindowsOptions
+    [...str]: any
 
 schema ValuesSecurityContextCapabilities:
     r"""
@@ -11474,8 +13825,9 @@ schema ValuesSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
-    [...str]: any
+
     drop?: [str]
+    [...str]: any
 
 schema ValuesSecurityContextSeccompProfile:
     r"""
@@ -11485,8 +13837,9 @@ schema ValuesSecurityContextSeccompProfile:
     ----------
     $type : str, optional, default is "RuntimeDefault"
     """
-    [...str]: any
+
     $type?: str
+    [...str]: any
 
 schema ValuesSecurityContextWindowsOptions:
     r"""
@@ -11497,14 +13850,16 @@ schema ValuesSecurityContextWindowsOptions:
     hostProcess : bool, optional, default is True
     runAsUserName : str, optional, default is "NT AUTHORITY\\system"
     """
-    [...str]: any
+
     hostProcess?: bool
     runAsUserName?: str
+    [...str]: any
 
 schema ValuesSelectorOverride:
     r"""
     # Override selector labels
     """
+
     [...str]: any
 
 schema ValuesSelfMonitor:
@@ -11517,8 +13872,9 @@ schema ValuesSelfMonitor:
     ----------
     enabled : bool, optional, default is False
     """
-    [...str]: any
+
     enabled?: bool
+    [...str]: any
 
 schema ValuesSelfReporting:
     r"""
@@ -11529,6 +13885,9 @@ schema ValuesSelfReporting:
 
     Attributes
     ----------
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
     destinations : [any], optional
         The destinations where self-report metrics will be sent. If empty, all metrics-capable destinations will be used.
     enabled : bool, optional, default is True
@@ -11536,10 +13895,12 @@ schema ValuesSelfReporting:
     scrapeInterval : str, optional, default is ""
         How frequently to generate self-report metrics. This does utilize the global scrapeInterval setting.
     """
-    [...str]: any
+
+    dataProcessors?: [any]
     destinations?: [any]
     enabled?: bool
     scrapeInterval?: str
+    [...str]: any
 
 schema ValuesSendingQueue:
     r"""
@@ -11564,7 +13925,7 @@ schema ValuesSendingQueue:
     waitForResult : any, optional
         Determines if incoming requests are blocked until the request is processed or not.
     """
-    [...str]: any
+
     batch?: ValuesSendingQueueBatch
     blockOnOverflow?: any
     enabled?: bool
@@ -11573,6 +13934,7 @@ schema ValuesSendingQueue:
     sizer?: str
     storage?: str
     waitForResult?: any
+    [...str]: any
 
 schema ValuesSendingQueueBatch:
     r"""
@@ -11592,12 +13954,13 @@ schema ValuesSendingQueueBatch:
         How the queue and batching is measured. Overrides the sizer set at the sendingQueue level for batching.
         Valid options are "bytes" or "items".
     """
-    [...str]: any
+
     enabled?: bool
     flushTimeout?: str
     maxSize?: any
     minSize?: any
     sizer?: str
+    [...str]: any
 
 schema ValuesService:
     r"""
@@ -11614,8 +13977,7 @@ schema ValuesService:
     enabled : bool, optional, default is True
         Creates a Service for the controller's pods.
     externalTrafficPolicy : str, optional, default is ""
-        # External/Internal traffic policy setting (Cluster, Local)
-        # https://kubernetes.io/docs/reference/networking/virtual-ips/#traffic-policies
+        Value for external traffic policy. 'Cluster' or 'Local'
     extraPorts : [any], optional
         extra ports.  Useful for sidecar pods such as oauth-proxy
     health : ValuesServiceHealth, optional
@@ -11657,7 +14019,7 @@ schema ValuesService:
     $type : str, optional, default is "ClusterIP"
         Service type
     """
-    [...str]: any
+
     annotations?: ValuesServiceAnnotations
     appProtocol?: str
     clusterIP?: str
@@ -11680,6 +14042,7 @@ schema ValuesService:
     servicePort?: str
     targetPort?: int
     $type?: str
+    [...str]: any
 
 schema ValuesServiceAccount:
     r"""
@@ -11706,7 +14069,7 @@ schema ValuesServiceAccount:
         The name of the existing service account to use when
         serviceAccount.create is false.
     """
-    [...str]: any
+
     additionalLabels?: ValuesServiceAccountAdditionalLabels
     annotations?: ValuesServiceAccountAnnotations
     automount?: bool
@@ -11715,23 +14078,27 @@ schema ValuesServiceAccount:
     imagePullSecrets?: [any]
     labels?: ValuesServiceAccountLabels
     name?: any
+    [...str]: any
 
 schema ValuesServiceAccountAdditionalLabels:
     r"""
     Additional labels to add to the created service account.
     """
+
     [...str]: any
 
 schema ValuesServiceAccountAnnotations:
     r"""
     Annotations to add to the created service account.
     """
+
     [...str]: any
 
 schema ValuesServiceAccountLabels:
     r"""
     ServiceAccount labels.
     """
+
     [...str]: any
 
 schema ValuesServiceAnnotations:
@@ -11742,8 +14109,9 @@ schema ValuesServiceAnnotations:
     ----------
     "prometheus.io/scrape" : str, optional, default is "true"
     """
-    [...str]: any
+
     "prometheus.io/scrape"?: str
+    [...str]: any
 
 schema ValuesServiceHealth:
     r"""
@@ -11754,8 +14122,9 @@ schema ValuesServiceHealth:
     port : int, optional, default is 8081
         The port number for the health probes.
     """
-    [...str]: any
+
     port?: int
+    [...str]: any
 
 schema ValuesServiceInternalMetrics:
     r"""
@@ -11773,11 +14142,12 @@ schema ValuesServiceInternalMetrics:
         targetPort overrides the internal metrics port. It defaults to the value of `internal_metrics.prometheus.port`
         from the Beyla configuration file.
     """
-    [...str]: any
+
     appProtocol?: str
     port?: int
     portName?: str
     targetPort?: any
+    [...str]: any
 
 schema ValuesServiceIpDualStack:
     r"""
@@ -11790,15 +14160,17 @@ schema ValuesServiceIpDualStack:
     ipFamilies : [str], optional
     ipFamilyPolicy : str, optional, default is "PreferDualStack"
     """
-    [...str]: any
+
     enabled?: bool
     ipFamilies?: [str]
     ipFamilyPolicy?: str
+    [...str]: any
 
 schema ValuesServiceLabels:
     r"""
      Labels to add to the service account
     """
+
     [...str]: any
 
 schema ValuesServiceMetrics:
@@ -11810,8 +14182,9 @@ schema ValuesServiceMetrics:
     port : int, optional, default is 8082
         The port number for the metrics service.
     """
-    [...str]: any
+
     port?: int
+    [...str]: any
 
 schema ValuesServiceMonitor:
     r"""
@@ -11850,7 +14223,7 @@ schema ValuesServiceMonitor:
     tlsConfig : ValuesServiceMonitorTlsConfig, optional
         Customize tls parameters for the service monitor
     """
-    [...str]: any
+
     additionalLabels?: ValuesServiceMonitorAdditionalLabels
     annotations?: ValuesServiceMonitorAnnotations
     attachMetadata?: ValuesServiceMonitorAttachMetadata
@@ -11867,17 +14240,20 @@ schema ValuesServiceMonitor:
     targetLabels?: [any]
     telemetryPath?: str
     tlsConfig?: ValuesServiceMonitorTlsConfig
+    [...str]: any
 
 schema ValuesServiceMonitorAdditionalLabels:
     r"""
     Additional labels for the service monitor.
     """
+
     [...str]: any
 
 schema ValuesServiceMonitorAnnotations:
     r"""
     ServiceMonitor annotations
     """
+
     [...str]: any
 
 schema ValuesServiceMonitorAttachMetadata:
@@ -11888,8 +14264,9 @@ schema ValuesServiceMonitorAttachMetadata:
     ----------
     node : bool, optional, default is False
     """
-    [...str]: any
+
     node?: bool
+    [...str]: any
 
 schema ValuesServiceMonitorInternalMetrics:
     r"""
@@ -11902,8 +14279,9 @@ schema ValuesServiceMonitorInternalMetrics:
         Target port and path is set based on service and `internal_metrics` values.
         For additional values, see the ServiceMonitor spec
     """
-    [...str]: any
+
     endpoint?: ValuesServiceMonitorInternalMetricsEndpoint
+    [...str]: any
 
 schema ValuesServiceMonitorInternalMetricsEndpoint:
     r"""
@@ -11915,13 +14293,15 @@ schema ValuesServiceMonitorInternalMetricsEndpoint:
     ----------
     interval : str, optional, default is "15s"
     """
-    [...str]: any
+
     interval?: str
+    [...str]: any
 
 schema ValuesServiceMonitorLabels:
     r"""
     ValuesServiceMonitorLabels
     """
+
     [...str]: any
 
 schema ValuesServiceMonitorMetrics:
@@ -11935,8 +14315,9 @@ schema ValuesServiceMonitorMetrics:
         Target port and path is set based on service and `prometheus_export` values.
         For additional values, see the ServiceMonitor spec
     """
-    [...str]: any
+
     endpoint?: ValuesServiceMonitorMetricsEndpoint
+    [...str]: any
 
 schema ValuesServiceMonitorMetricsEndpoint:
     r"""
@@ -11948,8 +14329,9 @@ schema ValuesServiceMonitorMetricsEndpoint:
     ----------
     interval : str, optional, default is "15s"
     """
-    [...str]: any
+
     interval?: str
+    [...str]: any
 
 schema ValuesServiceMonitorRelabelingsItems0:
     r"""
@@ -11963,17 +14345,19 @@ schema ValuesServiceMonitorRelabelingsItems0:
     sourceLabels : [str], optional
     targetLabel : str, optional, default is "instance"
     """
-    [...str]: any
+
     action?: str
     regex?: str
     replacement?: str
     sourceLabels?: [str]
     targetLabel?: str
+    [...str]: any
 
 schema ValuesServiceMonitorTlsConfig:
     r"""
     Customize tls parameters for the service monitor
     """
+
     [...str]: any
 
 schema ValuesServiceMonitors:
@@ -12005,8 +14389,8 @@ schema ValuesServiceMonitors:
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for cadvisor prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesServiceMonitorsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespaces : [any], optional
@@ -12014,12 +14398,13 @@ schema ValuesServiceMonitors:
     scrapeInterval : str, optional, default is ""
         The default interval between scraping targets. Used as the default if the target resource doesn’t provide a
         scrape interval.
-        Overrides global.scrapeInterval
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The default timeout for scrape requests. Used as the default if the target resource doesn’t provide a scrape
         timeout.
+        Overrides `global.scrapeTimeout`.
     """
-    [...str]: any
+
     enabled?: bool
     excludeNamespaces?: [any]
     extraDiscoveryRules?: str
@@ -12031,12 +14416,14 @@ schema ValuesServiceMonitors:
     namespaces?: [any]
     scrapeInterval?: str
     scrapeTimeout?: str
+    [...str]: any
 
 schema ValuesServiceMonitorsLabelSelectors:
     r"""
     Label selectors to filter which ServiceMonitor objects to use.
     Example: `app.kubernetes.io/name: my-app`
     """
+
     [...str]: any
 
 schema ValuesServiceMonitorsMetricsTuning:
@@ -12050,9 +14437,10 @@ schema ValuesServiceMonitorsMetricsTuning:
     includeMetrics : [any], optional
         Metrics to keep. Can use regular expressions.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
+    [...str]: any
 
 schema ValuesServices:
     r"""
@@ -12075,12 +14463,13 @@ schema ValuesServices:
     staticLabelsFrom : ValuesServicesStaticLabelsFrom, optional
         Static labels to set on metrics from discovered Services, not quoted so it can reference config components.
     """
-    [...str]: any
+
     enabled?: bool
     labelSelectors?: ValuesServicesLabelSelectors
     labels?: ValuesServicesLabels
     staticLabels?: ValuesServicesStaticLabels
     staticLabelsFrom?: ValuesServicesStaticLabelsFrom
+    [...str]: any
 
 schema ValuesServicesLabelSelectors:
     r"""
@@ -12088,6 +14477,7 @@ schema ValuesServicesLabelSelectors:
     Example: `labelSelectors: { 'app': 'myapp' }` will only discover Services with the label `app=myapp`.
     Example: `labelSelectors: { 'app': ['myapp', 'myotherapp'] }` will only discover Services with the label `app=myapp` or `app=myotherapp`.
     """
+
     [...str]: any
 
 schema ValuesServicesLabels:
@@ -12096,18 +14486,21 @@ schema ValuesServicesLabels:
     [documentation](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.kubernetes/#service-role)
     for the full list of meta labels.
     """
+
     [...str]: any
 
 schema ValuesServicesStaticLabels:
     r"""
     Metric labels to set with static data for discovered Services.
     """
+
     [...str]: any
 
 schema ValuesServicesStaticLabelsFrom:
     r"""
     Static labels to set on metrics from discovered Services, not quoted so it can reference config components.
     """
+
     [...str]: any
 
 schema ValuesSidecarMetrics:
@@ -12118,6 +14511,10 @@ schema ValuesSidecarMetrics:
     ----------
     enabled : bool, optional
         Whether to enable metrics collection from Istio sidecar containers.
+    extraDiscoveryRules : str, optional
+        Rule blocks to be added to the discovery.relabel component for discovered Istio sidecar targets.
+        These relabeling rules are applied pre-scrape against the targets from Kubernetes service discovery, so all `__meta*` labels are still present.
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/discovery/discovery.relabel/#rule-block))
     extraMetricProcessingRules : str, optional
         Rule blocks to be added to the prometheus.relabel component for Istio sidecar metrics.
         These relabeling rules are applied post-scrape against the metrics returned from the scraped target, no `__meta*` labels are present.
@@ -12127,8 +14524,8 @@ schema ValuesSidecarMetrics:
     maxCacheSize : any, optional
         Sets the max_cache_size for prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     scrapeInterval : any, optional
         How frequently to scrape metrics from Istio sidecar containers.
     scrapeTimeout : str, optional
@@ -12138,8 +14535,9 @@ schema ValuesSidecarMetrics:
     tuning : ValuesSidecarMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     """
-    [...str]: any
+
     enabled?: bool
+    extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
     labelSelectors?: ValuesSidecarMetricsLabelSelectors
     maxCacheSize?: any
@@ -12147,11 +14545,13 @@ schema ValuesSidecarMetrics:
     scrapeTimeout?: str
     sidecarContainerName?: str
     tuning?: ValuesSidecarMetricsTuning
+    [...str]: any
 
 schema ValuesSidecarMetricsLabelSelectors:
     r"""
     Label selectors to be used when choosing pods with the Istio sidecar.
     """
+
     [...str]: any
 
 schema ValuesSidecarMetricsTuning:
@@ -12167,10 +14567,11 @@ schema ValuesSidecarMetricsTuning:
     useDefaultAllowList : bool, optional
         Filter the list of metrics from Istio sidecar to the minimal set required for the Istio integration.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesStartupProbe:
     r"""
@@ -12187,7 +14588,7 @@ schema ValuesStartupProbe:
     successThreshold : int, optional, default is 1
     timeoutSeconds : int, optional, default is 5
     """
-    [...str]: any
+
     enabled?: bool
     failureThreshold?: int
     httpGet?: ValuesStartupProbeHttpGet
@@ -12195,6 +14596,7 @@ schema ValuesStartupProbe:
     periodSeconds?: int
     successThreshold?: int
     timeoutSeconds?: int
+    [...str]: any
 
 schema ValuesStartupProbeHttpGet:
     r"""
@@ -12205,43 +14607,46 @@ schema ValuesStartupProbeHttpGet:
     httpHeaders : [any], optional
     scheme : str, optional, default is "http"
     """
-    [...str]: any
+
     httpHeaders?: [any]
     scheme?: str
+    [...str]: any
 
 schema ValuesStaticAttributes:
     r"""
     Log attributes to set with static values.
     """
+
     [...str]: any
 
 schema ValuesStaticAttributesFrom:
     r"""
     Log attributes to set with static values, not quoted so it can reference config components.
     """
+
     [...str]: any
 
 schema ValuesStaticLabels:
     r"""
     Log labels to set with static values.
     """
+
     [...str]: any
 
 schema ValuesStaticLabelsFrom:
     r"""
     Log labels to set with static values, not quoted so it can reference config components.
     """
+
     [...str]: any
 
 schema ValuesStructuredMetadata:
     r"""
     The structured metadata mappings to set.
-    Format: `<key>: <extracted_key>`.
-    Example:
-    structuredMetadata:
-      component: component
-      kind: kind
-      name: name
+    To not set any structured metadata, set this to an empty object (e.g. `{}`)
+    Format: `<key>: <field>`.
+    Available fields include: `channel`, `computer`, `source`, `eventID`, `keywords`, `level`, `levelText`,
+    `opCode`, `task`, `timeCreated`.
 
     Attributes
     ----------
@@ -12251,12 +14656,22 @@ schema ValuesStructuredMetadata:
     pod : str, optional, default is "pod"
     "service.instance.id" : str, optional, default is "service.instance.id"
     """
-    [...str]: any
+
     "k8s.pod.name"?: str
     name?: str
     node?: str
     pod?: str
     "service.instance.id"?: str
+    [...str]: any
+
+schema ValuesTags:
+    r"""
+    EC2 instance tags to copy to telemetry data, as a map of
+    `<telemetry label>: <EC2 tag name>`. Applies to data carrying a `node` label that matches
+    an instance's private DNS name.
+    """
+
+    [...str]: any
 
 schema ValuesTelemetryServices:
     r"""
@@ -12268,6 +14683,10 @@ schema ValuesTelemetryServices:
 
     Attributes
     ----------
+    beyla : ValuesTelemetryServicesBeyla, optional
+        [Beyla](https://github.com/grafana/beyla) provides a Kubernetes cache that supplies metadata to Beyla instances.
+    "k8s-manifest-tail" : ValuesTelemetryServicesK8SManifestTail, optional
+        [k8s-manifest-tail](https://github.com/grafana/k8s-manifest-tail) watches and logs Kubernetes resource manifest changes.
     kepler : ValuesTelemetryServicesKepler, optional
         [Kepler](https://sustainable-computing.io/) is a service that can gather energy usage metrics from the Kubernetes
         Cluster nodes.
@@ -12277,15 +14696,63 @@ schema ValuesTelemetryServices:
         [Node Exporter](https://github.com/prometheus/node_exporter) collects host-level Linux metrics.
     opencost : ValuesTelemetryServicesOpencost, optional
         [OpenCost](https://www.opencost.io/) reports Kubernetes resource cost data.
+    sdkInjector : ValuesTelemetryServicesSdkInjector, optional
+        The [SDK Injector](https://github.com/grafana/k8s-injection-controller) auto-instruments applications with the Beyla SDK.
     "windows-exporter" : ValuesTelemetryServicesWindowsExporter, optional
         [Windows Exporter](https://github.com/prometheus-community/windows_exporter) collects host-level Windows metrics.
     """
-    [...str]: any
+
+    beyla?: ValuesTelemetryServicesBeyla
+    "k8s-manifest-tail"?: ValuesTelemetryServicesK8SManifestTail
     kepler?: ValuesTelemetryServicesKepler
     "kube-state-metrics"?: ValuesTelemetryServicesKubeStateMetrics
     "node-exporter"?: ValuesTelemetryServicesNodeExporter
     opencost?: ValuesTelemetryServicesOpencost
+    sdkInjector?: ValuesTelemetryServicesSdkInjector
     "windows-exporter"?: ValuesTelemetryServicesWindowsExporter
+    [...str]: any
+
+schema ValuesTelemetryServicesBeyla:
+    r"""
+    [Beyla](https://github.com/grafana/beyla) provides a Kubernetes cache that supplies metadata to Beyla instances.
+
+    Attributes
+    ----------
+    deploy : bool, optional, default is False
+        Deploy Grafana Beyla's Kubernetes cache.
+    k8sCache : ValuesTelemetryServicesBeylaK8SCache, optional
+        Options for the Grafana Beyla Kubernetes metadata cache.
+    """
+
+    deploy?: bool
+    k8sCache?: ValuesTelemetryServicesBeylaK8SCache
+    [...str]: any
+
+schema ValuesTelemetryServicesBeylaK8SCache:
+    r"""
+    Options for the Grafana Beyla Kubernetes metadata cache.
+
+    Attributes
+    ----------
+    replicas : int, optional, default is 0
+        Number of replicas for the Beyla Kubernetes metadata cache. Set to a positive number and set telemetryServices.beyla.deploy=true to deploy the cache.
+    """
+
+    replicas?: int
+    [...str]: any
+
+schema ValuesTelemetryServicesK8SManifestTail:
+    r"""
+    [k8s-manifest-tail](https://github.com/grafana/k8s-manifest-tail) watches and logs Kubernetes resource manifest changes.
+
+    Attributes
+    ----------
+    deploy : bool, optional, default is False
+        Deploy k8s-manifest-tail to watch and log Kubernetes manifest changes.
+    """
+
+    deploy?: bool
+    [...str]: any
 
 schema ValuesTelemetryServicesKepler:
     r"""
@@ -12298,8 +14765,9 @@ schema ValuesTelemetryServicesKepler:
         Deploy [Kepler](https://sustainable-computing.io/) to gather energy usage metrics from the Kubernetes Cluster
         nodes.
     """
-    [...str]: any
+
     deploy?: bool
+    [...str]: any
 
 schema ValuesTelemetryServicesKubeStateMetrics:
     r"""
@@ -12310,8 +14778,9 @@ schema ValuesTelemetryServicesKubeStateMetrics:
     deploy : bool, optional, default is False
         Deploy kube-state-metrics to expose Kubernetes object metadata as Prometheus metrics.
     """
-    [...str]: any
+
     deploy?: bool
+    [...str]: any
 
 schema ValuesTelemetryServicesNodeExporter:
     r"""
@@ -12322,8 +14791,9 @@ schema ValuesTelemetryServicesNodeExporter:
     deploy : bool, optional, default is False
         Deploy Node Exporter to gather Linux node hardware and OS metrics.
     """
-    [...str]: any
+
     deploy?: bool
+    [...str]: any
 
 schema ValuesTelemetryServicesOpencost:
     r"""
@@ -12334,8 +14804,22 @@ schema ValuesTelemetryServicesOpencost:
     deploy : bool, optional, default is False
         Deploy OpenCost to calculate and expose Kubernetes cost allocation metrics.
     """
-    [...str]: any
+
     deploy?: bool
+    [...str]: any
+
+schema ValuesTelemetryServicesSdkInjector:
+    r"""
+    The [SDK Injector](https://github.com/grafana/k8s-injection-controller) auto-instruments applications with the Beyla SDK.
+
+    Attributes
+    ----------
+    deploy : bool, optional, default is False
+        Deploy the SDK Injector.
+    """
+
+    deploy?: bool
+    [...str]: any
 
 schema ValuesTelemetryServicesWindowsExporter:
     r"""
@@ -12346,8 +14830,9 @@ schema ValuesTelemetryServicesWindowsExporter:
     deploy : bool, optional, default is False
         Deploy Windows Exporter to gather Windows node hardware and OS metrics.
     """
-    [...str]: any
+
     deploy?: bool
+    [...str]: any
 
 schema ValuesTempo:
     r"""
@@ -12357,8 +14842,9 @@ schema ValuesTempo:
     ----------
     instances : [any], optional
     """
-    [...str]: any
+
     instances?: [any]
+    [...str]: any
 
 schema ValuesTerminationMessageParams:
     r"""
@@ -12373,10 +14859,11 @@ schema ValuesTerminationMessageParams:
     terminationMessagePolicy : str, optional, default is "File"
         If enabled, specify the policy for termination messages
     """
-    [...str]: any
+
     enabled?: bool
     terminationMessagePath?: str
     terminationMessagePolicy?: str
+    [...str]: any
 
 schema ValuesTls:
     r"""
@@ -12407,7 +14894,7 @@ schema ValuesTls:
     keyFrom : str, optional
         Raw config for accessing the client key.
     """
-    [...str]: any
+
     ca?: str
     caFile?: str
     caFrom?: str
@@ -12419,6 +14906,7 @@ schema ValuesTls:
     key?: str
     keyFile?: str
     keyFrom?: str
+    [...str]: any
 
 schema ValuesTlsSecret:
     r"""
@@ -12441,13 +14929,14 @@ schema ValuesTlsSecret:
     volumeName : str, optional, default is "prometheus-node-exporter-tls"
         # Name of the volume to be created
     """
-    [...str]: any
+
     caItem?: str
     certItem?: str
     enabled?: bool
     keyItem?: str
     secretName?: str
     volumeName?: str
+    [...str]: any
 
 schema ValuesTolerationsItems0:
     r"""
@@ -12459,14 +14948,15 @@ schema ValuesTolerationsItems0:
     key : str, optional, default is "node-role.kubernetes.io/control-plane"
     operator : str, optional, default is "Exists"
     """
-    [...str]: any
+
     effect?: str
     key?: str
     operator?: str
+    [...str]: any
 
 schema ValuesTraces:
     r"""
-    ValuesTraces
+    Drop all traces sent to this destination.
 
     Attributes
     ----------
@@ -12475,6 +14965,10 @@ schema ValuesTraces:
     filters : ValuesTracesFilters, optional
         Apply a filter to traces.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.filter/))
+    otlp : ValuesTracesOtlp, optional
+    path : str, optional
+        A custom path to append to the URL when sending traces. Only used when `protocol` is `http`. Overrides the
+        default `/v1/traces` path. For example, set `path: v2/trace/otlp` to send traces to `<url>/v2/trace/otlp`.
     setSpanNameSemanticConvention : str, optional, default is "1.37.0"
         Update the names of spans according to the semantic conventions. Set to "" to prevent changing span names.
     target : str, optional
@@ -12484,12 +14978,15 @@ schema ValuesTraces:
         Apply a transformation to traces.
         ([docs](https://grafana.com/docs/alloy/latest/reference/components/otelcol/otelcol.processor.transform/))
     """
-    [...str]: any
+
     enabled?: bool
     filters?: ValuesTracesFilters
+    otlp?: ValuesTracesOtlp
+    path?: str
     setSpanNameSemanticConvention?: str
     target?: str
     transforms?: ValuesTracesTransforms
+    [...str]: any
 
 schema ValuesTracesFilters:
     r"""
@@ -12501,9 +14998,29 @@ schema ValuesTracesFilters:
     span : [any], optional
     spanevent : [any], optional
     """
-    [...str]: any
+
     span?: [any]
     spanevent?: [any]
+    [...str]: any
+
+schema ValuesTracesOtlp:
+    r"""
+    ValuesTracesOtlp
+
+    Attributes
+    ----------
+    config : str, optional
+        Raw Alloy block for the OTLP traces pipeline.
+    enabled : bool, optional
+        Enable processing OTLP-formatted traces through this processor.
+    input : str, optional
+        Alloy component reference where the chart forwards OTLP traces into the user's pipeline.
+    """
+
+    config?: str
+    enabled?: bool
+    input?: str
+    [...str]: any
 
 schema ValuesTracesTransforms:
     r"""
@@ -12516,10 +15033,11 @@ schema ValuesTracesTransforms:
     span : [any], optional
     spanevent : [any], optional
     """
-    [...str]: any
+
     resource?: [any]
     span?: [any]
     spanevent?: [any]
+    [...str]: any
 
 schema ValuesUpdateStrategy:
     r"""
@@ -12531,9 +15049,10 @@ schema ValuesUpdateStrategy:
     $type : str, optional, default is "RollingUpdate"
         update strategy type
     """
-    [...str]: any
+
     rollingUpdate?: ValuesUpdateStrategyRollingUpdate
     $type?: str
+    [...str]: any
 
 schema ValuesUpdateStrategyRollingUpdate:
     r"""
@@ -12544,9 +15063,10 @@ schema ValuesUpdateStrategyRollingUpdate:
     maxSurge : int, optional, default is 1
     maxUnavailable : int, optional, default is 1
     """
-    [...str]: any
+
     maxSurge?: int
     maxUnavailable?: int
+    [...str]: any
 
 schema ValuesVerticalPodAutoscaler:
     r"""
@@ -12564,16 +15084,18 @@ schema ValuesVerticalPodAutoscaler:
         memory: 100Mi
         Define the min allowed resources for the pod
     """
-    [...str]: any
+
     controlledResources?: [any]
     enabled?: bool
     maxAllowed?: ValuesVerticalPodAutoscalerMaxAllowed
     minAllowed?: ValuesVerticalPodAutoscalerMinAllowed
+    [...str]: any
 
 schema ValuesVerticalPodAutoscalerMaxAllowed:
     r"""
     Define the max allowed resources for the pod
     """
+
     [...str]: any
 
 schema ValuesVerticalPodAutoscalerMinAllowed:
@@ -12582,6 +15104,73 @@ schema ValuesVerticalPodAutoscalerMinAllowed:
     memory: 100Mi
     Define the min allowed resources for the pod
     """
+
+    [...str]: any
+
+schema ValuesWebhook:
+    r"""
+    Pod mutating webhook configuration.
+
+    Attributes
+    ----------
+    certManager : ValuesWebhookCertManager, optional
+        How the webhook serving certificate is provisioned:
+          auto         - use cert-manager if its API (cert-manager.io/v1) is present
+                         on the cluster, otherwise the controller self-signs and
+                         rotates its own cert (no cert-manager required).
+          cert-manager - always use cert-manager (renders Issuer/Certificate);
+                         fails to render if the cert-manager API is absent.
+          self-signed  - always self-sign in-controller, ignoring any cert-manager.
+    excludedNamespaces : [str], optional
+        Namespaces excluded from the mutating webhook via namespaceSelector. The
+        install namespace is always appended automatically (deadlock prevention).
+    """
+
+    certManager?: ValuesWebhookCertManager
+    excludedNamespaces?: [str]
+    [...str]: any
+
+schema ValuesWebhookCertManager:
+    r"""
+    How the webhook serving certificate is provisioned:
+      auto         - use cert-manager if its API (cert-manager.io/v1) is present
+                     on the cluster, otherwise the controller self-signs and
+                     rotates its own cert (no cert-manager required).
+      cert-manager - always use cert-manager (renders Issuer/Certificate);
+                     fails to render if the cert-manager API is absent.
+      self-signed  - always self-sign in-controller, ignoring any cert-manager.
+
+    Attributes
+    ----------
+    mode : str, optional, default is "auto"
+    """
+
+    mode?: str
+    [...str]: any
+
+schema ValuesWindowsEventLogs:
+    r"""
+    Windows event logs.
+    Requires a destination that supports logs and a collector using the `windows` preset.
+    To see the valid options, please see the [Windows Event Logs feature documentation](https://github.com/grafana/k8s-monitoring-helm/tree/main/charts/k8s-monitoring/charts/feature-windows-event-logs).
+
+    Attributes
+    ----------
+    collector : str, optional, default is ""
+        Which collector to assign this feature to.
+    dataProcessors : [any], optional
+        Optional chain of processors to run before delivering data to destinations.
+        Each entry is a key from the top-level `dataProcessors:` map.
+    destinations : [any], optional
+        The destinations where logs will be sent. If empty, all logs-capable destinations will be used.
+    enabled : bool, optional, default is False
+        Enable gathering event logs from Windows Kubernetes Cluster Nodes.
+    """
+
+    collector?: str
+    dataProcessors?: [any]
+    destinations?: [any]
+    enabled?: bool
     [...str]: any
 
 schema ValuesWindowsExporter:
@@ -12597,11 +15186,12 @@ schema ValuesWindowsExporter:
     podAnnotations : ValuesWindowsExporterPodAnnotations, optional
     releaseLabel : bool, optional, default is True
     """
-    [...str]: any
+
     config?: str
     deploy?: bool
     podAnnotations?: ValuesWindowsExporterPodAnnotations
     releaseLabel?: bool
+    [...str]: any
 
 schema ValuesWindowsExporterPodAnnotations:
     r"""
@@ -12611,8 +15201,9 @@ schema ValuesWindowsExporterPodAnnotations:
     ----------
     "k8s.grafana.com/logs.job" : str, optional, default is "integrations/windows_exporter"
     """
-    [...str]: any
+
     "k8s.grafana.com/logs.job"?: str
+    [...str]: any
 
 schema ValuesWindowsHosts:
     r"""
@@ -12622,6 +15213,10 @@ schema ValuesWindowsHosts:
     ----------
     bearerTokenFile : str, optional, default is ""
         The bearer token file to use when scraping metrics from Windows Exporter.
+    collector : str, optional, default is ""
+        Which collector to assign the Windows host metrics to. If empty, the feature-level `hostMetrics.collector` is
+        used. Set this to route Windows host metrics to a different collector than the Linux host metrics or energy metrics
+        (for example, a Windows DaemonSet using the Alloy source).
     enabled : bool, optional, default is False
         Scrape node metrics
     extraDiscoveryRules : str, optional, default is ""
@@ -12636,13 +15231,13 @@ schema ValuesWindowsHosts:
     jobLabel : str, optional, default is "integrations/windows-exporter"
         The value for the job label.
     labelMatchers : ValuesWindowsHostsLabelMatchers, optional
-        Labels used to select the Windows Exporter pods. If deploying from telemetry services, this will automatically be
-         # populated.
+        Labels used to select the Windows Exporter pods. Required when connecting to an existing Windows Exporter; if
+        deploying from telemetry services, this will automatically be populated.
     maxCacheSize : any, optional, default is ""
         Sets the max_cache_size for the Windows Exporter prometheus.relabel component.
         This should be at least 2x-5x your largest scrape target or samples appended rate.
-        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments))
-        Overrides global.maxCacheSize
+        ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.relabel/#arguments)).
+        Overrides `global.maxCacheSize`.
     metricsTuning : ValuesWindowsHostsMetricsTuning, optional
         Adjustments to the scraped metrics to filter the amount of data sent to storage.
     namespace : str, optional, default is ""
@@ -12652,11 +15247,19 @@ schema ValuesWindowsHosts:
         The scrape scheme for Windows host metrics.
     scrapeInterval : str, optional, default is ""
         How frequently to scrape Windows host metrics.
+        Overrides `global.scrapeInterval`.
     scrapeTimeout : str, optional, default is ""
         The timeout for scraping Windows host metrics.
+        Overrides `global.scrapeTimeout`.
+    source : str, optional, default is "windows-exporter"
+        How to collect Windows host metrics. "windows-exporter" scrapes a Windows Exporter deployment (discovered via
+        telemetryServices or labelMatchers). "alloy" collects host metrics directly using `prometheus.exporter.windows` on
+        the assigned collector, which must be a DaemonSet running on Windows nodes (use the "windows", and "daemonset"
+        collector presets) and does not require a Windows Exporter deployment.
     """
-    [...str]: any
+
     bearerTokenFile?: str
+    collector?: str
     enabled?: bool
     extraDiscoveryRules?: str
     extraMetricProcessingRules?: str
@@ -12668,12 +15271,15 @@ schema ValuesWindowsHosts:
     scheme?: str
     scrapeInterval?: str
     scrapeTimeout?: str
+    source?: str
+    [...str]: any
 
 schema ValuesWindowsHostsLabelMatchers:
     r"""
-    Labels used to select the Windows Exporter pods. If deploying from telemetry services, this will automatically be
-     # populated.
+    Labels used to select the Windows Exporter pods. Required when connecting to an existing Windows Exporter; if
+    deploying from telemetry services, this will automatically be populated.
     """
+
     [...str]: any
 
 schema ValuesWindowsHostsMetricsTuning:
@@ -12689,10 +15295,11 @@ schema ValuesWindowsHostsMetricsTuning:
     useDefaultAllowList : bool, optional, default is True
         Filter the list of metrics from Windows Exporter to the minimal set required for Kubernetes Monitoring.
     """
-    [...str]: any
+
     excludeMetrics?: [any]
     includeMetrics?: [any]
     useDefaultAllowList?: bool
+    [...str]: any
 
 schema ValuesWriteAheadLog:
     r"""
@@ -12700,15 +15307,31 @@ schema ValuesWriteAheadLog:
 
     Attributes
     ----------
+    drainTimeout : str, optional
+        Maximum time the WAL drain procedure can take, before being forcefully stopped.
+    enabled : bool, optional
+        Whether to enable the WAL.
     maxKeepaliveTime : str, optional
         Maximum time to keep data in the write-ahead log before removing it.
+    maxReadFrequency : str, optional
+        Maximum backoff time in the backup read mechanism.
+    maxSegmentAge : str, optional
+        Maximum time a WAL segment should be allowed to live. Segments older than this setting are eventually deleted.
     minKeepaliveTime : str, optional
         Minimum time to keep data in the write-ahead log before it can be removed.
+    minReadFrequency : str, optional
+        Minimum backoff time in the backup read mechanism.
     truncateFrequency : str, optional
         How frequently to clean up the write-ahead log.
     """
-    [...str]: any
+
+    drainTimeout?: str
+    enabled?: bool
     maxKeepaliveTime?: str
+    maxReadFrequency?: str
+    maxSegmentAge?: str
     minKeepaliveTime?: str
+    minReadFrequency?: str
     truncateFrequency?: str
+    [...str]: any
 
