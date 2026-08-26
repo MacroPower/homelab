@@ -14,10 +14,10 @@ schema Chart(helm.Chart):
     values : Values | any, optional
     chart : str, required, default is "dagger-helm"
     repoURL : str, required, default is "oci://registry.dagger.io/dagger-helm"
-    targetRevision : str, optional, default is "0.20.6"
+    targetRevision : str, optional, default is "0.21.9"
     """
     values?: Values | any
     chart: str = "dagger-helm"
     repoURL: str = "oci://registry.dagger.io/dagger-helm"
-    targetRevision?: str = "0.20.6"
+    targetRevision?: str = "0.21.9"
 

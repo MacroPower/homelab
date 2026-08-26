@@ -386,7 +386,7 @@ charts: helm.Charts = {
     dagger_helm: {
         chart = "dagger-helm"
         repoURL = "oci://registry.dagger.io/dagger-helm"
-        targetRevision = "0.20.6"
+        targetRevision = "0.21.9"
         schemaGenerator = "AUTO"
     }
     gha_runner_scale_set_controller: {
