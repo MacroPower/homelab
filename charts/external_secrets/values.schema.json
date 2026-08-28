@@ -33,6 +33,10 @@
           "required": [],
           "type": "object"
         },
+        "enablePartialCache": {
+          "required": [],
+          "type": "boolean"
+        },
         "extraArgs": {
           "required": [],
           "type": "object"
@@ -94,6 +98,43 @@
           "required": [],
           "type": "array"
         },
+        "livenessProbe": {
+          "properties": {
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "required": [],
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
         "log": {
           "properties": {
             "level": {
@@ -112,9 +153,41 @@
           "properties": {
             "listen": {
               "properties": {
+                "auth": {
+                  "properties": {
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
                 "port": {
                   "required": [],
                   "type": "integer"
+                },
+                "secure": {
+                  "properties": {
+                    "certDir": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "certFile": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    },
+                    "keyFile": {
+                      "required": [],
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
                 }
               },
               "required": [],
@@ -137,6 +210,51 @@
               },
               "required": [],
               "type": "object"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
+        "networkPolicy": {
+          "properties": {
+            "egress": {
+              "required": [],
+              "type": "array"
+            },
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "ingress": {
+              "items": {
+                "properties": {
+                  "ports": {
+                    "items": {
+                      "properties": {
+                        "port": {
+                          "required": [],
+                          "type": [
+                            "string",
+                            "integer"
+                          ]
+                        },
+                        "protocol": {
+                          "required": [],
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "type": "array"
             }
           },
           "required": [],
@@ -205,7 +323,34 @@
               "required": [],
               "type": "string"
             },
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
             "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
               "required": [],
               "type": "integer"
             }
@@ -228,6 +373,14 @@
         "revisionHistoryLimit": {
           "required": [],
           "type": "integer"
+        },
+        "runtimeClassName": {
+          "required": [],
+          "type": "string"
+        },
+        "schedulerName": {
+          "required": [],
+          "type": "string"
         },
         "securityContext": {
           "properties": {
@@ -311,19 +464,41 @@
               "required": [],
               "type": "boolean"
             },
-            "port": {
+            "failureThreshold": {
               "required": [],
-              "type": "string"
+              "type": "integer"
             },
-            "useReadinessProbePort": {
+            "initialDelaySeconds": {
               "required": [],
-              "type": "boolean"
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
             }
           },
           "required": [],
           "type": "object"
         },
         "strategy": {
+          "required": [],
+          "type": "object"
+        },
+        "tls": {
+          "properties": {
+            "ciphers": {
+              "required": [],
+              "type": "string"
+            },
+            "curvePreferences": {
+              "required": [],
+              "type": "array"
+            },
+            "minVersion": {
+              "required": [],
+              "type": "string"
+            }
+          },
           "required": [],
           "type": "object"
         },
@@ -602,6 +777,22 @@
       "required": [],
       "type": "boolean"
     },
+    "leaderElectionID": {
+      "required": [],
+      "type": "string"
+    },
+    "leaderElectionLeaseDuration": {
+      "required": [],
+      "type": "string"
+    },
+    "leaderElectionRenewDeadline": {
+      "required": [],
+      "type": "string"
+    },
+    "leaderElectionRetryPeriod": {
+      "required": [],
+      "type": "string"
+    },
     "livenessProbe": {
       "properties": {
         "enabled": {
@@ -681,6 +872,16 @@
       "properties": {
         "listen": {
           "properties": {
+            "auth": {
+              "properties": {
+                "enabled": {
+                  "required": [],
+                  "type": "boolean"
+                }
+              },
+              "required": [],
+              "type": "object"
+            },
             "port": {
               "required": [],
               "type": "integer"
@@ -740,6 +941,51 @@
     "namespaceOverride": {
       "required": [],
       "type": "string"
+    },
+    "networkPolicy": {
+      "properties": {
+        "egress": {
+          "required": [],
+          "type": "array"
+        },
+        "enabled": {
+          "required": [],
+          "type": "boolean"
+        },
+        "ingress": {
+          "items": {
+            "properties": {
+              "ports": {
+                "items": {
+                  "properties": {
+                    "port": {
+                      "required": [],
+                      "type": [
+                        "string",
+                        "integer"
+                      ]
+                    },
+                    "protocol": {
+                      "required": [],
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
+                "required": [],
+                "type": "array"
+              }
+            },
+            "required": [],
+            "type": "object"
+          },
+          "required": [],
+          "type": "array"
+        }
+      },
+      "required": [],
+      "type": "object"
     },
     "nodeSelector": {
       "required": [],
@@ -822,6 +1068,10 @@
     },
     "rbac": {
       "properties": {
+        "aggregateToAdmin": {
+          "required": [],
+          "type": "boolean"
+        },
         "aggregateToEdit": {
           "required": [],
           "type": "boolean"
@@ -831,6 +1081,10 @@
           "type": "boolean"
         },
         "create": {
+          "required": [],
+          "type": "boolean"
+        },
+        "serviceAccountTokenCreate": {
           "required": [],
           "type": "boolean"
         },
@@ -912,6 +1166,14 @@
     "revisionHistoryLimit": {
       "required": [],
       "type": "integer"
+    },
+    "runtimeClassName": {
+      "required": [],
+      "type": "string"
+    },
+    "schedulerName": {
+      "required": [],
+      "type": "string"
     },
     "scopedNamespace": {
       "required": [],
@@ -1058,6 +1320,10 @@
       "required": [],
       "type": "object"
     },
+    "storeRequeueInterval": {
+      "required": [],
+      "type": "string"
+    },
     "strategy": {
       "required": [],
       "type": "object"
@@ -1066,6 +1332,24 @@
       "required": [],
       "type": "boolean"
     },
+    "tls": {
+      "properties": {
+        "ciphers": {
+          "required": [],
+          "type": "string"
+        },
+        "curvePreferences": {
+          "required": [],
+          "type": "array"
+        },
+        "minVersion": {
+          "required": [],
+          "type": "string"
+        }
+      },
+      "required": [],
+      "type": "object"
+    },
     "tolerations": {
       "required": [],
       "type": "array"
@@ -1073,6 +1357,20 @@
     "topologySpreadConstraints": {
       "required": [],
       "type": "array"
+    },
+    "vault": {
+      "properties": {
+        "enableTokenCache": {
+          "required": [],
+          "type": "boolean"
+        },
+        "tokenCacheSize": {
+          "required": [],
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "type": "object"
     },
     "webhook": {
       "properties": {
@@ -1231,6 +1529,43 @@
           "required": [],
           "type": "array"
         },
+        "livenessProbe": {
+          "properties": {
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "required": [],
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
         "log": {
           "properties": {
             "level": {
@@ -1253,9 +1588,41 @@
           "properties": {
             "listen": {
               "properties": {
+                "auth": {
+                  "properties": {
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
+                },
                 "port": {
                   "required": [],
                   "type": "integer"
+                },
+                "secure": {
+                  "properties": {
+                    "certDir": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "certFile": {
+                      "required": [],
+                      "type": "string"
+                    },
+                    "enabled": {
+                      "required": [],
+                      "type": "boolean"
+                    },
+                    "keyFile": {
+                      "required": [],
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "type": "object"
                 }
               },
               "required": [],
@@ -1278,6 +1645,51 @@
               },
               "required": [],
               "type": "object"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
+        "networkPolicy": {
+          "properties": {
+            "egress": {
+              "required": [],
+              "type": "array"
+            },
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "ingress": {
+              "items": {
+                "properties": {
+                  "ports": {
+                    "items": {
+                      "properties": {
+                        "port": {
+                          "required": [],
+                          "type": [
+                            "string",
+                            "integer"
+                          ]
+                        },
+                        "protocol": {
+                          "required": [],
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "type": "array"
             }
           },
           "required": [],
@@ -1340,7 +1752,34 @@
               "required": [],
               "type": "string"
             },
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            },
             "port": {
+              "required": [],
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "successThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "timeoutSeconds": {
               "required": [],
               "type": "integer"
             }
@@ -1359,6 +1798,14 @@
         "revisionHistoryLimit": {
           "required": [],
           "type": "integer"
+        },
+        "runtimeClassName": {
+          "required": [],
+          "type": "string"
+        },
+        "schedulerName": {
+          "required": [],
+          "type": "string"
         },
         "secretAnnotations": {
           "required": [],
@@ -1466,7 +1913,47 @@
           "required": [],
           "type": "object"
         },
+        "startupProbe": {
+          "properties": {
+            "enabled": {
+              "required": [],
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "required": [],
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "required": [],
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "required": [],
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "type": "object"
+        },
         "strategy": {
+          "required": [],
+          "type": "object"
+        },
+        "tls": {
+          "properties": {
+            "ciphers": {
+              "required": [],
+              "type": "string"
+            },
+            "curvePreferences": {
+              "required": [],
+              "type": "array"
+            },
+            "minVersion": {
+              "required": [],
+              "type": "string"
+            }
+          },
           "required": [],
           "type": "object"
         },

@@ -30,7 +30,7 @@ charts: helm.Charts = {
     external_secrets: {
         chart = "external-secrets"
         repoURL = "https://charts.external-secrets.io/"
-        targetRevision = "2.2.0"
+        targetRevision = "2.10.0"
         schemaGenerator = "AUTO"
         crdGenerator = "TEMPLATE"
         values: {
