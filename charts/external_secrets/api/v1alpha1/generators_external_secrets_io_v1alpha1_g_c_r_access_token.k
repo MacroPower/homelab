@@ -144,6 +144,13 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
         externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
         credential_source.url in the provided credConfig. This field is merely to double-check the external token source
         URL is having the expected value.
+    gcpServiceAccountEmail : str, default is Undefined, optional
+        GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+        after Workload Identity Federation. Use this to grant access through the service account's
+        IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+        service_account_impersonation_url in the external account JSON from credConfig;
+        when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+        on that ServiceAccount.
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef, default is Undefined, optional
         service account ref
     """
@@ -151,7 +158,12 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
     awsSecurityCredentials?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials
     credConfig?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationCredConfig
     externalTokenEndpoint?: str
+    gcpServiceAccountEmail?: str
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef
+
+    check:
+        len(gcpServiceAccountEmail) >= 1 if gcpServiceAccountEmail
+        _regex_match(str(gcpServiceAccountEmail), r"^.*@.*\.iam\.gserviceaccount\.com$") if gcpServiceAccountEmail
 
 schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials:
     r"""
@@ -242,8 +254,8 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -271,8 +283,8 @@ schema GeneratorsExternalSecretsIoV1alpha1GCRAccessTokenSpecAuthWorkloadIdentity
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional

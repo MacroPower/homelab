@@ -59,6 +59,8 @@ schema ExternalSecretsIoV1ExternalSecretSpec:
         - OnChange: Only synchronizes the Secret when the ExternalSecret's metadata or specification changes
     secretStoreRef : ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef, default is Undefined, optional
         secret store ref
+    syncWindows : ExternalSecretsIoV1ExternalSecretSpecSyncWindows, default is Undefined, optional
+        sync windows
     target : ExternalSecretsIoV1ExternalSecretSpecTarget, default is Undefined, optional
         target
     """
@@ -67,6 +69,7 @@ schema ExternalSecretsIoV1ExternalSecretSpec:
     refreshInterval?: str = "1h0m0s"
     refreshPolicy?: "CreatedOnce" | "Periodic" | "OnChange"
     secretStoreRef?: ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef
+    syncWindows?: ExternalSecretsIoV1ExternalSecretSpecSyncWindows
     target?: ExternalSecretsIoV1ExternalSecretSpecTarget
 
 schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0:
@@ -98,24 +101,27 @@ schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Extract:
 
     Attributes
     ----------
-    conversionStrategy : str, default is "Default", optional
-        Used to define a conversion Strategy
-    decodingStrategy : str, default is "None", optional
-        Used to define a decoding Strategy
+    conversionStrategy : str, default is Undefined, optional
+        Used to define a conversion Strategy. Defaults to Default when omitted.
+    decodingStrategy : str, default is Undefined, optional
+        Used to define a decoding Strategy. Defaults to None when omitted.
     key : str, default is Undefined, required
         Key is the key used in the Provider, mandatory
-    metadataPolicy : str, default is "None", optional
+    metadataPolicy : str, default is Undefined, optional
         Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+    nullBytePolicy : str, default is Undefined, optional
+        Controls how ESO handles fetched secret data containing NUL bytes for this source.
     property : str, default is Undefined, optional
         Used to select a specific property of the Provider value (if a map), if supported
     version : str, default is Undefined, optional
         Used to select a specific version of the Provider value, if supported
     """
-    conversionStrategy?: "Default" | "Unicode" = "Default"
-    decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
+    conversionStrategy?: "Default" | "Unicode"
+    decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None"
     key: str
 
-    metadataPolicy?: "None" | "Fetch" = "None"
+    metadataPolicy?: "None" | "Fetch"
+    nullBytePolicy?: "Ignore" | "Fail"
     property?: str
     version?: str
 
@@ -126,20 +132,23 @@ schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0Find:
 
     Attributes
     ----------
-    conversionStrategy : str, default is "Default", optional
-        Used to define a conversion Strategy
-    decodingStrategy : str, default is "None", optional
-        Used to define a decoding Strategy
+    conversionStrategy : str, default is Undefined, optional
+        Used to define a conversion Strategy. Defaults to Default when omitted.
+    decodingStrategy : str, default is Undefined, optional
+        Used to define a decoding Strategy. Defaults to None when omitted.
     name : ExternalSecretsIoV1ExternalSecretSpecDataFromItems0FindName, default is Undefined, optional
         name
+    nullBytePolicy : str, default is Undefined, optional
+        Controls how ESO handles fetched secret data containing NUL bytes for this find source.
     path : str, default is Undefined, optional
         A root path to start the find operations.
     tags : {str:str}, default is Undefined, optional
         Find secrets based on tags.
     """
-    conversionStrategy?: "Default" | "Unicode" = "Default"
-    decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
+    conversionStrategy?: "Default" | "Unicode"
+    decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None"
     name?: ExternalSecretsIoV1ExternalSecretSpecDataFromItems0FindName
+    nullBytePolicy?: "Ignore" | "Fail"
     path?: str
     tags?: {str:str}
 
@@ -258,7 +267,7 @@ schema ExternalSecretsIoV1ExternalSecretSpecDataFromItems0SourceRefGeneratorRef:
         Specify the name of the generator resource
     """
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-    kind: "ACRAccessToken" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
+    kind: "ACRAccessToken" | "BeyondtrustWorkloadCredentialsDynamicSecret" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "GitlabDeployToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
 
     name: str
 
@@ -318,24 +327,27 @@ schema ExternalSecretsIoV1ExternalSecretSpecDataItems0RemoteRef:
 
     Attributes
     ----------
-    conversionStrategy : str, default is "Default", optional
-        Used to define a conversion Strategy
-    decodingStrategy : str, default is "None", optional
-        Used to define a decoding Strategy
+    conversionStrategy : str, default is Undefined, optional
+        Used to define a conversion Strategy. Defaults to Default when omitted.
+    decodingStrategy : str, default is Undefined, optional
+        Used to define a decoding Strategy. Defaults to None when omitted.
     key : str, default is Undefined, required
         Key is the key used in the Provider, mandatory
-    metadataPolicy : str, default is "None", optional
+    metadataPolicy : str, default is Undefined, optional
         Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+    nullBytePolicy : str, default is Undefined, optional
+        Controls how ESO handles fetched secret data containing NUL bytes for this source.
     property : str, default is Undefined, optional
         Used to select a specific property of the Provider value (if a map), if supported
     version : str, default is Undefined, optional
         Used to select a specific version of the Provider value, if supported
     """
-    conversionStrategy?: "Default" | "Unicode" = "Default"
-    decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None" = "None"
+    conversionStrategy?: "Default" | "Unicode"
+    decodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None"
     key: str
 
-    metadataPolicy?: "None" | "Fetch" = "None"
+    metadataPolicy?: "None" | "Fetch"
+    nullBytePolicy?: "Ignore" | "Fail"
     property?: str
     version?: str
 
@@ -371,7 +383,7 @@ schema ExternalSecretsIoV1ExternalSecretSpecDataItems0SourceRefGeneratorRef:
         Specify the name of the generator resource
     """
     apiVersion?: str = "generators.external-secrets.io/v1alpha1"
-    kind: "ACRAccessToken" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
+    kind: "ACRAccessToken" | "BeyondtrustWorkloadCredentialsDynamicSecret" | "ClusterGenerator" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "GitlabDeployToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
 
     name: str
 
@@ -420,6 +432,53 @@ schema ExternalSecretsIoV1ExternalSecretSpecSecretStoreRef:
         len(name) >= 1 if name
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
 
+schema ExternalSecretsIoV1ExternalSecretSpecSyncWindows:
+    r"""
+    SyncWindows optionally restricts when periodic refreshes may occur.
+    Evaluated in UTC, only for Periodic refresh policy (or when refreshPolicy is unset).
+
+    Attributes
+    ----------
+    kind : str, default is Undefined, required
+        Kind applies to every window in the list.
+        "allow" -- syncs are permitted only while at least one window is active;
+                   all other times are blocked.
+        "deny"  -- syncs are blocked while any window is active;
+                   all other times are permitted.
+    windows : [ExternalSecretsIoV1ExternalSecretSpecSyncWindowsWindowsItems0], default is Undefined, required
+        Windows is the list of schedule+duration pairs.
+    """
+    kind: "allow" | "deny"
+
+    windows: [ExternalSecretsIoV1ExternalSecretSpecSyncWindowsWindowsItems0]
+
+    check:
+        len(windows) >= 1
+
+schema ExternalSecretsIoV1ExternalSecretSpecSyncWindowsWindowsItems0:
+    r"""
+    ExternalSecretSyncWindowEntry defines a single cron-schedule + duration pair
+    within a SyncWindows block.
+
+    Attributes
+    ----------
+    duration : str, default is Undefined, required
+        Duration specifies how long the window stays open after each Schedule
+        firing. Example: "8h".
+    schedule : str, default is Undefined, required
+        Schedule is a standard 5-field cron expression evaluated in UTC, or a
+        named shorthand such as @daily or @every 1h. It marks the start time of
+        each window occurrence.
+        Example: "0 22 * * 1-5" opens a window every weekday at 22:00 UTC.
+    """
+    duration: str
+
+    schedule: str
+
+    check:
+        len(schedule) >= 1
+        _regex_match(str(schedule), r"^(@(annually|yearly|monthly|weekly|daily|midnight|hourly)|@every [^\s]+.*|[^\s]+( [^\s]+){4})$")
+
 schema ExternalSecretsIoV1ExternalSecretSpecTarget:
     r"""
     ExternalSecretTarget defines the Kubernetes Secret to be created,
@@ -443,7 +502,7 @@ schema ExternalSecretsIoV1ExternalSecretSpecTarget:
     template : ExternalSecretsIoV1ExternalSecretSpecTargetTemplate, default is Undefined, optional
         template
     """
-    creationPolicy?: "Owner" | "Orphan" | "Merge" | "None" = "Owner"
+    creationPolicy?: "Owner" | "Orphan" | "Merge" | "None" | "CreateOrMerge" = "Owner"
     deletionPolicy?: "Delete" | "Merge" | "Retain" = "Retain"
     immutable?: bool
     manifest?: ExternalSecretsIoV1ExternalSecretSpecTargetManifest
@@ -537,14 +596,19 @@ schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0:
         secret
     target : str, default is "Data", optional
         Target specifies where to place the template result.
-        For Secret resources, common values are: "Data", "Annotations", "Labels".
+        For Secret resources the accepted values are empty, "Data", "Annotations" and "Labels";
+        any other value is rejected because it would allow writes to privileged Secret fields.
         For custom resources (when spec.target.manifest is set), this supports
         nested paths like "spec.database.config" or "data".
+    valuesDecodingStrategy : str, default is Undefined, optional
+        Used to define a decoding Strategy for the rendered template values.
+        Defaults to None when omitted.
     """
     configMap?: ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap
     literal?: str
     secret?: ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0Secret
     target?: str = "Data"
+    valuesDecodingStrategy?: "Auto" | "Base64" | "Base64URL" | "None"
 
 schema ExternalSecretsIoV1ExternalSecretSpecTargetTemplateTemplateFromItems0ConfigMap:
     r"""
