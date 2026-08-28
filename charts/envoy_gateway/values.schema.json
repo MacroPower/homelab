@@ -49,6 +49,52 @@
                   "required": [],
                   "title": "labels",
                   "type": "object"
+                },
+                "securityContext": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "fsGroup": {
+                      "default": 65532,
+                      "required": [],
+                      "title": "fsGroup",
+                      "type": "integer"
+                    },
+                    "runAsGroup": {
+                      "default": 65532,
+                      "required": [],
+                      "title": "runAsGroup",
+                      "type": "integer"
+                    },
+                    "runAsNonRoot": {
+                      "default": true,
+                      "required": [],
+                      "title": "runAsNonRoot",
+                      "type": "boolean"
+                    },
+                    "runAsUser": {
+                      "default": 65532,
+                      "required": [],
+                      "title": "runAsUser",
+                      "type": "integer"
+                    },
+                    "seccompProfile": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "type": {
+                          "default": "RuntimeDefault",
+                          "required": [],
+                          "title": "type",
+                          "type": "string"
+                        }
+                      },
+                      "required": [],
+                      "title": "seccompProfile",
+                      "type": "object"
+                    }
+                  },
+                  "required": [],
+                  "title": "securityContext",
+                  "type": "object"
                 }
               },
               "required": [],
@@ -180,6 +226,13 @@
       "title": "certgen",
       "type": "object"
     },
+    "commonLabels": {
+      "additionalProperties": true,
+      "description": "Labels to apply to all resources",
+      "required": [],
+      "title": "commonLabels",
+      "type": "object"
+    },
     "config": {
       "additionalProperties": true,
       "properties": {
@@ -253,6 +306,22 @@
       "title": "config",
       "type": "object"
     },
+    "crds": {
+      "additionalProperties": true,
+      "description": "Values for CRDs dependency",
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Install Envoy Gateway CRDs, Gateway API CRDs, and Gateway API safe upgrade policy resources. Set to false when these resources are managed separately.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "crds",
+      "type": "object"
+    },
     "createNamespace": {
       "default": false,
       "required": [],
@@ -271,6 +340,15 @@
         "envoyGateway": {
           "additionalProperties": true,
           "properties": {
+            "extraEnv": {
+              "description": "Additional environment variables for the envoy-gateway container.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraEnv",
+              "type": "array"
+            },
             "image": {
               "additionalProperties": true,
               "properties": {
@@ -305,6 +383,98 @@
               "required": [],
               "title": "imagePullSecrets",
               "type": "array"
+            },
+            "livenessProbe": {
+              "additionalProperties": true,
+              "properties": {
+                "httpGet": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "path": {
+                      "default": "/healthz",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 8081,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "periodSeconds": {
+                  "default": 20,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "successThreshold": {
+                  "default": 1,
+                  "required": [],
+                  "title": "successThreshold",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "livenessProbe",
+              "type": "object"
+            },
+            "readinessProbe": {
+              "additionalProperties": true,
+              "properties": {
+                "httpGet": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "path": {
+                      "default": "/readyz",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 8081,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "periodSeconds": {
+                  "default": 10,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "successThreshold": {
+                  "default": 1,
+                  "required": [],
+                  "title": "successThreshold",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "readinessProbe",
+              "type": "object"
             },
             "resources": {
               "additionalProperties": true,
@@ -380,6 +550,12 @@
                   "title": "privileged",
                   "type": "boolean"
                 },
+                "readOnlyRootFilesystem": {
+                  "default": true,
+                  "required": [],
+                  "title": "readOnlyRootFilesystem",
+                  "type": "boolean"
+                },
                 "runAsGroup": {
                   "default": 65532,
                   "required": [],
@@ -416,6 +592,72 @@
               "required": [],
               "title": "securityContext",
               "type": "object"
+            },
+            "startupProbe": {
+              "additionalProperties": true,
+              "description": "Kubernetes best practice for controllers: use a startupProbe with a generous\nfailure threshold to avoid premature liveness/readiness failures during initialization.\nRef: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes",
+              "properties": {
+                "failureThreshold": {
+                  "default": 30,
+                  "required": [],
+                  "title": "failureThreshold",
+                  "type": "integer"
+                },
+                "httpGet": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "path": {
+                      "default": "/healthz",
+                      "required": [],
+                      "title": "path",
+                      "type": "string"
+                    },
+                    "port": {
+                      "default": 8081,
+                      "required": [],
+                      "title": "port",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [],
+                  "title": "httpGet",
+                  "type": "object"
+                },
+                "periodSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "periodSeconds",
+                  "type": "integer"
+                },
+                "successThreshold": {
+                  "default": 1,
+                  "required": [],
+                  "title": "successThreshold",
+                  "type": "integer"
+                },
+                "timeoutSeconds": {
+                  "default": 1,
+                  "required": [],
+                  "title": "timeoutSeconds",
+                  "type": "integer"
+                }
+              },
+              "required": [],
+              "title": "startupProbe",
+              "type": "object"
+            },
+            "strategy": {
+              "additionalProperties": true,
+              "description": "Volume source for the Wasm module cache mounted at /var/lib/eg/wasm. Defaults to an emptyDir when left empty.\nExample: persist the Wasm module cache across controller restarts by backing it with a PersistentVolumeClaim:\n  wasmCacheVolume:\n    persistentVolumeClaim:\n      claimName: envoy-gateway-wasm-cache",
+              "required": [],
+              "title": "strategy",
+              "type": "object"
+            },
+            "wasmCacheVolume": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "wasmCacheVolume",
+              "type": "object"
             }
           },
           "required": [],
@@ -451,6 +693,24 @@
               "title": "annotations",
               "type": "object"
             },
+            "extraVolumeMounts": {
+              "description": "Additional volumeMounts on the deployment definition.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumeMounts",
+              "type": "array"
+            },
+            "extraVolumes": {
+              "description": "- name: foo\n  mountPath: \"/etc/foo\"\n  readOnly: true\nAdditional volumes on the deployment definition.",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraVolumes",
+              "type": "array"
+            },
             "labels": {
               "additionalProperties": true,
               "required": [],
@@ -461,6 +721,53 @@
               "additionalProperties": true,
               "required": [],
               "title": "nodeSelector",
+              "type": "object"
+            },
+            "securityContext": {
+              "additionalProperties": true,
+              "description": "- name: foo\n  configMap:\n    name: myconfigmap",
+              "properties": {
+                "fsGroup": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "fsGroup",
+                  "type": "integer"
+                },
+                "runAsGroup": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "runAsGroup",
+                  "type": "integer"
+                },
+                "runAsNonRoot": {
+                  "default": true,
+                  "required": [],
+                  "title": "runAsNonRoot",
+                  "type": "boolean"
+                },
+                "runAsUser": {
+                  "default": 65532,
+                  "required": [],
+                  "title": "runAsUser",
+                  "type": "integer"
+                },
+                "seccompProfile": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "type": {
+                      "default": "RuntimeDefault",
+                      "required": [],
+                      "title": "type",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "seccompProfile",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "securityContext",
               "type": "object"
             },
             "tolerations": {
@@ -531,6 +838,28 @@
       "title": "deployment",
       "type": "object"
     },
+    "gatewayAPI": {
+      "additionalProperties": true,
+      "properties": {
+        "safeUpgradePolicy": {
+          "additionalProperties": true,
+          "properties": {
+            "enabled": {
+              "default": true,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            }
+          },
+          "required": [],
+          "title": "safeUpgradePolicy",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "gatewayAPI",
+      "type": "object"
+    },
     "global": {
       "additionalProperties": true,
       "description": "Global settings",
@@ -546,7 +875,7 @@
         },
         "imageRegistry": {
           "default": "",
-          "description": "If set, these take highest precedence and change both envoyGateway and ratelimit's container registry and pull secrets.\nGlobal override for image registry",
+          "description": "If set, these take highest precedence and change envoyGateway, envoyProxy, and ratelimit's container registry and pull secrets.\nGlobal override for image registry",
           "required": [],
           "title": "imageRegistry",
           "type": "string"
@@ -559,21 +888,21 @@
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/gateway:v1.7.1",
-                  "description": "This is the full image name including the hub, repo, and tag.",
+                  "default": "docker.io/envoyproxy/gateway:v1.9.1",
+                  "description": "Full image for the Envoy Gateway control plane Deployment installed by this chart.",
                   "required": [],
                   "title": "image",
                   "type": "string"
                 },
                 "pullPolicy": {
                   "default": "IfNotPresent",
-                  "description": "Specify image pull policy if default behavior isn't desired.\nDefault behavior: latest images will be Always else IfNotPresent.",
+                  "description": "Image pull policy for the Envoy Gateway control plane Deployment.\nDefault behavior: latest images will be Always else IfNotPresent.",
                   "required": [],
                   "title": "pullPolicy",
                   "type": "string"
                 },
                 "pullSecrets": {
-                  "description": "List of secrets in the same namespace of the component that can be used to pull images from private repositories.",
+                  "description": "Pull secrets for the Envoy Gateway control plane Deployment.",
                   "items": {
                     "required": []
                   },
@@ -586,11 +915,42 @@
               "title": "envoyGateway",
               "type": "object"
             },
+            "envoyProxy": {
+              "additionalProperties": true,
+              "properties": {
+                "image": {
+                  "default": "",
+                  "description": "Full image for the managed Envoy Proxy data plane.\nThis updates the generated `envoyProxy` config and does not change the `envoy-gateway`\ncontrol plane Deployment image. If not specified, the default image built into\n`envoy-gateway` is used.",
+                  "required": [],
+                  "title": "image",
+                  "type": "string"
+                },
+                "pullPolicy": {
+                  "default": "",
+                  "description": "Image pull policy for the managed Envoy Proxy data plane.\nDefault behavior: IfNotPresent.",
+                  "required": [],
+                  "title": "pullPolicy",
+                  "type": "string"
+                },
+                "pullSecrets": {
+                  "description": "Pull secrets for the managed Envoy Proxy data plane.",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "pullSecrets",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "envoyProxy",
+              "type": "object"
+            },
             "ratelimit": {
               "additionalProperties": true,
               "properties": {
                 "image": {
-                  "default": "docker.io/envoyproxy/ratelimit:c8765e89",
+                  "default": "docker.io/envoyproxy/ratelimit:8fe6ea42",
                   "description": "This is the full image name including the hub, repo, and tag.",
                   "required": [],
                   "title": "image",
@@ -671,6 +1031,13 @@
       "default": "cluster.local",
       "required": [],
       "title": "kubernetesClusterDomain",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Override the namespace for resources deployed by the chart.\nDefaults to the release namespace.",
+      "required": [],
+      "title": "namespaceOverride",
       "type": "string"
     },
     "podDisruptionBudget": {

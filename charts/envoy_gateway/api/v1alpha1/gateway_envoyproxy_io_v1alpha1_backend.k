@@ -113,7 +113,7 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecEndpointsItems0Fqdn:
     check:
         len(hostname) <= 253
         len(hostname) >= 1
-        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\.?$")
         port <= 65535
         port >= 0
 
@@ -176,6 +176,14 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         - http/1.0
         - http/1.1
         - h2
+    autoSNIFromEndpointHostname : bool, default is Undefined, optional
+        AutoSNIFromEndpointHostname indicates whether the upstream endpoint's hostname should be used as the SNI value
+        when establishing a TLS connection to the backend.
+        This uses the resolved hostname of the upstream endpoint (e.g., from the Backend Endpoints list),
+        rather than a static value.
+
+        Mutually exclusive with SNI. When a BackendTLSPolicy is attached, its Hostname value takes
+        precedence and AutoSNIFromEndpointHostname is ignored.
     caCertificateRefs : [GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0], default is Undefined, optional
         CACertificateRefs contains one or more references to Kubernetes objects that
         contain TLS certificates of the Certificate Authorities that can be used
@@ -190,6 +198,39 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
     ciphers : [str], default is Undefined, optional
         Ciphers specifies the set of cipher suites supported when
         negotiating TLS 1.0 - 1.2. This setting has no effect for TLS 1.3.
+        For Envoy TLS cipher suite configuration semantics and default cipher
+        lists, see the Envoy documentation:
+        https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/transport_sockets/tls/v3/common.proto#extensions-transport-sockets-tls-v3-tlsparameters
+        Supported cipher suite names:
+        - ECDHE-ECDSA-AES128-GCM-SHA256
+        - ECDHE-RSA-AES128-GCM-SHA256
+        - ECDHE-ECDSA-AES256-GCM-SHA384
+        - ECDHE-RSA-AES256-GCM-SHA384
+        - ECDHE-ECDSA-CHACHA20-POLY1305
+        - ECDHE-RSA-CHACHA20-POLY1305
+        - ECDHE-ECDSA-AES128-SHA
+        - ECDHE-RSA-AES128-SHA
+        - AES128-GCM-SHA256
+        - AES128-SHA
+        - ECDHE-ECDSA-AES256-SHA
+        - ECDHE-RSA-AES256-SHA
+        - AES256-GCM-SHA384
+        - AES256-SHA
+        Supported IANA/RFC aliases:
+        - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+        - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
+        - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+        - TLS_RSA_WITH_AES_128_GCM_SHA256
+        - TLS_RSA_WITH_AES_128_CBC_SHA
+        - TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA
+        - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA
+        - TLS_RSA_WITH_AES_256_GCM_SHA384
+        - TLS_RSA_WITH_AES_256_CBC_SHA
         In non-FIPS Envoy Proxy builds the default cipher list is:
         - [ECDHE-ECDSA-AES128-GCM-SHA256|ECDHE-ECDSA-CHACHA20-POLY1305]
         - [ECDHE-RSA-AES128-GCM-SHA256|ECDHE-RSA-CHACHA20-POLY1305]
@@ -209,6 +250,17 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         - P-256
         In builds using BoringSSL FIPS the default curve is:
         - P-256
+    fingerprints : [str], default is Undefined, optional
+        Fingerprints specifies TLS client fingerprinting.
+        When specified, a JAX fingerprint derived from the client’s TLS handshake
+        is generated. The fingerprint can be logged in access logs or
+        forwarded to upstream services using request headers.
+
+        Fingerprinting is disabled if not specified.
+
+        Supported values are:
+        - JA3
+        - JA4
     insecureSkipVerify : bool, default is Undefined, optional
         InsecureSkipVerify indicates whether the upstream's certificate verification
         should be skipped. Defaults to "false".
@@ -222,14 +274,17 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         SignatureAlgorithms specifies which signature algorithms the listener should
         support.
     sni : str, default is Undefined, optional
-        SNI is specifies the SNI value used when establishing an upstream TLS connection to the backend.
+        SNI specifies the fixed SNI value used when establishing an upstream TLS connection to the backend.
 
         Envoy Gateway will use the HTTP host header value for SNI, when all resources referenced in BackendRefs are:
         1. Backend resources that do not set SNI, or
         2. Service/ServiceImport resources that do not have a BackendTLSPolicy attached to them
 
-        When a BackendTLSPolicy attaches to a Backend resource, the BackendTLSPolicy's Hostname value takes precedence
-        over this value.
+        If a BackendTLSPolicy is attached to the Backend resource, the BackendTLSPolicy's validation.hostname
+        value takes precedence over this field.
+
+        If no BackendTLSPolicy validation.hostname applies and both this field and AutoSNIFromEndpointHostname
+        are unset, Envoy Gateway configures Envoy to set the upstream SNI from the downstream HTTP host/authority header.
     wellKnownCACertificates : str, default is Undefined, optional
         WellKnownCACertificates specifies whether system CA certificates may be used in
         the TLS handshake between the gateway and backend pod.
@@ -239,22 +294,27 @@ schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLS:
         CACertificateRefs or WellKnownCACertificates may be specified, not both.
     """
     alpnProtocols?: [str]
+    autoSNIFromEndpointHostname?: bool
     caCertificateRefs?: [GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0]
     ciphers?: [str]
     clientCertificateRef?: GatewayEnvoyproxyIoV1alpha1BackendSpecTLSClientCertificateRef
     ecdhCurves?: [str]
+    fingerprints?: [str]
     insecureSkipVerify?: bool = False
     maxVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
     minVersion?: "Auto" | "1.0" | "1.1" | "1.2" | "1.3"
     signatureAlgorithms?: [str]
     sni?: str
-    wellKnownCACertificates?: "System"
+    wellKnownCACertificates?: str
 
     check:
         len(caCertificateRefs) <= 8 if caCertificateRefs
         len(sni) <= 253 if sni
         len(sni) >= 1 if sni
         _regex_match(str(sni), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sni
+        len(wellKnownCACertificates) <= 253 if wellKnownCACertificates
+        len(wellKnownCACertificates) >= 1 if wellKnownCACertificates
+        _regex_match(str(wellKnownCACertificates), r"^(System|([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]))$") if wellKnownCACertificates
 
 schema GatewayEnvoyproxyIoV1alpha1BackendSpecTLSCaCertificateRefsItems0:
     r"""

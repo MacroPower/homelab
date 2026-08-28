@@ -11,25 +11,37 @@ schema Values:
     ----------
     certgen : ValuesCertgen, optional
         Certgen is used to generate the certificates required by EnvoyGateway. If you want to construct a custom certificate, you can generate a custom certificate through Cert-Manager before installing EnvoyGateway. Certgen will not overwrite the custom certificate. Please do not manually modify `values.yaml` to disable certgen, it may cause EnvoyGateway OIDC,OAuth2,etc. to not work as expected.
+    commonLabels : ValuesCommonLabels, optional
+        Labels to apply to all resources
     config : ValuesConfig, optional
+    crds : ValuesCrds, optional
+        Values for CRDs dependency
     createNamespace : bool, optional, default is False
     deployment : ValuesDeployment, optional
+    gatewayAPI : ValuesGatewayApi, optional
     global : ValuesGlobal, optional
         Global settings
     hpa : ValuesHpa, optional
     kubernetesClusterDomain : str, optional, default is "cluster.local"
+    namespaceOverride : str, optional, default is ""
+        Override the namespace for resources deployed by the chart.
+        Defaults to the release namespace.
     podDisruptionBudget : ValuesPodDisruptionBudget, optional
     service : ValuesService, optional
     topologyInjector : ValuesTopologyInjector, optional
     """
     [...str]: any
     certgen?: ValuesCertgen
+    commonLabels?: ValuesCommonLabels
     config?: ValuesConfig
+    crds?: ValuesCrds
     createNamespace?: bool
     deployment?: ValuesDeployment
+    gatewayAPI?: ValuesGatewayApi
     global?: ValuesGlobal
     hpa?: ValuesHpa
     kubernetesClusterDomain?: str
+    namespaceOverride?: str
     podDisruptionBudget?: ValuesPodDisruptionBudget
     service?: ValuesService
     topologyInjector?: ValuesTopologyInjector
@@ -100,10 +112,12 @@ schema ValuesCertgenJobPod:
     ----------
     annotations : ValuesCertgenJobPodAnnotations, optional
     labels : ValuesCertgenJobPodLabels, optional
+    securityContext : ValuesCertgenJobPodSecurityContext, optional
     """
     [...str]: any
     annotations?: ValuesCertgenJobPodAnnotations
     labels?: ValuesCertgenJobPodLabels
+    securityContext?: ValuesCertgenJobPodSecurityContext
 
 schema ValuesCertgenJobPodAnnotations:
     r"""
@@ -116,6 +130,36 @@ schema ValuesCertgenJobPodLabels:
     ValuesCertgenJobPodLabels
     """
     [...str]: any
+
+schema ValuesCertgenJobPodSecurityContext:
+    r"""
+    ValuesCertgenJobPodSecurityContext
+
+    Attributes
+    ----------
+    fsGroup : int, optional, default is 65532
+    runAsGroup : int, optional, default is 65532
+    runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 65532
+    seccompProfile : ValuesCertgenJobPodSecurityContextSeccompProfile, optional
+    """
+    [...str]: any
+    fsGroup?: int
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesCertgenJobPodSecurityContextSeccompProfile
+
+schema ValuesCertgenJobPodSecurityContextSeccompProfile:
+    r"""
+    ValuesCertgenJobPodSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesCertgenJobResources:
     r"""
@@ -192,6 +236,12 @@ schema ValuesCertgenRbacAnnotations:
 schema ValuesCertgenRbacLabels:
     r"""
     ValuesCertgenRbacLabels
+    """
+    [...str]: any
+
+schema ValuesCommonLabels:
+    r"""
+    Labels to apply to all resources
     """
     [...str]: any
 
@@ -274,6 +324,18 @@ schema ValuesConfigEnvoyGatewayProvider:
     [...str]: any
     $type?: str
 
+schema ValuesCrds:
+    r"""
+    Values for CRDs dependency
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Install Envoy Gateway CRDs, Gateway API CRDs, and Gateway API safe upgrade policy resources. Set to false when these resources are managed separately.
+    """
+    [...str]: any
+    enabled?: bool
+
 schema ValuesDeployment:
     r"""
     ValuesDeployment
@@ -307,18 +369,39 @@ schema ValuesDeploymentEnvoyGateway:
 
     Attributes
     ----------
+    extraEnv : [any], optional
+        Additional environment variables for the envoy-gateway container.
     image : ValuesDeploymentEnvoyGatewayImage, optional
     imagePullPolicy : str, optional, default is ""
     imagePullSecrets : [any], optional
+    livenessProbe : ValuesDeploymentEnvoyGatewayLivenessProbe, optional
+    readinessProbe : ValuesDeploymentEnvoyGatewayReadinessProbe, optional
     resources : ValuesDeploymentEnvoyGatewayResources, optional
     securityContext : ValuesDeploymentEnvoyGatewaySecurityContext, optional
+    startupProbe : ValuesDeploymentEnvoyGatewayStartupProbe, optional
+        Kubernetes best practice for controllers: use a startupProbe with a generous
+        failure threshold to avoid premature liveness/readiness failures during initialization.
+        Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes
+    strategy : ValuesDeploymentEnvoyGatewayStrategy, optional
+        Volume source for the Wasm module cache mounted at /var/lib/eg/wasm. Defaults to an emptyDir when left empty.
+        Example: persist the Wasm module cache across controller restarts by backing it with a PersistentVolumeClaim:
+          wasmCacheVolume:
+            persistentVolumeClaim:
+              claimName: envoy-gateway-wasm-cache
+    wasmCacheVolume : ValuesDeploymentEnvoyGatewayWasmCacheVolume, optional
     """
     [...str]: any
+    extraEnv?: [any]
     image?: ValuesDeploymentEnvoyGatewayImage
     imagePullPolicy?: str
     imagePullSecrets?: [any]
+    livenessProbe?: ValuesDeploymentEnvoyGatewayLivenessProbe
+    readinessProbe?: ValuesDeploymentEnvoyGatewayReadinessProbe
     resources?: ValuesDeploymentEnvoyGatewayResources
     securityContext?: ValuesDeploymentEnvoyGatewaySecurityContext
+    startupProbe?: ValuesDeploymentEnvoyGatewayStartupProbe
+    strategy?: ValuesDeploymentEnvoyGatewayStrategy
+    wasmCacheVolume?: ValuesDeploymentEnvoyGatewayWasmCacheVolume
 
 schema ValuesDeploymentEnvoyGatewayImage:
     r"""
@@ -333,6 +416,66 @@ schema ValuesDeploymentEnvoyGatewayImage:
     [...str]: any
     repository?: str
     tag?: str
+
+schema ValuesDeploymentEnvoyGatewayLivenessProbe:
+    r"""
+    ValuesDeploymentEnvoyGatewayLivenessProbe
+
+    Attributes
+    ----------
+    httpGet : ValuesDeploymentEnvoyGatewayLivenessProbeHttpGet, optional
+    periodSeconds : int, optional, default is 20
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 1
+    """
+    [...str]: any
+    httpGet?: ValuesDeploymentEnvoyGatewayLivenessProbeHttpGet
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesDeploymentEnvoyGatewayLivenessProbeHttpGet:
+    r"""
+    ValuesDeploymentEnvoyGatewayLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz"
+    port : int, optional, default is 8081
+    """
+    [...str]: any
+    path?: str
+    port?: int
+
+schema ValuesDeploymentEnvoyGatewayReadinessProbe:
+    r"""
+    ValuesDeploymentEnvoyGatewayReadinessProbe
+
+    Attributes
+    ----------
+    httpGet : ValuesDeploymentEnvoyGatewayReadinessProbeHttpGet, optional
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 1
+    """
+    [...str]: any
+    httpGet?: ValuesDeploymentEnvoyGatewayReadinessProbeHttpGet
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesDeploymentEnvoyGatewayReadinessProbeHttpGet:
+    r"""
+    ValuesDeploymentEnvoyGatewayReadinessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/readyz"
+    port : int, optional, default is 8081
+    """
+    [...str]: any
+    path?: str
+    port?: int
 
 schema ValuesDeploymentEnvoyGatewayResources:
     r"""
@@ -380,6 +523,7 @@ schema ValuesDeploymentEnvoyGatewaySecurityContext:
     allowPrivilegeEscalation : bool, optional, default is False
     capabilities : ValuesDeploymentEnvoyGatewaySecurityContextCapabilities, optional
     privileged : bool, optional, default is False
+    readOnlyRootFilesystem : bool, optional, default is True
     runAsGroup : int, optional, default is 65532
     runAsNonRoot : bool, optional, default is True
     runAsUser : int, optional, default is 65532
@@ -389,6 +533,7 @@ schema ValuesDeploymentEnvoyGatewaySecurityContext:
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesDeploymentEnvoyGatewaySecurityContextCapabilities
     privileged?: bool
+    readOnlyRootFilesystem?: bool
     runAsGroup?: int
     runAsNonRoot?: bool
     runAsUser?: int
@@ -416,6 +561,56 @@ schema ValuesDeploymentEnvoyGatewaySecurityContextSeccompProfile:
     [...str]: any
     $type?: str
 
+schema ValuesDeploymentEnvoyGatewayStartupProbe:
+    r"""
+    Kubernetes best practice for controllers: use a startupProbe with a generous
+    failure threshold to avoid premature liveness/readiness failures during initialization.
+    Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/#define-startup-probes
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 30
+    httpGet : ValuesDeploymentEnvoyGatewayStartupProbeHttpGet, optional
+    periodSeconds : int, optional, default is 1
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 1
+    """
+    [...str]: any
+    failureThreshold?: int
+    httpGet?: ValuesDeploymentEnvoyGatewayStartupProbeHttpGet
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesDeploymentEnvoyGatewayStartupProbeHttpGet:
+    r"""
+    ValuesDeploymentEnvoyGatewayStartupProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz"
+    port : int, optional, default is 8081
+    """
+    [...str]: any
+    path?: str
+    port?: int
+
+schema ValuesDeploymentEnvoyGatewayStrategy:
+    r"""
+    Volume source for the Wasm module cache mounted at /var/lib/eg/wasm. Defaults to an emptyDir when left empty.
+    Example: persist the Wasm module cache across controller restarts by backing it with a PersistentVolumeClaim:
+      wasmCacheVolume:
+        persistentVolumeClaim:
+          claimName: envoy-gateway-wasm-cache
+    """
+    [...str]: any
+
+schema ValuesDeploymentEnvoyGatewayWasmCacheVolume:
+    r"""
+    ValuesDeploymentEnvoyGatewayWasmCacheVolume
+    """
+    [...str]: any
+
 schema ValuesDeploymentPod:
     r"""
     ValuesDeploymentPod
@@ -424,16 +619,30 @@ schema ValuesDeploymentPod:
     ----------
     affinity : ValuesDeploymentPodAffinity, optional
     annotations : ValuesDeploymentPodAnnotations, optional
+    extraVolumeMounts : [any], optional
+        Additional volumeMounts on the deployment definition.
+    extraVolumes : [any], optional
+        - name: foo
+          mountPath: "/etc/foo"
+          readOnly: true
+        Additional volumes on the deployment definition.
     labels : ValuesDeploymentPodLabels, optional
     nodeSelector : ValuesDeploymentPodNodeSelector, optional
+    securityContext : ValuesDeploymentPodSecurityContext, optional
+        - name: foo
+          configMap:
+            name: myconfigmap
     tolerations : [any], optional
     topologySpreadConstraints : [any], optional
     """
     [...str]: any
     affinity?: ValuesDeploymentPodAffinity
     annotations?: ValuesDeploymentPodAnnotations
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
     labels?: ValuesDeploymentPodLabels
     nodeSelector?: ValuesDeploymentPodNodeSelector
+    securityContext?: ValuesDeploymentPodSecurityContext
     tolerations?: [any]
     topologySpreadConstraints?: [any]
 
@@ -468,6 +677,38 @@ schema ValuesDeploymentPodNodeSelector:
     """
     [...str]: any
 
+schema ValuesDeploymentPodSecurityContext:
+    r"""
+    - name: foo
+      configMap:
+        name: myconfigmap
+
+    Attributes
+    ----------
+    fsGroup : int, optional, default is 65532
+    runAsGroup : int, optional, default is 65532
+    runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 65532
+    seccompProfile : ValuesDeploymentPodSecurityContextSeccompProfile, optional
+    """
+    [...str]: any
+    fsGroup?: int
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesDeploymentPodSecurityContextSeccompProfile
+
+schema ValuesDeploymentPodSecurityContextSeccompProfile:
+    r"""
+    ValuesDeploymentPodSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
+
 schema ValuesDeploymentPortsItems0:
     r"""
     ValuesDeploymentPortsItems0
@@ -483,6 +724,28 @@ schema ValuesDeploymentPortsItems0:
     port?: int
     targetPort?: int
 
+schema ValuesGatewayApi:
+    r"""
+    ValuesGatewayApi
+
+    Attributes
+    ----------
+    safeUpgradePolicy : ValuesGatewayApiSafeUpgradePolicy, optional
+    """
+    [...str]: any
+    safeUpgradePolicy?: ValuesGatewayApiSafeUpgradePolicy
+
+schema ValuesGatewayApiSafeUpgradePolicy:
+    r"""
+    ValuesGatewayApiSafeUpgradePolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+    """
+    [...str]: any
+    enabled?: bool
+
 schema ValuesGlobal:
     r"""
     Global settings
@@ -492,7 +755,7 @@ schema ValuesGlobal:
     imagePullSecrets : [any], optional
         Global override for image pull secrets
     imageRegistry : str, optional, default is ""
-        If set, these take highest precedence and change both envoyGateway and ratelimit's container registry and pull secrets.
+        If set, these take highest precedence and change envoyGateway, envoyProxy, and ratelimit's container registry and pull secrets.
         Global override for image registry
     images : ValuesGlobalImages, optional
         If set, these override image-specific values: useful when installing the chart in a private registry environment.
@@ -511,10 +774,12 @@ schema ValuesGlobalImages:
     Attributes
     ----------
     envoyGateway : ValuesGlobalImagesEnvoyGateway, optional
+    envoyProxy : ValuesGlobalImagesEnvoyProxy, optional
     ratelimit : ValuesGlobalImagesRatelimit, optional
     """
     [...str]: any
     envoyGateway?: ValuesGlobalImagesEnvoyGateway
+    envoyProxy?: ValuesGlobalImagesEnvoyProxy
     ratelimit?: ValuesGlobalImagesRatelimit
 
 schema ValuesGlobalImagesEnvoyGateway:
@@ -523,13 +788,35 @@ schema ValuesGlobalImagesEnvoyGateway:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.7.1"
-        This is the full image name including the hub, repo, and tag.
+    image : str, optional, default is "docker.io/envoyproxy/gateway:v1.9.1"
+        Full image for the Envoy Gateway control plane Deployment installed by this chart.
     pullPolicy : str, optional, default is "IfNotPresent"
-        Specify image pull policy if default behavior isn't desired.
+        Image pull policy for the Envoy Gateway control plane Deployment.
         Default behavior: latest images will be Always else IfNotPresent.
     pullSecrets : [any], optional
-        List of secrets in the same namespace of the component that can be used to pull images from private repositories.
+        Pull secrets for the Envoy Gateway control plane Deployment.
+    """
+    [...str]: any
+    image?: str
+    pullPolicy?: str
+    pullSecrets?: [any]
+
+schema ValuesGlobalImagesEnvoyProxy:
+    r"""
+    ValuesGlobalImagesEnvoyProxy
+
+    Attributes
+    ----------
+    image : str, optional, default is ""
+        Full image for the managed Envoy Proxy data plane.
+        This updates the generated `envoyProxy` config and does not change the `envoy-gateway`
+        control plane Deployment image. If not specified, the default image built into
+        `envoy-gateway` is used.
+    pullPolicy : str, optional, default is ""
+        Image pull policy for the managed Envoy Proxy data plane.
+        Default behavior: IfNotPresent.
+    pullSecrets : [any], optional
+        Pull secrets for the managed Envoy Proxy data plane.
     """
     [...str]: any
     image?: str
@@ -542,7 +829,7 @@ schema ValuesGlobalImagesRatelimit:
 
     Attributes
     ----------
-    image : str, optional, default is "docker.io/envoyproxy/ratelimit:c8765e89"
+    image : str, optional, default is "docker.io/envoyproxy/ratelimit:8fe6ea42"
         This is the full image name including the hub, repo, and tag.
     pullPolicy : str, optional, default is "IfNotPresent"
         Specify image pull policy if default behavior isn't desired.
