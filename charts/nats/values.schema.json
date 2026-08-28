@@ -359,6 +359,20 @@
           "title": "jetstream",
           "type": "object"
         },
+        "lameDuckDuration": {
+          "default": "30s",
+          "description": "period over which the server evicts all clients after the grace period\nhttps://docs.nats.io/running-a-nats-service/nats_admin/lame_duck_mode\nnote: podTemplate.terminationGracePeriodSeconds should be at least\nlameDuckGracePeriod + lameDuckDuration + 20s shutdown overhead",
+          "required": [],
+          "title": "lameDuckDuration",
+          "type": "string"
+        },
+        "lameDuckGracePeriod": {
+          "default": "10s",
+          "description": "period the server waits after entering lame duck mode before starting\nto evict clients",
+          "required": [],
+          "title": "lameDuckGracePeriod",
+          "type": "string"
+        },
         "leafnodes": {
           "additionalProperties": true,
           "properties": {
@@ -1010,7 +1024,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "2.12.6-alpine",
+              "default": "2.14.6-alpine",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1018,6 +1032,64 @@
           },
           "required": [],
           "title": "image",
+          "type": "object"
+        },
+        "livenessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz?js-enabled-only=true",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "monitor",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 30,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "livenessProbe",
           "type": "object"
         },
         "merge": {
@@ -1092,11 +1164,128 @@
           "title": "ports",
           "type": "object"
         },
+        "readinessProbe": {
+          "additionalProperties": true,
+          "properties": {
+            "failureThreshold": {
+              "default": 3,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz?js-server-only=true",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "monitor",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "readinessProbe",
+          "type": "object"
+        },
         "resources": {
           "additionalProperties": true,
           "description": "container resources",
           "required": [],
           "title": "resources",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "probes are only applied when config.monitor is enabled\nscheme is set to HTTPS automatically when config.monitor.tls is enabled\nhttps://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#probe-v1-core",
+          "properties": {
+            "failureThreshold": {
+              "default": 90,
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpGet": {
+              "additionalProperties": true,
+              "properties": {
+                "path": {
+                  "default": "/healthz",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "port": {
+                  "default": "monitor",
+                  "required": [],
+                  "title": "port",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "httpGet",
+              "type": "object"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 5,
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         }
       },
@@ -1267,7 +1456,7 @@
                   "type": "object"
                 },
                 "tag": {
-                  "default": "0.19.3",
+                  "default": "0.19.7",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -1669,6 +1858,13 @@
           "title": "patch",
           "type": "array"
         },
+        "terminationGracePeriodSeconds": {
+          "default": 60,
+          "description": "how long to wait for graceful shutdown\nshould be at least config.lameDuckGracePeriod + config.lameDuckDuration\n+ 20s shutdown overhead",
+          "required": [],
+          "title": "terminationGracePeriodSeconds",
+          "type": "integer"
+        },
         "topologySpreadConstraints": {
           "additionalProperties": true,
           "description": "map of topologyKey: topologySpreadConstraint\nlabelSelector will be added to match StatefulSet pods\n\ntopologySpreadConstraints:\n  kubernetes.io/hostname:\n    maxSkew: 1\n",
@@ -1732,7 +1928,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.18.0",
+              "default": "0.20.1",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -1863,7 +2059,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.21.1",
+              "default": "0.23.0",
               "required": [],
               "title": "tag",
               "type": "string"
