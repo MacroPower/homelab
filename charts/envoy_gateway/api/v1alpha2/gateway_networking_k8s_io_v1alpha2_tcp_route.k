@@ -287,16 +287,8 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0:
         connections, then 80% of connections must be rejected instead.
 
         Support: Core for Kubernetes Service
-
-        Support: Extended for Kubernetes ServiceImport
-
-        Support: Implementation-specific for any other resource
-
-        Support for weight: Extended
     name : str, default is Undefined, optional
         Name is the name of the route rule. This name MUST be unique within a Route if it is set.
-
-        Support: Extended
     """
     backendRefs: [GatewayNetworkingK8sIoV1alpha2TCPRouteSpecRulesItems0BackendRefsItems0]
 
@@ -469,7 +461,7 @@ schema GatewayNetworkingK8sIoV1alpha2TCPRouteStatusParentsItems0:
 
         * The Route refers to a nonexistent parent.
         * The Route is of a type that the controller does not support.
-        * The Route is in a namespace the controller does not have access to.
+        * The Route is in a namespace to which the controller does not have access.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the

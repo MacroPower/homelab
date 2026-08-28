@@ -8,182 +8,193 @@ import k8s.apimachinery.pkg.apis.meta.v1
 
 _regex_match = regex.match
 
-schema BackendTLSPolicy:
+schema XBackend:
     r"""
-    BackendTLSPolicy provides a way to configure how a Gateway
-    connects to a Backend via TLS.
+    XBackend is a Gateway API resource that represents a backend destination for
+    routing traffic. It serves as a Gateway-native way to define where and how a
+    Gateway should connect to a backend.
+
+    Support: Extended
 
     Attributes
     ----------
-    apiVersion : str, default is "gateway.networking.k8s.io/v1alpha3", required
+    apiVersion : str, default is "gateway.networking.x-k8s.io/v1alpha1", required
         APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-    kind : str, default is "BackendTLSPolicy", required
+    kind : str, default is "XBackend", required
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec, default is Undefined, required
+    spec : GatewayNetworkingxK8sIoV1alpha1XBackendSpec, default is Undefined, required
         spec
-    status : GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatus, default is Undefined, optional
+    status : GatewayNetworkingxK8sIoV1alpha1XBackendStatus, default is Undefined, optional
         status
     """
-    apiVersion: "gateway.networking.k8s.io/v1alpha3" = "gateway.networking.k8s.io/v1alpha3"
+    apiVersion: "gateway.networking.x-k8s.io/v1alpha1" = "gateway.networking.x-k8s.io/v1alpha1"
 
-    kind: "BackendTLSPolicy" = "BackendTLSPolicy"
+    kind: "XBackend" = "XBackend"
 
     metadata?: v1.ObjectMeta
-    spec: GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec
+    spec: GatewayNetworkingxK8sIoV1alpha1XBackendSpec
 
-    status?: GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatus
+    status?: GatewayNetworkingxK8sIoV1alpha1XBackendStatus
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpec:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpec:
     r"""
-    Spec defines the desired state of BackendTLSPolicy.
+    Spec defines the desired state of XBackend.
 
     Attributes
     ----------
-    options : {str:str}, default is Undefined, optional
-        Options are a list of key/value pairs to enable extended TLS
-        configuration for each implementation. For example, configuring the
-        minimum TLS version or supported cipher suites.
+    externalHostname : GatewayNetworkingxK8sIoV1alpha1XBackendSpecExternalHostname, default is Undefined, optional
+        external hostname
+    port : GatewayNetworkingxK8sIoV1alpha1XBackendSpecPort, default is Undefined, required
+        port
+    $protocol : str, default is Undefined, optional
+        Protocol defines the protocol for backend communication.
 
-        A set of common keys MAY be defined by the API in the future. To avoid
-        any ambiguity, implementation-specific definitions MUST use
-        domain-prefixed names, such as `example.com/my-custom-option`.
-        Un-prefixed names are reserved for key names defined by Gateway API.
+        In the common case, the underlying transport protocol for the
+        proxied traffic will already have been determined and processed
+        by the dataplane at the routing step. Where this field is useful
+        is either for higher level protocols or asymmetrical protocol
+        configurations (e.g. version upgrades or h2c).
 
-        Support: Implementation-specific
-    targetRefs : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecTargetRefsItems0], default is Undefined, required
-        TargetRefs identifies an API object to apply the policy to.
-        Note that this config applies to the entire referenced resource
-        by default, but this default may change in the future to provide
-        a more granular application of the policy.
+        When set, the implementation uses the specified protocol when connecting
+        to this backend. When not set, the implementation will use the protocol
+        determined by the route or listener configuration.
 
-        TargetRefs must be _distinct_. This means either that:
+        Support: Core - HTTP, HTTP2, H2C, and HTTP11
 
-        * They select different targets. If this is the case, then targetRef
-          entries are distinct. In terms of fields, this means that the
-          multi-part key defined by `group`, `kind`, and `name` must
-          be unique across all targetRef entries in the BackendTLSPolicy.
-        * They select different sectionNames in the same target.
+        Support: Extended - GRPC, MCP, TCP
+    tls : GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLS, default is Undefined, optional
+        tls
+    $type : str, default is Undefined, required
+        Type defines the backend type.
+    """
+    externalHostname?: GatewayNetworkingxK8sIoV1alpha1XBackendSpecExternalHostname
+    port: GatewayNetworkingxK8sIoV1alpha1XBackendSpecPort
 
-        When more than one BackendTLSPolicy selects the same target and
-        sectionName, implementations MUST determine precedence using the
-        following criteria, continuing on ties:
+    $protocol?: "TCP" | "HTTP" | "HTTP2" | "HTTP11" | "H2C" | "MCP"
+    tls?: GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLS
+    $type: "ExternalHostname"
 
-        * The older policy by creation timestamp takes precedence. For
-          example, a policy with a creation timestamp of "2021-07-15
-          01:02:03" MUST be given precedence over a policy with a
-          creation timestamp of "2021-07-15 01:02:04".
-        * The policy appearing first in alphabetical order by {namespace}/{name}.
-          For example, a policy named `foo/bar` is given precedence over a
-          policy named `foo/baz`.
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecExternalHostname:
+    r"""
+    ExternalHostname specifies the configuration for an ExternalHostname
+    backend. This field must be set when type is ExternalHostname and must
+    be unset otherwise.
 
-        For any BackendTLSPolicy that does not take precedence, the
-        implementation MUST ensure the `Accepted` Condition is set to
-        `status: False`, with Reason `Conflicted`.
+    Support: Extended
 
-        Implementations SHOULD NOT support more than one targetRef at this
-        time. Although the API technically allows for this, the current guidance
-        for conflict resolution and status handling is lacking. Until that can be
-        clarified in a future release, the safest approach is to support a single
-        targetRef.
+    Attributes
+    ----------
+    hostname : str, default is Undefined, required
+        Hostname specifies the FQDN used to reach this backend.
+        IP addresses are not allowed in this field.
+    """
+    hostname: str
 
-        Support Levels:
+    check:
+        len(hostname) <= 253
+        len(hostname) >= 1
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
 
-        * Extended: Kubernetes Service referenced by backendRefs used on a Route.
-          - HTTPRoute, GRPCRoute, TLSRoute with termination
-          - Filters that needs a backend of type Service, like Mirror and External Authorization
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecPort:
+    r"""
+    Port defines the port that the implementation should use when connecting
+    to this backend.
 
-        * Implementation-Specific: Implementations MAY use BackendTLSPolicy for:
-          - Services not referenced by any Route (e.g., infrastructure services)
-          - Service mesh workload-to-service communication
-          - Other resource types beyond Service
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name represents the name of this port. All ports in a Backend must have
+        a unique name. Name must either be an empty string or pass DNS_LABEL
+        validation (lowercase alphanumeric or '-', starting and ending with an
+        alphanumeric character, at most 63 characters).
+    port : int, default is Undefined, required
+        Port represents the port number of the endpoint.
+    """
+    name?: str
+    port: int
 
-        Implementations SHOULD aim to ensure that BackendTLSPolicy behavior is consistent,
-        even outside of the extended HTTPRoute -(backendRef) -> Service path.
-        They SHOULD clearly document how BackendTLSPolicy is interpreted in these
-        scenarios, including:
-          - Which resources beyond Service are supported
-          - How the policy is discovered and applied
-          - Any implementation-specific semantics or restrictions
+    check:
+        len(name) <= 63 if name
+        port <= 65535
+        port >= 1
 
-        Note that this config applies to the entire referenced resource
-        by default, but this default may change in the future to provide
-        a more granular application of the policy.
-    validation : GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation, default is Undefined, required
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLS:
+    r"""
+    TLS defines the TLS configuration that the implementation should use
+    when connecting to the backend.
+
+    ExternalHostname backends SHOULD have TLS configured; the lack of TLS
+    for external hostnames should be considered insecure and a security risk.
+
+    Support: Extended
+
+    Attributes
+    ----------
+    clientCertificateRef : GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSClientCertificateRef, default is Undefined, optional
+        client certificate ref
+    mode : str, default is Undefined, required
+        Mode defines the TLS mode for the backend connection.
+    validation : GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidation, default is Undefined, optional
         validation
     """
-    options?: {str:str}
-    targetRefs: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecTargetRefsItems0]
+    clientCertificateRef?: GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSClientCertificateRef
+    mode: "None" | "ServerOnly" | "ClientAndServer"
 
-    validation: GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation
+    validation?: GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidation
 
-    check:
-        all _, options in options {len(options) <= 4096 if options not in [None, Undefined]} if options
-        all _, options in options {len(options) >= 0 if options not in [None, Undefined]} if options
-        len(targetRefs) >= 1
-        len(targetRefs) <= 16
-
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecTargetRefsItems0:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSClientCertificateRef:
     r"""
-    LocalPolicyTargetReferenceWithSectionName identifies an API object to apply a
-    direct policy to. This should be used as part of Policy resources that can
-    target single resources. For more information on how this policy attachment
-    mode works, and a sample Policy resource, refer to the policy attachment
-    documentation for Gateway API.
-
-    Note: This should only be used for direct policy attachment when references
-    to SectionName are actually needed. In all other cases,
-    LocalPolicyTargetReference should be used.
+    ClientCertificateRef is a reference to a Secret containing the client
+    TLS certificate and private key for mutual TLS. This field is required
+    when mode is ClientAndServer and must be unset otherwise.
 
     Attributes
     ----------
-    group : str, default is Undefined, required
-        Group is the group of the target resource.
-    kind : str, default is Undefined, required
-        Kind is kind of the target resource.
+    group : str, default is Undefined, optional
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is "Secret", optional
+        Kind is kind of the referent. For example "Secret".
     name : str, default is Undefined, required
-        Name is the name of the target resource.
-    sectionName : str, default is Undefined, optional
-        SectionName is the name of a section within the target resource. When
-        unspecified, this targetRef targets the entire resource. In the following
-        resources, SectionName is interpreted as the following:
+        Name is the name of the referent.
+    namespace : str, default is Undefined, optional
+        Namespace is the namespace of the referenced object. When unspecified, the local
+        namespace is inferred.
 
-        * Gateway: Listener name
-        * HTTPRoute: HTTPRouteRule name
-        * Service: Port name
+        Note that when a namespace different than the local namespace is specified,
+        a ReferenceGrant object is required in the referent namespace to allow that
+        namespace's owner to accept the reference. See the ReferenceGrant
+        documentation for details.
 
-        If a SectionName is specified, but does not exist on the targeted object,
-        the Policy must fail to attach, and the policy implementation should record
-        a `ResolvedRefs` or similar Condition in the Policy's status.
+        Support: Core
     """
-    group: str
-
-    kind: str
-
+    group?: str = ""
+    kind?: str = "Secret"
     name: str
 
-    sectionName?: str
+    namespace?: str
 
     check:
-        len(group) <= 253
-        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
-        len(kind) <= 63
-        len(kind) >= 1
-        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
+        len(group) <= 253 if group
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if group
+        len(kind) <= 63 if kind
+        len(kind) >= 1 if kind
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$") if kind
         len(name) <= 253
         len(name) >= 1
-        len(sectionName) <= 253 if sectionName
-        len(sectionName) >= 1 if sectionName
-        _regex_match(str(sectionName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sectionName
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidation:
     r"""
-    Validation contains backend TLS validation configuration.
+    Validation contains TLS validation configuration for the backend connection.
 
     Attributes
     ----------
-    caCertificateRefs : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationCaCertificateRefsItems0], default is Undefined, optional
+    caCertificateRefs : [GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidationCaCertificateRefsItems0], default is Undefined, optional
         CACertificateRefs contains one or more references to Kubernetes objects that
         contain a PEM-encoded TLS CA certificate bundle, which is used to
         validate a TLS handshake between the Gateway and backend Pod.
@@ -240,7 +251,7 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
            of the Hostname field for authentication, you MUST add it to the SubjectAltNames list.
 
         Support: Core
-    subjectAltNames : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationSubjectAltNamesItems0], default is Undefined, optional
+    subjectAltNames : [GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidationSubjectAltNamesItems0], default is Undefined, optional
         SubjectAltNames contains one or more Subject Alternative Names.
         When specified the certificate served from the backend MUST
         have at least one Subject Alternate Name matching one of the specified SubjectAltNames.
@@ -267,10 +278,10 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
 
         Support: Implementation-specific
     """
-    caCertificateRefs?: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationCaCertificateRefsItems0]
+    caCertificateRefs?: [GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidationCaCertificateRefsItems0]
     hostname: str
 
-    subjectAltNames?: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationSubjectAltNamesItems0]
+    subjectAltNames?: [GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidationSubjectAltNamesItems0]
     wellKnownCACertificates?: str
 
     check:
@@ -283,7 +294,7 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidation:
         len(wellKnownCACertificates) >= 1 if wellKnownCACertificates
         _regex_match(str(wellKnownCACertificates), r"^(System|([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/([A-Za-z0-9][-A-Za-z0-9_.]{0,61})?[A-Za-z0-9]))$") if wellKnownCACertificates
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationCaCertificateRefsItems0:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidationCaCertificateRefsItems0:
     r"""
     LocalObjectReference identifies an API object within the namespace of the
     referrer.
@@ -319,7 +330,7 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationCaCertificate
         len(name) <= 253
         len(name) >= 1
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationSubjectAltNamesItems0:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendSpecTLSValidationSubjectAltNamesItems0:
     r"""
     SubjectAltName represents Subject Alternative Name.
 
@@ -355,119 +366,113 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicySpecValidationSubjectAltNam
         len(uri) >= 1 if uri
         _regex_match(str(uri), r"^(([^:/?#]+):)(//([^/?#]*))([^?#]*)(\?([^#]*))?(#(.*))?") if uri
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatus:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendStatus:
     r"""
-    Status defines the current state of BackendTLSPolicy.
+    Status defines the current state of XBackend.
 
     Attributes
     ----------
-    ancestors : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0], default is Undefined, required
-        Ancestors is a list of ancestor resources (usually Gateways) that are
-        associated with the policy, and the status of the policy with respect to
-        each ancestor. When this policy attaches to a parent, the controller that
-        manages the parent and the ancestors MUST add an entry to this list when
-        the controller first sees the policy and SHOULD update the entry as
-        appropriate when the relevant ancestor is modified.
+    parents : [GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0], default is Undefined, optional
+        Ancestors is a list of parent resources associated with this Backend,
+        and the status of the Backend with respect to each parent.
 
-        Note that choosing the relevant ancestor is left to the Policy designers;
-        an important part of Policy design is designing the right object level at
-        which to namespace this status.
-
-        Note also that implementations MUST ONLY populate ancestor status for
-        the Ancestor resources they are responsible for. Implementations MUST
-        use the ControllerName field to uniquely identify the entries in this list
-        that they are responsible for.
-
-        Note that to achieve this, the list of PolicyAncestorStatus structs
-        MUST be treated as a map with a composite key, made up of the AncestorRef
-        and ControllerName fields combined.
-
-        A maximum of 16 ancestors will be represented in this list. An empty list
-        means the Policy is not relevant for any ancestors.
-
-        If this slice is full, implementations MUST NOT add further entries.
-        Instead they MUST consider the policy unimplementable and signal that
-        on any related resources such as the ancestor that would be referenced
-        here. For example, if this list was full on BackendTLSPolicy, no
-        additional Gateways would be able to reference the Service targeted by
-        the BackendTLSPolicy.
+        A maximum of 32 parents will be represented in this list. An empty list
+        indicates that the Backend is not associated with any parents.
     """
-    ancestors: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0]
+    parents?: [GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0]
 
     check:
-        len(ancestors) <= 16
+        len(parents) <= 32 if parents
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0:
     r"""
-    PolicyAncestorStatus describes the status of a route with respect to an
-    associated Ancestor.
-
-    Ancestors refer to objects that are either the Target of a policy or above it
-    in terms of object hierarchy. For example, if a policy targets a Service, the
-    Policy's Ancestors are, in order, the Service, the HTTPRoute, the Gateway, and
-    the GatewayClass. Almost always, in this hierarchy, the Gateway will be the most
-    useful object to place Policy status on, so we recommend that implementations
-    SHOULD use Gateway as the PolicyAncestorStatus object unless the designers
-    have a _very_ good reason otherwise.
-
-    In the context of policy attachment, the Ancestor is used to distinguish which
-    resource results in a distinct application of this policy. For example, if a policy
-    targets a Service, it may have a distinct result per attached Gateway.
-
-    Policies targeting the same resource may have different effects depending on the
-    ancestors of those resources. For example, different Gateways targeting the same
-    Service may have different capabilities, especially if they have different underlying
-    implementations.
-
-    For example, in BackendTLSPolicy, the Policy attaches to a Service that is
-    used as a backend in a HTTPRoute that is itself attached to a Gateway.
-    In this case, the relevant object for status is the Gateway, and that is the
-    ancestor object referred to in this status.
-
-    Note that a parent is also an ancestor, so for objects where the parent is the
-    relevant object for status, this struct SHOULD still be used.
-
-    This struct is intended to be used in a slice that's effectively a map,
-    with a composite key made up of the AncestorRef and the ControllerName.
+    BackendAncestorStatus describes the status of a Backend with respect to a
+    specific parent resource (typically a Gateway).
 
     Attributes
     ----------
-    ancestorRef : GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0AncestorRef, default is Undefined, required
-        ancestor ref
-    conditions : [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0], default is Undefined, required
-        Conditions describes the status of the Policy with respect to the given Ancestor.
+    conditions : [GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0ConditionsItems0], default is Undefined, optional
+        For Kubernetes API conventions, see:
+        https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#typical-status-properties
+        conditions represent the current state of the Backend resource.
+        Each condition has a unique type and reflects the status of a specific aspect of the resource.
+
+        Defined condition types include:
+        - "Accepted": the resource has been acknowledged and accepteed by the controller
+
+        The status of each condition is one of True, False, or Unknown.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
-        controller that wrote this status. This corresponds with the
-        controllerName field on GatewayClass.
+        controller that manages the Backend.
 
         Example: "example.net/gateway-controller".
 
         The format of this field is DOMAIN "/" PATH, where DOMAIN and PATH are
         valid Kubernetes names
         (https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names).
-
-        Controllers MUST populate this field when writing status. Controllers should ensure that
-        entries to status populated with their ControllerName are cleaned up when they are no
-        longer necessary.
+    parentRef : GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0ParentRef, default is Undefined, required
+        parent ref
     """
-    ancestorRef: GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0AncestorRef
-
-    conditions: [GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0]
-
+    conditions?: [GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0ConditionsItems0]
     controllerName: str
 
+    parentRef: GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0ParentRef
+
     check:
-        len(conditions) >= 1
-        len(conditions) <= 8
         len(controllerName) <= 253
         len(controllerName) >= 1
         _regex_match(str(controllerName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*\/[A-Za-z0-9\/\-._~%!$&'()*+,;=:]+$")
 
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0AncestorRef:
+schema GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0ConditionsItems0:
     r"""
-    AncestorRef corresponds with a ParentRef in the spec that this
-    PolicyAncestorStatus struct describes the status of.
+    Condition contains details for one aspect of the current state of this API Resource.
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, required
+        lastTransitionTime is the last time the condition transitioned from one status to another.
+        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+    message : str, default is Undefined, required
+        message is a human readable message indicating details about the transition.
+        This may be an empty string.
+    observedGeneration : int, default is Undefined, optional
+        observedGeneration represents the .metadata.generation that the condition was set based upon.
+        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+        with respect to the current state of the instance.
+    reason : str, default is Undefined, required
+        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+        Producers of specific condition types may define expected values and meanings for this field,
+        and whether the values are considered a guaranteed API.
+        The value should be a CamelCase string.
+        This field may not be empty.
+    status : str, default is Undefined, required
+        status of the condition, one of True, False, Unknown.
+    $type : str, default is Undefined, required
+        type of condition in CamelCase or in foo.example.com/CamelCase.
+    """
+    lastTransitionTime: str
+
+    message: str
+
+    observedGeneration?: int
+    reason: str
+
+    status: "True" | "False" | "Unknown"
+
+    $type: str
+
+    check:
+        len(message) <= 32768
+        observedGeneration >= 0 if observedGeneration not in [None, Undefined]
+        len(reason) <= 1024
+        len(reason) >= 1
+        _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
+        len($type) <= 316
+        _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
+
+schema GatewayNetworkingxK8sIoV1alpha1XBackendStatusParentsItems0ParentRef:
+    r"""
+    AncestorRef identifies the parent resource that this status is associated with.
 
     Attributes
     ----------
@@ -595,51 +600,4 @@ schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0Ancest
         len(sectionName) <= 253 if sectionName
         len(sectionName) >= 1 if sectionName
         _regex_match(str(sectionName), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if sectionName
-
-schema GatewayNetworkingK8sIoV1alpha3BackendTLSPolicyStatusAncestorsItems0ConditionsItems0:
-    r"""
-    Condition contains details for one aspect of the current state of this API Resource.
-
-    Attributes
-    ----------
-    lastTransitionTime : str, default is Undefined, required
-        lastTransitionTime is the last time the condition transitioned from one status to another.
-        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
-    message : str, default is Undefined, required
-        message is a human readable message indicating details about the transition.
-        This may be an empty string.
-    observedGeneration : int, default is Undefined, optional
-        observedGeneration represents the .metadata.generation that the condition was set based upon.
-        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
-        with respect to the current state of the instance.
-    reason : str, default is Undefined, required
-        reason contains a programmatic identifier indicating the reason for the condition's last transition.
-        Producers of specific condition types may define expected values and meanings for this field,
-        and whether the values are considered a guaranteed API.
-        The value should be a CamelCase string.
-        This field may not be empty.
-    status : str, default is Undefined, required
-        status of the condition, one of True, False, Unknown.
-    $type : str, default is Undefined, required
-        type of condition in CamelCase or in foo.example.com/CamelCase.
-    """
-    lastTransitionTime: str
-
-    message: str
-
-    observedGeneration?: int
-    reason: str
-
-    status: "True" | "False" | "Unknown"
-
-    $type: str
-
-    check:
-        len(message) <= 32768
-        observedGeneration >= 0 if observedGeneration not in [None, Undefined]
-        len(reason) <= 1024
-        len(reason) >= 1
-        _regex_match(str(reason), r"^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$")
-        len($type) <= 316
-        _regex_match(str($type), r"^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$")
 

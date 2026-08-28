@@ -188,6 +188,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpec:
         all hostnames in hostnames {len(hostnames) >= 1 if hostnames not in [None, Undefined]} if hostnames
         all hostnames in hostnames {_regex_match(str(hostnames), r"^(\*\.)?[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostnames} if hostnames
         len(parentRefs) <= 32 if parentRefs
+        len(rules) >= 1 if rules
         len(rules) <= 16 if rules
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecParentRefsItems0:
@@ -484,7 +485,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0:
     backendRefs?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0]
     filters?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0]
     matches?: [GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0MatchesItems0] = [{
-        "path": {"value": "/", "type": "PathPrefix"}
+        "path": {"type": "PathPrefix", "value": "/"}
     }]
     name?: str
     retry?: GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0Retry
@@ -705,14 +706,14 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         AllowHeaders indicates which HTTP request headers are supported for
         accessing the requested resource.
 
-        Header names are not case sensitive.
+        Header names are not case-sensitive.
 
         Multiple header names in the value of the `Access-Control-Allow-Headers`
         response header are separated by a comma (",").
 
-        When the `AllowHeaders` field is configured with one or more headers, the
+        When the `allowHeaders` field is configured with one or more headers, the
         gateway must return the `Access-Control-Allow-Headers` response header
-        which value is present in the `AllowHeaders` field.
+        which value is present in the `allowHeaders` field.
 
         If any header name in the `Access-Control-Request-Headers` request header
         is not included in the list of header names specified by the response
@@ -724,18 +725,20 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         client side.
 
         A wildcard indicates that the requests with all HTTP headers are allowed.
-        The `Access-Control-Allow-Headers` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is true and `AllowHeaders` field
-        specified with the `*` wildcard, the gateway must specify one or more
-        HTTP headers in the value of the `Access-Control-Allow-Headers` response
-        header. The value of the header `Access-Control-Allow-Headers` is same as
-        the `Access-Control-Request-Headers` header provided by the client. If
-        the header `Access-Control-Request-Headers` is not included in the
-        request, the gateway will omit the `Access-Control-Allow-Headers`
-        response header, instead of specifying the `*` wildcard. A Gateway
-        implementation may choose to add implementation-specific default headers.
+        If the configuration contains the wildcard `*` in `allowHeaders` and
+        `allowCredentials` is set to `false`, the `Access-Control-Allow-Headers`
+        response header may either contain the wildcard `*` or echo the value
+        of the `Access-Control-Request-Headers` request header.
+
+        If the configuration contains the wildcard `*` in `allowHeaders` and
+        `allowCredentials` is set to `true`, the gateway must not return `*`
+        in the `Access-Control-Allow-Headers` response header. Instead, it must
+        return one or more header names matching the value of the
+        `Access-Control-Request-Headers` request header.
+        If the `Access-Control-Request-Headers` header is not present in the
+        request, the gateway must omit the `Access-Control-Allow-Headers`
+        response header.
 
         Support: Extended
     allowMethods : [str], default is Undefined, optional
@@ -745,7 +748,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         Valid values are any method defined by RFC9110, along with the special
         value `*`, which represents all HTTP methods are allowed.
 
-        Method names are case sensitive, so these values are also case-sensitive.
+        Method names are case-sensitive, so these values are also case-sensitive.
         (See https://www.rfc-editor.org/rfc/rfc2616#section-5.1.1)
 
         Multiple method names in the value of the `Access-Control-Allow-Methods`
@@ -754,29 +757,29 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         A CORS-safelisted method is a method that is `GET`, `HEAD`, or `POST`.
         (See https://fetch.spec.whatwg.org/#cors-safelisted-method) The
         CORS-safelisted methods are always allowed, regardless of whether they
-        are specified in the `AllowMethods` field.
+        are specified in the `allowMethods` field.
 
-        When the `AllowMethods` field is configured with one or more methods, the
+        When the `allowMethods` field is configured with one or more methods, the
         gateway must return the `Access-Control-Allow-Methods` response header
-        which value is present in the `AllowMethods` field.
+        which value is present in the `allowMethods` field.
 
         If the HTTP method of the `Access-Control-Request-Method` request header
         is not included in the list of methods specified by the response header
         `Access-Control-Allow-Methods`, it will present an error on the client
         side.
 
-        The `Access-Control-Allow-Methods` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is false or omitted.
+        If the configuration contains the wildcard `*` in `allowMethods` and
+        `allowCredentials` is set to `false`, the `Access-Control-Allow-Methods`
+        response header may either contain the wildcard `*` or echo the value
+        of the `Access-Control-Request-Method` request header.
 
-        When the `AllowCredentials` field is true and `AllowMethods` field
-        specified with the `*` wildcard, the gateway must specify one HTTP method
-        in the value of the Access-Control-Allow-Methods response header. The
-        value of the header `Access-Control-Allow-Methods` is same as the
-        `Access-Control-Request-Method` header provided by the client. If the
-        header `Access-Control-Request-Method` is not included in the request,
-        the gateway will omit the `Access-Control-Allow-Methods` response header,
-        instead of specifying the `*` wildcard. A Gateway implementation may
-        choose to add implementation-specific default methods.
+        If the configuration contains the wildcard `*` in `allowMethods` and
+        `allowCredentials` is set to `true`, the gateway must not return `*`
+        in the `Access-Control-Allow-Methods` response header. Instead, it must
+        return a single HTTP method matching the value of the
+        `Access-Control-Request-Method` request header.
+        If the `Access-Control-Request-Method` header is not present in the request,
+        the gateway must omit the `Access-Control-Allow-Methods` response header.
 
         Support: Extended
     allowOrigins : [str], default is Undefined, optional
@@ -805,7 +808,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         An origin value that includes _only_ the `*` character indicates requests
         from all `Origin`s are allowed.
 
-        When the `AllowOrigins` field is configured with multiple origins, it
+        When the `allowOrigins` field is configured with multiple origins, it
         means the server supports clients from multiple origins. If the request
         `Origin` matches the configured allowed origins, the gateway must return
         the given `Origin` and sets value of the header
@@ -822,15 +825,20 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         the CORS headers. The cross-origin request fails on the client side.
         Therefore, the client doesn't attempt the actual cross-origin request.
 
-        The `Access-Control-Allow-Origin` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is false or omitted.
+        Conversely, if the request `Origin` matches one of the configured
+        allowed origins, the gateway sets the response header
+        `Access-Control-Allow-Origin` to the same value as the `Origin`
+        header provided by the client.
 
-        When the `AllowCredentials` field is true and `AllowOrigins` field
-        specified with the `*` wildcard, the gateway must return a single origin
-        in the value of the `Access-Control-Allow-Origin` response header,
-        instead of specifying the `*` wildcard. The value of the header
-        `Access-Control-Allow-Origin` is same as the `Origin` header provided by
-        the client.
+        If the configuration contains the wildcard `*` in `allowOrigins` and
+        `allowCredentials` is set to `false`, the `Access-Control-Allow-Origin`
+        response header may either contain the wildcard `*` or echo the value
+        of the `Origin` request header.
+
+        If the configuration contains the wildcard `*` in `allowOrigins` and
+        `allowCredentials` is set to `true`, the gateway must not return `*`
+        in the `Access-Control-Allow-Origin` response header. Instead, it must
+        return a single origin matching the value of the `Origin` request header.
 
         Support: Extended
     exposeHeaders : [str], default is Undefined, optional
@@ -850,18 +858,25 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         (See https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name)
         The CORS-safelisted response headers are exposed to client by default.
 
-        When an HTTP header name is specified using the `ExposeHeaders` field,
+        When an HTTP header name is specified using the `exposeHeaders` field,
         this additional header will be exposed as part of the response to the
         client.
 
-        Header names are not case sensitive.
+        Header names are not case-sensitive.
 
         Multiple header names in the value of the `Access-Control-Expose-Headers`
         response header are separated by a comma (",").
 
         A wildcard indicates that the responses with all HTTP headers are exposed
-        to clients. The `Access-Control-Expose-Headers` response header can only
-        use `*` wildcard as value when the `AllowCredentials` field is false or omitted.
+        to clients.
+
+        If the configuration contains the wildcard `*` in `exposeHeaders` and
+        `allowCredentials` is set to `false`, the `Access-Control-Expose-Headers`
+        response header can contain the wildcard `*`.
+
+        If the configuration contains the wildcard `*` in `exposeHeaders` and
+        `allowCredentials` is set to `true`, the gateway cannot use the `*`
+        in the `Access-Control-Expose-Headers` response header.
 
         Support: Extended
     maxAge : int, default is 5, optional
@@ -874,6 +889,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
 
         The default value of `Access-Control-Max-Age` response header is 5
         (seconds).
+
+        When the `MaxAge` field is unspecified, the gateway sets the response
+        header "Access-Control-Max-Age: 5" by default.
     """
     allowCredentials?: bool
     allowHeaders?: [str]
@@ -891,7 +909,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         len(allowOrigins) <= 64 if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) <= 253 if allowOrigins not in [None, Undefined]} if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) >= 1 if allowOrigins not in [None, Undefined]} if allowOrigins
-        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"(^\*$)|(^([a-zA-Z][a-zA-Z0-9+\-.]+):\/\/([^:/?#]+)(:([0-9]{1,5}))?$)") if allowOrigins} if allowOrigins
+        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"(^\*$)|(^(http(s)?):\/\/(((\*\.)?([a-zA-Z0-9\-]+\.)*[a-zA-Z0-9-]+|\*)(:([0-9]{1,5}))?)$)") if allowOrigins} if allowOrigins
         len(exposeHeaders) <= 64 if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) <= 256 if exposeHeaders not in [None, Undefined]} if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) >= 1 if exposeHeaders not in [None, Undefined]} if exposeHeaders
@@ -1104,6 +1122,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
     """
     allowedHeaders?: [str]
 
+    check:
+        len(allowedHeaders) <= 64 if allowedHeaders
+
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ExternalAuthHTTP:
     r"""
     HTTPAuthConfig contains configuration for communication with HTTP-speaking
@@ -1160,6 +1181,8 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
     path?: str
 
     check:
+        len(allowedHeaders) <= 64 if allowedHeaders
+        len(allowedResponseHeaders) <= 64 if allowedResponseHeaders
         len(path) <= 1024 if path
         _regex_match(str(path), r"^(?:[-A-Za-z0-9/._~!$&'()*+,;=:@]|[%][0-9a-fA-F]{2})+$") if path
 
@@ -1250,6 +1273,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1261,6 +1287,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestHeaderModifierSetItems0:
     r"""
@@ -1279,6 +1306,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1290,6 +1320,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestMirror:
     r"""
@@ -1351,6 +1382,10 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
     Support: Extended for Kubernetes Service
 
     Support: Implementation-specific for any other resource
+
+    If the backend service requires TLS, use BackendTLSPolicy to tell the
+    implementation to supply the TLS details to be used to connect to that
+    backend.
 
     Attributes
     ----------
@@ -1505,7 +1540,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
     path?: GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0RequestRedirectPath
     port?: int
     scheme?: "http" | "https"
-    statusCode?: 301 | 302 = 302
+    statusCode?: 301 | 302 | 303 | 307 | 308 = 302
 
     check:
         len(hostname) <= 253 if hostname
@@ -1650,6 +1685,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1661,6 +1699,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0ResponseHeaderModifierSetItems0:
     r"""
@@ -1679,6 +1718,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -1690,6 +1732,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0Fil
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0BackendRefsItems0FiltersItems0URLRewrite:
     r"""
@@ -1859,14 +1902,14 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         AllowHeaders indicates which HTTP request headers are supported for
         accessing the requested resource.
 
-        Header names are not case sensitive.
+        Header names are not case-sensitive.
 
         Multiple header names in the value of the `Access-Control-Allow-Headers`
         response header are separated by a comma (",").
 
-        When the `AllowHeaders` field is configured with one or more headers, the
+        When the `allowHeaders` field is configured with one or more headers, the
         gateway must return the `Access-Control-Allow-Headers` response header
-        which value is present in the `AllowHeaders` field.
+        which value is present in the `allowHeaders` field.
 
         If any header name in the `Access-Control-Request-Headers` request header
         is not included in the list of header names specified by the response
@@ -1878,18 +1921,20 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         client side.
 
         A wildcard indicates that the requests with all HTTP headers are allowed.
-        The `Access-Control-Allow-Headers` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is false or omitted.
 
-        When the `AllowCredentials` field is true and `AllowHeaders` field
-        specified with the `*` wildcard, the gateway must specify one or more
-        HTTP headers in the value of the `Access-Control-Allow-Headers` response
-        header. The value of the header `Access-Control-Allow-Headers` is same as
-        the `Access-Control-Request-Headers` header provided by the client. If
-        the header `Access-Control-Request-Headers` is not included in the
-        request, the gateway will omit the `Access-Control-Allow-Headers`
-        response header, instead of specifying the `*` wildcard. A Gateway
-        implementation may choose to add implementation-specific default headers.
+        If the configuration contains the wildcard `*` in `allowHeaders` and
+        `allowCredentials` is set to `false`, the `Access-Control-Allow-Headers`
+        response header may either contain the wildcard `*` or echo the value
+        of the `Access-Control-Request-Headers` request header.
+
+        If the configuration contains the wildcard `*` in `allowHeaders` and
+        `allowCredentials` is set to `true`, the gateway must not return `*`
+        in the `Access-Control-Allow-Headers` response header. Instead, it must
+        return one or more header names matching the value of the
+        `Access-Control-Request-Headers` request header.
+        If the `Access-Control-Request-Headers` header is not present in the
+        request, the gateway must omit the `Access-Control-Allow-Headers`
+        response header.
 
         Support: Extended
     allowMethods : [str], default is Undefined, optional
@@ -1899,7 +1944,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         Valid values are any method defined by RFC9110, along with the special
         value `*`, which represents all HTTP methods are allowed.
 
-        Method names are case sensitive, so these values are also case-sensitive.
+        Method names are case-sensitive, so these values are also case-sensitive.
         (See https://www.rfc-editor.org/rfc/rfc2616#section-5.1.1)
 
         Multiple method names in the value of the `Access-Control-Allow-Methods`
@@ -1908,29 +1953,29 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         A CORS-safelisted method is a method that is `GET`, `HEAD`, or `POST`.
         (See https://fetch.spec.whatwg.org/#cors-safelisted-method) The
         CORS-safelisted methods are always allowed, regardless of whether they
-        are specified in the `AllowMethods` field.
+        are specified in the `allowMethods` field.
 
-        When the `AllowMethods` field is configured with one or more methods, the
+        When the `allowMethods` field is configured with one or more methods, the
         gateway must return the `Access-Control-Allow-Methods` response header
-        which value is present in the `AllowMethods` field.
+        which value is present in the `allowMethods` field.
 
         If the HTTP method of the `Access-Control-Request-Method` request header
         is not included in the list of methods specified by the response header
         `Access-Control-Allow-Methods`, it will present an error on the client
         side.
 
-        The `Access-Control-Allow-Methods` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is false or omitted.
+        If the configuration contains the wildcard `*` in `allowMethods` and
+        `allowCredentials` is set to `false`, the `Access-Control-Allow-Methods`
+        response header may either contain the wildcard `*` or echo the value
+        of the `Access-Control-Request-Method` request header.
 
-        When the `AllowCredentials` field is true and `AllowMethods` field
-        specified with the `*` wildcard, the gateway must specify one HTTP method
-        in the value of the Access-Control-Allow-Methods response header. The
-        value of the header `Access-Control-Allow-Methods` is same as the
-        `Access-Control-Request-Method` header provided by the client. If the
-        header `Access-Control-Request-Method` is not included in the request,
-        the gateway will omit the `Access-Control-Allow-Methods` response header,
-        instead of specifying the `*` wildcard. A Gateway implementation may
-        choose to add implementation-specific default methods.
+        If the configuration contains the wildcard `*` in `allowMethods` and
+        `allowCredentials` is set to `true`, the gateway must not return `*`
+        in the `Access-Control-Allow-Methods` response header. Instead, it must
+        return a single HTTP method matching the value of the
+        `Access-Control-Request-Method` request header.
+        If the `Access-Control-Request-Method` header is not present in the request,
+        the gateway must omit the `Access-Control-Allow-Methods` response header.
 
         Support: Extended
     allowOrigins : [str], default is Undefined, optional
@@ -1959,7 +2004,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         An origin value that includes _only_ the `*` character indicates requests
         from all `Origin`s are allowed.
 
-        When the `AllowOrigins` field is configured with multiple origins, it
+        When the `allowOrigins` field is configured with multiple origins, it
         means the server supports clients from multiple origins. If the request
         `Origin` matches the configured allowed origins, the gateway must return
         the given `Origin` and sets value of the header
@@ -1976,15 +2021,20 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         the CORS headers. The cross-origin request fails on the client side.
         Therefore, the client doesn't attempt the actual cross-origin request.
 
-        The `Access-Control-Allow-Origin` response header can only use `*`
-        wildcard as value when the `AllowCredentials` field is false or omitted.
+        Conversely, if the request `Origin` matches one of the configured
+        allowed origins, the gateway sets the response header
+        `Access-Control-Allow-Origin` to the same value as the `Origin`
+        header provided by the client.
 
-        When the `AllowCredentials` field is true and `AllowOrigins` field
-        specified with the `*` wildcard, the gateway must return a single origin
-        in the value of the `Access-Control-Allow-Origin` response header,
-        instead of specifying the `*` wildcard. The value of the header
-        `Access-Control-Allow-Origin` is same as the `Origin` header provided by
-        the client.
+        If the configuration contains the wildcard `*` in `allowOrigins` and
+        `allowCredentials` is set to `false`, the `Access-Control-Allow-Origin`
+        response header may either contain the wildcard `*` or echo the value
+        of the `Origin` request header.
+
+        If the configuration contains the wildcard `*` in `allowOrigins` and
+        `allowCredentials` is set to `true`, the gateway must not return `*`
+        in the `Access-Control-Allow-Origin` response header. Instead, it must
+        return a single origin matching the value of the `Origin` request header.
 
         Support: Extended
     exposeHeaders : [str], default is Undefined, optional
@@ -2004,18 +2054,25 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         (See https://fetch.spec.whatwg.org/#cors-safelisted-response-header-name)
         The CORS-safelisted response headers are exposed to client by default.
 
-        When an HTTP header name is specified using the `ExposeHeaders` field,
+        When an HTTP header name is specified using the `exposeHeaders` field,
         this additional header will be exposed as part of the response to the
         client.
 
-        Header names are not case sensitive.
+        Header names are not case-sensitive.
 
         Multiple header names in the value of the `Access-Control-Expose-Headers`
         response header are separated by a comma (",").
 
         A wildcard indicates that the responses with all HTTP headers are exposed
-        to clients. The `Access-Control-Expose-Headers` response header can only
-        use `*` wildcard as value when the `AllowCredentials` field is false or omitted.
+        to clients.
+
+        If the configuration contains the wildcard `*` in `exposeHeaders` and
+        `allowCredentials` is set to `false`, the `Access-Control-Expose-Headers`
+        response header can contain the wildcard `*`.
+
+        If the configuration contains the wildcard `*` in `exposeHeaders` and
+        `allowCredentials` is set to `true`, the gateway cannot use the `*`
+        in the `Access-Control-Expose-Headers` response header.
 
         Support: Extended
     maxAge : int, default is 5, optional
@@ -2028,6 +2085,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
 
         The default value of `Access-Control-Max-Age` response header is 5
         (seconds).
+
+        When the `MaxAge` field is unspecified, the gateway sets the response
+        header "Access-Control-Max-Age: 5" by default.
     """
     allowCredentials?: bool
     allowHeaders?: [str]
@@ -2045,7 +2105,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Cors:
         len(allowOrigins) <= 64 if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) <= 253 if allowOrigins not in [None, Undefined]} if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) >= 1 if allowOrigins not in [None, Undefined]} if allowOrigins
-        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"(^\*$)|(^([a-zA-Z][a-zA-Z0-9+\-.]+):\/\/([^:/?#]+)(:([0-9]{1,5}))?$)") if allowOrigins} if allowOrigins
+        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"(^\*$)|(^(http(s)?):\/\/(((\*\.)?([a-zA-Z0-9\-]+\.)*[a-zA-Z0-9-]+|\*)(:([0-9]{1,5}))?)$)") if allowOrigins} if allowOrigins
         len(exposeHeaders) <= 64 if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) <= 256 if exposeHeaders not in [None, Undefined]} if exposeHeaders
         all exposeHeaders in exposeHeaders {len(exposeHeaders) >= 1 if exposeHeaders not in [None, Undefined]} if exposeHeaders
@@ -2258,6 +2318,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Externa
     """
     allowedHeaders?: [str]
 
+    check:
+        len(allowedHeaders) <= 64 if allowedHeaders
+
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0ExternalAuthHTTP:
     r"""
     HTTPAuthConfig contains configuration for communication with HTTP-speaking
@@ -2314,6 +2377,8 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Externa
     path?: str
 
     check:
+        len(allowedHeaders) <= 64 if allowedHeaders
+        len(allowedResponseHeaders) <= 64 if allowedResponseHeaders
         len(path) <= 1024 if path
         _regex_match(str(path), r"^(?:[-A-Za-z0-9/._~!$&'()*+,;=:@]|[%][0-9a-fA-F]{2})+$") if path
 
@@ -2404,6 +2469,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Request
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -2415,6 +2483,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Request
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0RequestHeaderModifierSetItems0:
     r"""
@@ -2433,6 +2502,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Request
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -2444,6 +2516,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Request
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0RequestMirror:
     r"""
@@ -2505,6 +2578,10 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Request
     Support: Extended for Kubernetes Service
 
     Support: Implementation-specific for any other resource
+
+    If the backend service requires TLS, use BackendTLSPolicy to tell the
+    implementation to supply the TLS details to be used to connect to that
+    backend.
 
     Attributes
     ----------
@@ -2659,7 +2736,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Request
     path?: GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0RequestRedirectPath
     port?: int
     scheme?: "http" | "https"
-    statusCode?: 301 | 302 = 302
+    statusCode?: 301 | 302 | 303 | 307 | 308 = 302
 
     check:
         len(hostname) <= 253 if hostname
@@ -2804,6 +2881,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Respons
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -2815,6 +2895,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Respons
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0ResponseHeaderModifierSetItems0:
     r"""
@@ -2833,6 +2914,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Respons
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -2844,6 +2928,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0Respons
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0FiltersItems0URLRewrite:
     r"""
@@ -3001,6 +3086,9 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0MatchesItems0Headers
         determine the supported dialect.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
     """
     name: str
 
@@ -3013,6 +3101,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0MatchesItems0Headers
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+        _regex_match(str(value), r"^[!-~]+([\t ]?[!-~]+)*$")
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0MatchesItems0Path:
     r"""
@@ -3113,7 +3202,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0Retry:
         For example, setting the `rules[].retry.backoff` field to the value
         `100ms` will cause a backend request to first be retried approximately
         100 milliseconds after timing out or receiving a response code configured
-        to be retryable.
+        to be retriable.
 
         An implementation MAY use an exponential or alternative backoff strategy
         for subsequent retry attempts, MAY cap the maximum backoff duration to
@@ -3154,6 +3243,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0Retry:
     codes?: [int]
 
     check:
+        attempts >= 1 if attempts not in [None, Undefined]
         _regex_match(str(backoff), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if backoff
         all codes in codes {codes <= 599 if codes not in [None, Undefined]} if codes
         all codes in codes {codes >= 400 if codes not in [None, Undefined]} if codes
@@ -3175,12 +3265,6 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0SessionPersistence:
         Support: Extended
     cookieConfig : GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0SessionPersistenceCookieConfig, default is Undefined, optional
         cookie config
-    idleTimeout : str, default is Undefined, optional
-        IdleTimeout defines the idle timeout of the persistent session.
-        Once the session has been idle for more than the specified
-        IdleTimeout duration, the session becomes invalid.
-
-        Support: Extended
     sessionName : str, default is Undefined, optional
         SessionName defines the name of the persistent session token
         which may be reflected in the cookie or the header. Users
@@ -3190,7 +3274,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0SessionPersistence:
         Support: Implementation-specific
     $type : str, default is "Cookie", optional
         Type defines the type of session persistence such as through
-        the use a header or cookie. Defaults to cookie based session
+        the use of a header or cookie. Defaults to cookie based session
         persistence.
 
         Support: Core for "Cookie" type
@@ -3199,13 +3283,11 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0SessionPersistence:
     """
     absoluteTimeout?: str
     cookieConfig?: GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0SessionPersistenceCookieConfig
-    idleTimeout?: str
     sessionName?: str
     $type?: "Cookie" | "Header" = "Cookie"
 
     check:
         _regex_match(str(absoluteTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if absoluteTimeout
-        _regex_match(str(idleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleTimeout
         len(sessionName) <= 128 if sessionName
 
 schema GatewayNetworkingK8sIoV1beta1HTTPRouteSpecRulesItems0SessionPersistenceCookieConfig:
@@ -3352,7 +3434,7 @@ schema GatewayNetworkingK8sIoV1beta1HTTPRouteStatusParentsItems0:
 
         * The Route refers to a nonexistent parent.
         * The Route is of a type that the controller does not support.
-        * The Route is in a namespace the controller does not have access to.
+        * The Route is in a namespace to which the controller does not have access.
     controllerName : str, default is Undefined, required
         ControllerName is a domain/path string that indicates the name of the
         controller that wrote this status. This corresponds with the
