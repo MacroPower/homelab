@@ -138,6 +138,14 @@ schema ValuesConfig:
     cluster : ValuesConfigCluster, optional
     gateway : ValuesConfigGateway, optional
     jetstream : ValuesConfigJetstream, optional
+    lameDuckDuration : str, optional, default is "30s"
+        period over which the server evicts all clients after the grace period
+        https://docs.nats.io/running-a-nats-service/nats_admin/lame_duck_mode
+        note: podTemplate.terminationGracePeriodSeconds should be at least
+        lameDuckGracePeriod + lameDuckDuration + 20s shutdown overhead
+    lameDuckGracePeriod : str, optional, default is "10s"
+        period the server waits after entering lame duck mode before starting
+        to evict clients
     leafnodes : ValuesConfigLeafnodes, optional
     merge : ValuesConfigMerge, optional
         merge or patch the nats config
@@ -186,6 +194,8 @@ schema ValuesConfig:
     cluster?: ValuesConfigCluster
     gateway?: ValuesConfigGateway
     jetstream?: ValuesConfigJetstream
+    lameDuckDuration?: str
+    lameDuckGracePeriod?: str
     leafnodes?: ValuesConfigLeafnodes
     merge?: ValuesConfigMerge
     monitor?: ValuesConfigMonitor
@@ -912,6 +922,7 @@ schema ValuesContainer:
                   name: nats-auth
                   key: token
     image : ValuesContainerImage, optional
+    livenessProbe : ValuesContainerLivenessProbe, optional
     merge : ValuesContainerMerge, optional
         merge or patch the container
         https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#container-v1-core
@@ -920,16 +931,24 @@ schema ValuesContainer:
         container port options
         must be enabled in the config section also
         https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#containerport-v1-core
+    readinessProbe : ValuesContainerReadinessProbe, optional
     resources : ValuesContainerResources, optional
         container resources
+    startupProbe : ValuesContainerStartupProbe, optional
+        probes are only applied when config.monitor is enabled
+        scheme is set to HTTPS automatically when config.monitor.tls is enabled
+        https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#probe-v1-core
     """
     [...str]: any
     env?: ValuesContainerEnv
     image?: ValuesContainerImage
+    livenessProbe?: ValuesContainerLivenessProbe
     merge?: ValuesContainerMerge
     patch?: [any]
     ports?: ValuesContainerPorts
+    readinessProbe?: ValuesContainerReadinessProbe
     resources?: ValuesContainerResources
+    startupProbe?: ValuesContainerStartupProbe
 
 schema ValuesContainerEnv:
     r"""
@@ -959,7 +978,7 @@ schema ValuesContainerImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "nats"
-    tag : str, optional, default is "2.12.6-alpine"
+    tag : str, optional, default is "2.14.6-alpine"
     """
     [...str]: any
     digest?: any
@@ -968,6 +987,40 @@ schema ValuesContainerImage:
     registry?: any
     repository?: str
     tag?: str
+
+schema ValuesContainerLivenessProbe:
+    r"""
+    ValuesContainerLivenessProbe
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 3
+    httpGet : ValuesContainerLivenessProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 10
+    periodSeconds : int, optional, default is 30
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    failureThreshold?: int
+    httpGet?: ValuesContainerLivenessProbeHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesContainerLivenessProbeHttpGet:
+    r"""
+    ValuesContainerLivenessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz?js-enabled-only=true"
+    port : str, optional, default is "monitor"
+    """
+    [...str]: any
+    path?: str
+    port?: str
 
 schema ValuesContainerMerge:
     r"""
@@ -1051,11 +1104,81 @@ schema ValuesContainerPortsWebsocket:
     """
     [...str]: any
 
+schema ValuesContainerReadinessProbe:
+    r"""
+    ValuesContainerReadinessProbe
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 3
+    httpGet : ValuesContainerReadinessProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 10
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    failureThreshold?: int
+    httpGet?: ValuesContainerReadinessProbeHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesContainerReadinessProbeHttpGet:
+    r"""
+    ValuesContainerReadinessProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz?js-server-only=true"
+    port : str, optional, default is "monitor"
+    """
+    [...str]: any
+    path?: str
+    port?: str
+
 schema ValuesContainerResources:
     r"""
     container resources
     """
     [...str]: any
+
+schema ValuesContainerStartupProbe:
+    r"""
+    probes are only applied when config.monitor is enabled
+    scheme is set to HTTPS automatically when config.monitor.tls is enabled
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#probe-v1-core
+
+    Attributes
+    ----------
+    failureThreshold : int, optional, default is 90
+    httpGet : ValuesContainerStartupProbeHttpGet, optional
+    initialDelaySeconds : int, optional, default is 10
+    periodSeconds : int, optional, default is 10
+    successThreshold : int, optional, default is 1
+    timeoutSeconds : int, optional, default is 5
+    """
+    [...str]: any
+    failureThreshold?: int
+    httpGet?: ValuesContainerStartupProbeHttpGet
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesContainerStartupProbeHttpGet:
+    r"""
+    ValuesContainerStartupProbeHttpGet
+
+    Attributes
+    ----------
+    path : str, optional, default is "/healthz"
+    port : str, optional, default is "monitor"
+    """
+    [...str]: any
+    path?: str
+    port?: str
 
 schema ValuesGlobal:
     r"""
@@ -1209,7 +1332,7 @@ schema ValuesNatsBoxContainerImage:
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-box"
     resources : ValuesNatsBoxContainerImageResources, optional
-    tag : str, optional, default is "0.19.3"
+    tag : str, optional, default is "0.19.7"
     """
     [...str]: any
     digest?: any
@@ -1499,6 +1622,10 @@ schema ValuesPodTemplate:
         merge or patch the pod template
         https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.24/#pod-v1-core
     patch : [any], optional
+    terminationGracePeriodSeconds : int, optional, default is 60
+        how long to wait for graceful shutdown
+        should be at least config.lameDuckGracePeriod + config.lameDuckDuration
+        + 20s shutdown overhead
     topologySpreadConstraints : ValuesPodTemplateTopologySpreadConstraints, optional
         map of topologyKey: topologySpreadConstraint
         labelSelector will be added to match StatefulSet pods
@@ -1512,6 +1639,7 @@ schema ValuesPodTemplate:
     configChecksumAnnotation?: bool
     merge?: ValuesPodTemplateMerge
     patch?: [any]
+    terminationGracePeriodSeconds?: int
     topologySpreadConstraints?: ValuesPodTemplateTopologySpreadConstraints
 
 schema ValuesPodTemplateMerge:
@@ -1586,7 +1714,7 @@ schema ValuesPromExporterImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/prometheus-nats-exporter"
-    tag : str, optional, default is "0.18.0"
+    tag : str, optional, default is "0.20.1"
     """
     [...str]: any
     digest?: any
@@ -1677,7 +1805,7 @@ schema ValuesReloaderImage:
     pullPolicy : any, optional, default is ""
     registry : any, optional, default is ""
     repository : str, optional, default is "natsio/nats-server-config-reloader"
-    tag : str, optional, default is "0.21.1"
+    tag : str, optional, default is "0.23.0"
     """
     [...str]: any
     digest?: any
