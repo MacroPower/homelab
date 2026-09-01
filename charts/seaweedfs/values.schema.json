@@ -427,6 +427,12 @@
           "title": "restartPolicy",
           "type": "null"
         },
+        "schedulerName": {
+          "default": "",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
+        },
         "secret": {
           "additionalProperties": true,
           "description": "Admin authentication",
@@ -469,6 +475,13 @@
           "title": "secret",
           "type": "object"
         },
+        "secretExtraEnvironmentVars": {
+          "additionalProperties": true,
+          "description": "secret env variables (e.g. for injecting OIDC client secret from a Kubernetes Secret)",
+          "required": [],
+          "title": "secretExtraEnvironmentVars",
+          "type": "object"
+        },
         "service": {
           "additionalProperties": true,
           "properties": {
@@ -476,6 +489,48 @@
               "additionalProperties": true,
               "required": [],
               "title": "annotations",
+              "type": "object"
+            },
+            "loadBalancerClass": {
+              "default": "",
+              "description": "used only when type is LoadBalancer",
+              "required": [],
+              "title": "loadBalancerClass",
+              "type": "string"
+            },
+            "loadBalancerIP": {
+              "default": "",
+              "required": [],
+              "title": "loadBalancerIP",
+              "type": "string"
+            },
+            "loadBalancerSourceRanges": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "loadBalancerSourceRanges",
+              "type": "array"
+            },
+            "nodePorts": {
+              "additionalProperties": true,
+              "description": "fixed nodePorts, used only when type is NodePort or LoadBalancer",
+              "properties": {
+                "grpc": {
+                  "default": "null",
+                  "required": [],
+                  "title": "grpc",
+                  "type": "null"
+                },
+                "http": {
+                  "default": "null",
+                  "required": [],
+                  "title": "http",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "nodePorts",
               "type": "object"
             },
             "type": {
@@ -959,7 +1014,7 @@
             },
             "createBucketsHook": {
               "additionalProperties": true,
-              "description": "You may specify buckets to be created during the install process.\nBuckets may be exposed publicly by setting `anonymousRead` to `true`\nttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)\nobjectLock enables S3 Object Lock (irreversible, forces versioning)\nversioning: Enabled or Suspended (or true to enable)\ncreateBuckets:\n  - name: bucket-a\n    anonymousRead: true\n    ttl: 7d\n    objectLock: true\n    versioning: Enabled\n  - name: bucket-b\n    anonymousRead: false",
+              "description": "You may specify buckets to be created during the install process.\nBuckets may be exposed publicly by setting `anonymousRead` to `true`\nttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)\nobjectLock enables S3 Object Lock (irreversible, forces versioning)\nversioning: Enabled or Suspended (or bool true/false)\ncreateBuckets:\n  - name: bucket-a\n    anonymousRead: true\n    ttl: 7d\n    objectLock: true\n    versioning: Enabled\n  - name: bucket-b\n    anonymousRead: false",
               "properties": {
                 "resources": {
                   "additionalProperties": true,
@@ -1020,6 +1075,13 @@
           "title": "s3",
           "type": "object"
         },
+        "schedulerName": {
+          "default": "",
+          "description": "Used to assign a custom scheduler to pods\nref: https://kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
+        },
         "secretExtraEnvironmentVars": {
           "additionalProperties": true,
           "description": "Secret environment variables (for database credentials, etc.)\nExample:\nsecretExtraEnvironmentVars:\n  WEED_POSTGRES_USERNAME:\n    secretKeyRef:\n      name: postgres-credentials\n      key: username\n  WEED_POSTGRES_PASSWORD:\n    secretKeyRef:\n      name: postgres-credentials\n      key: password",
@@ -1042,6 +1104,96 @@
               "required": [],
               "title": "internalTrafficPolicy",
               "type": "string"
+            },
+            "loadBalancerClass": {
+              "default": "",
+              "description": "used only when type is LoadBalancer",
+              "required": [],
+              "title": "loadBalancerClass",
+              "type": "string"
+            },
+            "loadBalancerIP": {
+              "default": "",
+              "required": [],
+              "title": "loadBalancerIP",
+              "type": "string"
+            },
+            "loadBalancerSourceRanges": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "loadBalancerSourceRanges",
+              "type": "array"
+            },
+            "nodePorts": {
+              "additionalProperties": true,
+              "description": "fixed nodePorts, used only when type is NodePort or LoadBalancer",
+              "properties": {
+                "filer": {
+                  "default": "null",
+                  "required": [],
+                  "title": "filer",
+                  "type": "null"
+                },
+                "filerGrpc": {
+                  "default": "null",
+                  "required": [],
+                  "title": "filerGrpc",
+                  "type": "null"
+                },
+                "master": {
+                  "default": "null",
+                  "required": [],
+                  "title": "master",
+                  "type": "null"
+                },
+                "masterGrpc": {
+                  "default": "null",
+                  "required": [],
+                  "title": "masterGrpc",
+                  "type": "null"
+                },
+                "metrics": {
+                  "default": "null",
+                  "required": [],
+                  "title": "metrics",
+                  "type": "null"
+                },
+                "s3": {
+                  "default": "null",
+                  "required": [],
+                  "title": "s3",
+                  "type": "null"
+                },
+                "s3Https": {
+                  "default": "null",
+                  "required": [],
+                  "title": "s3Https",
+                  "type": "null"
+                },
+                "sftp": {
+                  "default": "null",
+                  "required": [],
+                  "title": "sftp",
+                  "type": "null"
+                },
+                "volume": {
+                  "default": "null",
+                  "required": [],
+                  "title": "volume",
+                  "type": "null"
+                },
+                "volumeGrpc": {
+                  "default": "null",
+                  "required": [],
+                  "title": "volumeGrpc",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "nodePorts",
+              "type": "object"
             },
             "type": {
               "default": "ClusterIP",
@@ -1101,6 +1253,12 @@
               "title": "enabled",
               "type": "boolean"
             },
+            "existingCAKeysSecret": {
+              "default": "null",
+              "required": [],
+              "title": "existingCAKeysSecret",
+              "type": "null"
+            },
             "existingConfigSecret": {
               "default": "null",
               "description": "Set to the name of an existing kubernetes Secret with the sftp json config file",
@@ -1143,6 +1301,13 @@
               "default": "null",
               "required": [],
               "title": "sshPrivateKey",
+              "type": "null"
+            },
+            "trustedUserCAKeys": {
+              "default": "null",
+              "description": "SSH user-certificate authentication. See sftp.trustedUserCAKeys above.\n(null on either field inherits from the top-level sftp.* setting.)",
+              "required": [],
+              "title": "trustedUserCAKeys",
               "type": "null"
             }
           },
@@ -1224,6 +1389,14 @@
           "required": [],
           "title": "commonName",
           "type": "string"
+        },
+        "dnsNames": {
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "dnsNames",
+          "type": "array"
         },
         "duration": {
           "default": "2160h",
@@ -1368,6 +1541,13 @@
           "required": [],
           "title": "resources",
           "type": "object"
+        },
+        "schedulerName": {
+          "default": "",
+          "description": "used to assign a custom scheduler to cosi pods\nref: https://kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
         },
         "sidecar": {
           "additionalProperties": true,
@@ -1615,6 +1795,7 @@
             },
             "WEED_MYSQL_ENABLED": {
               "default": "false",
+              "description": "the WEED_MYSQL_* keys and the db credential secret only render while this is \"true\"",
               "required": [],
               "title": "WEED_MYSQL_ENABLED",
               "type": "string"
@@ -1673,49 +1854,128 @@
           "title": "imageOverride",
           "type": "null"
         },
-        "ingress": {
+        "ingresses": {
           "additionalProperties": true,
           "properties": {
-            "annotations": {
+            "grpc": {
               "additionalProperties": true,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "nginx.ingress.kubernetes.io/backend-protocol": {
+                      "default": "GRPC",
+                      "description": "Ingress terminates TLS and re-originates gRPC (HTTP/2) to the filer.",
+                      "required": [],
+                      "title": "nginx.ingress.kubernetes.io/backend-protocol",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "className": {
+                  "default": "",
+                  "required": [],
+                  "title": "className",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "host": {
+                  "default": "seaweedfs.cluster.local",
+                  "required": [],
+                  "title": "host",
+                  "type": "string"
+                },
+                "path": {
+                  "default": "/",
+                  "description": "gRPC methods are called at /\u003cpackage\u003e.\u003cService\u003e/\u003cMethod\u003e, so route the\nwhole host, not the HTTP UI's regex path.",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "pathType": {
+                  "default": "Prefix",
+                  "required": [],
+                  "title": "pathType",
+                  "type": "string"
+                },
+                "tls": {
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "tls",
+                  "type": "array"
+                }
+              },
               "required": [],
-              "title": "annotations",
+              "title": "grpc",
               "type": "object"
             },
-            "className": {
-              "default": "",
+            "http": {
+              "additionalProperties": true,
+              "properties": {
+                "annotations": {
+                  "additionalProperties": true,
+                  "required": [],
+                  "title": "annotations",
+                  "type": "object"
+                },
+                "className": {
+                  "default": "",
+                  "required": [],
+                  "title": "className",
+                  "type": "string"
+                },
+                "enabled": {
+                  "default": false,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "host": {
+                  "default": "seaweedfs.cluster.local",
+                  "description": "host: false for \"*\" hostname",
+                  "required": [],
+                  "title": "host",
+                  "type": "string"
+                },
+                "path": {
+                  "default": "/sw-filer/?(.*)",
+                  "required": [],
+                  "title": "path",
+                  "type": "string"
+                },
+                "pathType": {
+                  "default": "ImplementationSpecific",
+                  "required": [],
+                  "title": "pathType",
+                  "type": "string"
+                },
+                "tls": {
+                  "description": "nginx.ingress.kubernetes.io/backend-protocol: GRPC\nnginx.ingress.kubernetes.io/auth-type: \"basic\"\nnginx.ingress.kubernetes.io/auth-secret: \"default/ingress-basic-auth-secret\"\nnginx.ingress.kubernetes.io/auth-realm: 'Authentication Required - SW-Filer'\nnginx.ingress.kubernetes.io/service-upstream: \"true\"\nnginx.ingress.kubernetes.io/rewrite-target: /$1\nnginx.ingress.kubernetes.io/use-regex: \"true\"\nnginx.ingress.kubernetes.io/enable-rewrite-log: \"true\"\nnginx.ingress.kubernetes.io/ssl-redirect: \"false\"\nnginx.ingress.kubernetes.io/force-ssl-redirect: \"false\"\nnginx.ingress.kubernetes.io/configuration-snippet: |\n  sub_filter '\u003chead\u003e' '\u003chead\u003e \u003cbase href=\"/sw-filer/\"\u003e'; #add base url\n  sub_filter '=\"/' '=\"./';                               #make absolute paths to relative\n  sub_filter '=/' '=./';\n  sub_filter '/seaweedfsstatic' './seaweedfsstatic';\n  sub_filter_once off;",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "tls",
+                  "type": "array"
+                }
+              },
               "required": [],
-              "title": "className",
-              "type": "string"
-            },
-            "enabled": {
-              "default": false,
-              "required": [],
-              "title": "enabled",
-              "type": "boolean"
-            },
-            "host": {
-              "default": "seaweedfs.cluster.local",
-              "description": "host: false for \"*\" hostname",
-              "required": [],
-              "title": "host",
-              "type": "string"
-            },
-            "path": {
-              "default": "/sw-filer/?(.*)",
-              "required": [],
-              "title": "path",
-              "type": "string"
-            },
-            "pathType": {
-              "default": "ImplementationSpecific",
-              "required": [],
-              "title": "pathType",
-              "type": "string"
+              "title": "http",
+              "type": "object"
             }
           },
           "required": [],
-          "title": "ingress",
+          "title": "ingresses",
           "type": "object"
         },
         "initContainers": {
@@ -2031,7 +2291,7 @@
             },
             "createBucketsHook": {
               "additionalProperties": true,
-              "description": "You may specify buckets to be created during the install or upgrade process.\nBuckets may be exposed publicly by setting `anonymousRead` to `true`\nttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)\nobjectLock enables S3 Object Lock (irreversible, forces versioning)\nversioning: Enabled or Suspended (or true to enable)\ncreateBuckets:\n  - name: bucket-a\n    anonymousRead: true\n    ttl: 7d\n    objectLock: true\n    versioning: Enabled\n  - name: bucket-b\n    anonymousRead: false",
+              "description": "You may specify buckets to be created during the install or upgrade process.\nBuckets may be exposed publicly by setting `anonymousRead` to `true`\nttl format: [1-255][m|h|d|w|M|y] (e.g., 7d)\nobjectLock enables S3 Object Lock (irreversible, forces versioning)\nversioning: Enabled or Suspended (or bool true/false)\ncreateBuckets:\n  - name: bucket-a\n    anonymousRead: true\n    ttl: 7d\n    objectLock: true\n    versioning: Enabled\n  - name: bucket-b\n    anonymousRead: false",
               "properties": {
                 "resources": {
                   "additionalProperties": true,
@@ -2088,6 +2348,13 @@
           "required": [],
           "title": "s3",
           "type": "object"
+        },
+        "schedulerName": {
+          "default": "",
+          "description": "used to specify a custom scheduler for filer pods\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
         },
         "secretExtraEnvironmentVars": {
           "additionalProperties": true,
@@ -2266,6 +2533,7 @@
               "properties": {
                 "name": {
                   "default": "chrislusf/seaweedfs",
+                  "description": "chrislusf/seaweedfs-enterprise for the enterprise edition",
                   "required": [],
                   "title": "name",
                   "type": "string"
@@ -2287,6 +2555,33 @@
               "required": [],
               "title": "imagePullPolicy",
               "type": "string"
+            },
+            "license": {
+              "additionalProperties": true,
+              "description": "Enterprise license file, held in a Secret in the release namespace and\nmounted read-only on the components that run a master. A renewed Secret\nreaches the running master without a restart. SEAWEED_LICENSE is reserved\nwhile this is set: an extraEnvironmentVars entry of that name is dropped.",
+              "properties": {
+                "existingSecret": {
+                  "default": "",
+                  "required": [],
+                  "title": "existingSecret",
+                  "type": "string"
+                },
+                "mountPath": {
+                  "default": "/etc/seaweedfs/license",
+                  "required": [],
+                  "title": "mountPath",
+                  "type": "string"
+                },
+                "secretKey": {
+                  "default": "seaweed-license.json",
+                  "required": [],
+                  "title": "secretKey",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "license",
+              "type": "object"
             },
             "loggingLevel": {
               "default": 1,
@@ -2347,10 +2642,44 @@
             },
             "securityConfig": {
               "additionalProperties": true,
+              "description": "filerWrite: true mounts security.toml on filer + admin without needing\nenableSecurity (mTLS); required for the Admin UI Users tab.",
               "properties": {
                 "jwtSigning": {
                   "additionalProperties": true,
                   "properties": {
+                    "expiresAfterSeconds": {
+                      "additionalProperties": true,
+                      "description": "Positive values override SeaweedFS token lifetime defaults.\nZero keeps the runtime defaults: 10s for writes and 60s for reads.",
+                      "properties": {
+                        "filerRead": {
+                          "default": 0,
+                          "required": [],
+                          "title": "filerRead",
+                          "type": "integer"
+                        },
+                        "filerWrite": {
+                          "default": 0,
+                          "required": [],
+                          "title": "filerWrite",
+                          "type": "integer"
+                        },
+                        "volumeRead": {
+                          "default": 0,
+                          "required": [],
+                          "title": "volumeRead",
+                          "type": "integer"
+                        },
+                        "volumeWrite": {
+                          "default": 0,
+                          "required": [],
+                          "title": "volumeWrite",
+                          "type": "integer"
+                        }
+                      },
+                      "required": [],
+                      "title": "expiresAfterSeconds",
+                      "type": "object"
+                    },
                     "filerRead": {
                       "default": false,
                       "required": [],
@@ -2513,7 +2842,7 @@
         },
         "data": {
           "additionalProperties": true,
-          "description": "You may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n data:\n   type: \"persistentVolumeClaim\"\n   size: \"24Ti\"\n   storageClass: \"local-path-provisioner\"\n   annotations:\n     \"key\": \"value\"\n\nYou may also spacify an existing claim:\n data:\n   type: \"existingClaim\"\n   claimName: \"my-pvc\"\n\nYou can also use emptyDir storage:\n data:\n   type: \"emptyDir\"",
+          "description": "You may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n data:\n   type: \"persistentVolumeClaim\"\n   size: \"24Ti\"\n   storageClass: \"local-path-provisioner\"\n   annotations:\n     \"key\": \"value\"\n\nYou may also specify an existing claim:\n data:\n   type: \"existingClaim\"\n   claimName: \"my-pvc\"\n\nYou can also use emptyDir storage:\n data:\n   type: \"emptyDir\"\n-mdir holds the Raft log and snapshots, and with them the cluster's\nidentity (its topology UUID). A hostPath does not follow a rescheduled pod,\nso prefer type \"persistentVolumeClaim\" for new installs. The default stays\nhostPath so existing releases keep upgrading; see the README to switch one.",
           "properties": {
             "hostPathPrefix": {
               "default": "/ssd",
@@ -2522,6 +2851,7 @@
               "type": "string"
             },
             "size": {
+              "default": "1Gi",
               "required": [],
               "title": "size",
               "type": "string"
@@ -3004,6 +3334,13 @@
           "title": "resumeState",
           "type": "boolean"
         },
+        "schedulerName": {
+          "default": "",
+          "description": "used to specify a custom scheduler for master pods\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
+        },
         "serviceAccountName": {
           "default": "",
           "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
@@ -3058,6 +3395,145 @@
       "title": "master",
       "type": "object"
     },
+    "networkPolicy": {
+      "additionalProperties": true,
+      "properties": {
+        "components": {
+          "additionalProperties": true,
+          "description": "Per-component additions, keyed by the component's app.kubernetes.io/component\nlabel value, for rules that should not apply to the whole release. The keys\nare master, filer, s3, sftp, admin, worker, bucket-hook,\nvolume-resize-hook, objectstorage-provisioner, seaweedfs-all-in-one, and\nvolume (plus volume-\u003cname\u003e for every entry under `volumes`):\n\n  components:\n    filer:\n      extraEgress:\n        - to:\n            - ipBlock:\n                cidr: 10.0.0.5/32\n          ports:\n            - protocol: TCP\n              port: 5432",
+          "required": [],
+          "title": "components",
+          "type": "object"
+        },
+        "egress": {
+          "additionalProperties": true,
+          "properties": {
+            "allowDNS": {
+              "default": true,
+              "description": "Every component resolves its peers by DNS name, so this is required\nfor the release to function at all.\n\nThe defaults below are CoreDNS as kubeadm, kind and the managed offerings\nfrom AWS, Google and Azure install it. OpenShift runs its resolver\nelsewhere and needs both overridden:\n  dnsNamespaceSelector:\n    matchLabels:\n      kubernetes.io/metadata.name: openshift-dns\n  dnsPodSelector:\n    matchLabels:\n      dns.operator.openshift.io/daemonset-dns: default\nA node-local DNS cache is not a pod peer at all - the resolver address is\na link-local IP - so name it with an ipBlock in extraEgress instead.",
+              "required": [],
+              "title": "allowDNS",
+              "type": "boolean"
+            },
+            "dnsNamespaceSelector": {
+              "additionalProperties": true,
+              "properties": {
+                "matchLabels": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "kubernetes.io/metadata.name": {
+                      "default": "kube-system",
+                      "required": [],
+                      "title": "kubernetes.io/metadata.name",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "matchLabels",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "dnsNamespaceSelector",
+              "type": "object"
+            },
+            "dnsPodSelector": {
+              "additionalProperties": true,
+              "properties": {
+                "matchLabels": {
+                  "additionalProperties": true,
+                  "properties": {
+                    "k8s-app": {
+                      "default": "kube-dns",
+                      "required": [],
+                      "title": "k8s-app",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "matchLabels",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "dnsPodSelector",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Egress is a separate opt-in: the chart knows the addresses of its own\ncomponents, but not where your filer store (MySQL, Postgres, Redis,\n...), notification sink or remote tier lives. Enabling this without\nlisting those under extraEgress will cut the filer off from its store.\n\nIt cannot be on by default either. In a namespace with no default-deny,\negress rules would take the components from \"may reach anything\" down to\n\"may reach the peers listed here\", which is the same breakage from the\nother direction. Required if your default-deny covers egress.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "extraEgress": {
+              "description": "Plain NetworkPolicyEgressRule entries, appended to every component's\npolicy. This is where the filer store and the notification sinks go:\n\n  extraEgress:\n    - to:\n        - podSelector:\n            matchLabels:\n              app.kubernetes.io/name: mysql\n      ports:\n        - protocol: TCP\n          port: 3306",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "extraEgress",
+              "type": "array"
+            },
+            "kubeApiServer": {
+              "additionalProperties": true,
+              "description": "The COSI sidecar watches the COSI custom resources and the volume resize\nhook shells out to kubectl. Only those two get this rule - no seaweedfs\ncomponent itself speaks to the Kubernetes API. The resize hook's policy,\nand with it this requirement, only appears on an upgrade that actually\ngrows a volume PVC.",
+              "properties": {
+                "cidrs": {
+                  "description": "The API server cannot be selected by label, so its address has to be\ngiven here - there is no sane default, and 0.0.0.0/0 would defeat the\npoint. Rendering fails with a pointer to this value if a component\nneeds the API server and this is empty.\n\nUse the endpoint behind the kubernetes service, not its ClusterIP:\nkube-proxy rewrites the destination before the packet is matched.\n  kubectl get endpointslice kubernetes -o jsonpath='{.endpoints[*].addresses[*]}'",
+                  "items": {
+                    "required": []
+                  },
+                  "required": [],
+                  "title": "cidrs",
+                  "type": "array"
+                },
+                "enabled": {
+                  "default": true,
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "ports": {
+                  "items": {
+                    "required": [],
+                    "type": "integer"
+                  },
+                  "required": [],
+                  "title": "ports",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "kubeApiServer",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "egress",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Opt-in. While false the chart renders no NetworkPolicy objects at all and\nthe cluster default (usually allow-all) applies. Turn this on for a\nnamespace with a default-deny policy, where the components otherwise\ncannot reach each other and the install hangs.\n\nThis alone covers a default-deny that only restricts ingress. If yours has\nEgress in its policyTypes as well - the usual baseline - the components\nstill cannot resolve DNS or reach each other, and you need egress.enabled\nbelow too, together with an extraEgress entry for the filer store.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "extraIngress": {
+          "description": "One policy is rendered per component, selecting its pods by the standard\napp.kubernetes.io/{name,instance,component} labels. Each policy admits\ntraffic from any pod of this release, on the ports that component listens\non - the same values the containerPorts are taken from, so changing a port\ndoes not leave the policy behind. Everything else is denied.\n\nTraffic from outside the release has to be added here. Rules are plain\nNetworkPolicyIngressRule entries, appended to every component's policy.\n\nThe metrics ports are covered by the same rule as everything else, so with\nglobal.seaweedfs.monitoring.enabled the ServiceMonitors keep pointing at\nports a Prometheus outside the release can no longer reach. Nothing reports\nthat - the targets just go down - so add the scraper here:\n\n  extraIngress:\n    # an ingress controller reaching filer/s3/admin\n    - from:\n        - namespaceSelector:\n            matchLabels:\n              kubernetes.io/metadata.name: ingress-nginx\n      ports:\n        - protocol: TCP\n          port: 8888\n        - protocol: TCP\n          port: 8333\n    # Prometheus scraping the metrics ports\n    - from:\n        - namespaceSelector:\n            matchLabels:\n              kubernetes.io/metadata.name: monitoring\n      ports:\n        - protocol: TCP\n          port: 9327\n\nAn ingress controller running on the host network is not a pod as far as\nthe policy is concerned; select it with an ipBlock of the node addresses\ninstead of a namespaceSelector.\n\nKubelet probes are not covered by these rules. Node-to-pod traffic is\noutside NetworkPolicy in the CNIs that come up without host endpoints\n(Calico, Cilium); if yours polices it, allow the node addresses here.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "extraIngress",
+          "type": "array"
+        }
+      },
+      "required": [],
+      "title": "networkPolicy",
+      "type": "object"
+    },
     "podAnnotations": {
       "additionalProperties": true,
       "description": "Annotations to be added to all the created pods",
@@ -3085,7 +3561,7 @@
         },
         "auditLogConfig": {
           "additionalProperties": true,
-          "description": "Optionally provide explicit credentials for the S3 gateway.\nWhen set, these are used in the generated s3 secret instead of\nauto-generating random credentials.\ncredentials:\n  admin:\n    accessKey: \"\"\n    secretKey: \"\"\n  read:\n    accessKey: \"\"\n    secretKey: \"\"",
+          "description": "Optionally provide explicit credentials for the S3 gateway.\nWhen set, these are used in the generated s3 secret instead of\nauto-generating random credentials.\nAn identity may instead name an existing Secret to read its keys from. The\ngenerated config then references the keys through environment variables, so\nnothing is looked up at render time and a dry run renders what an install\napplies. Note the COSI driver parses the config itself and does not resolve\nthose references.\ncredentials:\n  admin:\n    accessKey: \"\"\n    secretKey: \"\"\n    existingSecret: \"\"\n    accessKeyKey: admin_access_key_id\n    secretKeyKey: admin_secret_access_key\n  read:\n    accessKey: \"\"\n    secretKey: \"\"\n    existingSecret: \"\"\n    accessKeyKey: read_access_key_id\n    secretKeyKey: read_secret_access_key",
           "required": [],
           "title": "auditLogConfig",
           "type": "object"
@@ -3350,6 +3826,65 @@
           "title": "initContainers",
           "type": "string"
         },
+        "lanceIngress": {
+          "additionalProperties": true,
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "className": {
+              "default": "",
+              "required": [],
+              "title": "className",
+              "type": "string"
+            },
+            "enabled": {
+              "default": false,
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "host": {
+              "default": "seaweedfs-lance.cluster.local",
+              "required": [],
+              "title": "host",
+              "type": "string"
+            },
+            "path": {
+              "default": "/",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            },
+            "pathType": {
+              "default": "Prefix",
+              "required": [],
+              "title": "pathType",
+              "type": "string"
+            },
+            "tls": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "tls",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "lanceIngress",
+          "type": "object"
+        },
+        "lancePort": {
+          "default": 9101,
+          "description": "Lance Namespace port; weed serves 9101 by default, 0 disables it\n(and, unless worker.namespaceUrl points elsewhere, the worker's Lance container)",
+          "required": [],
+          "title": "lancePort",
+          "type": "integer"
+        },
         "livenessProbe": {
           "additionalProperties": true,
           "description": "used to configure livenessProbe on s3 containers\n",
@@ -3598,10 +4133,77 @@
           "title": "restartPolicy",
           "type": "null"
         },
+        "schedulerName": {
+          "default": "",
+          "description": "used to assign a custom scheduler to server pods\nref: https://kubernetes.io/docs/tasks/extend-kubernetes/configure-multiple-schedulers/",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
+        },
         "service": {
           "additionalProperties": true,
           "description": "Service settings",
           "properties": {
+            "loadBalancerClass": {
+              "default": "",
+              "description": "used only when type is LoadBalancer",
+              "required": [],
+              "title": "loadBalancerClass",
+              "type": "string"
+            },
+            "loadBalancerIP": {
+              "default": "",
+              "required": [],
+              "title": "loadBalancerIP",
+              "type": "string"
+            },
+            "loadBalancerSourceRanges": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "loadBalancerSourceRanges",
+              "type": "array"
+            },
+            "nodePorts": {
+              "additionalProperties": true,
+              "description": "fixed nodePorts, used only when type is NodePort or LoadBalancer",
+              "properties": {
+                "http": {
+                  "default": "null",
+                  "required": [],
+                  "title": "http",
+                  "type": "null"
+                },
+                "https": {
+                  "default": "null",
+                  "required": [],
+                  "title": "https",
+                  "type": "null"
+                },
+                "iceberg": {
+                  "default": "null",
+                  "required": [],
+                  "title": "iceberg",
+                  "type": "null"
+                },
+                "lance": {
+                  "default": "null",
+                  "required": [],
+                  "title": "lance",
+                  "type": "null"
+                },
+                "metrics": {
+                  "default": "null",
+                  "required": [],
+                  "title": "metrics",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "nodePorts",
+              "type": "object"
+            },
             "type": {
               "default": "ClusterIP",
               "required": [],
@@ -3650,6 +4252,7 @@
     },
     "sftp": {
       "additionalProperties": true,
+      "description": "SFTP install: the pod only becomes ready if the server loads a host key\nfrom the generated sftp-ssh-secret, so this exercises the whole path.",
       "properties": {
         "annotations": {
           "additionalProperties": true,
@@ -3711,6 +4314,13 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "existingCAKeysSecret": {
+          "default": "null",
+          "description": "Set to the name of an existing kubernetes Secret carrying the CA\npublic keys under data key `ca_user.pub`.",
+          "required": [],
+          "title": "existingCAKeysSecret",
+          "type": "null"
         },
         "existingConfigSecret": {
           "default": "null",
@@ -3962,10 +4572,58 @@
           "title": "restartPolicy",
           "type": "null"
         },
+        "schedulerName": {
+          "default": "",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
+        },
         "service": {
           "additionalProperties": true,
           "description": "Service settings",
           "properties": {
+            "loadBalancerClass": {
+              "default": "",
+              "description": "used only when type is LoadBalancer",
+              "required": [],
+              "title": "loadBalancerClass",
+              "type": "string"
+            },
+            "loadBalancerIP": {
+              "default": "",
+              "required": [],
+              "title": "loadBalancerIP",
+              "type": "string"
+            },
+            "loadBalancerSourceRanges": {
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "loadBalancerSourceRanges",
+              "type": "array"
+            },
+            "nodePorts": {
+              "additionalProperties": true,
+              "description": "fixed nodePorts, used only when type is NodePort or LoadBalancer",
+              "properties": {
+                "metrics": {
+                  "default": "null",
+                  "required": [],
+                  "title": "metrics",
+                  "type": "null"
+                },
+                "sftp": {
+                  "default": "null",
+                  "required": [],
+                  "title": "sftp",
+                  "type": "null"
+                }
+              },
+              "required": [],
+              "title": "nodePorts",
+              "type": "object"
+            },
             "type": {
               "default": "ClusterIP",
               "required": [],
@@ -3993,7 +4651,7 @@
           "type": "array"
         },
         "sshPrivateKey": {
-          "default": "/etc/sw/seaweedfs_sftp_ssh_private_key",
+          "default": "",
           "description": "SSH server configuration",
           "required": [],
           "title": "sshPrivateKey",
@@ -4003,6 +4661,13 @@
           "default": "",
           "required": [],
           "title": "tolerations",
+          "type": "string"
+        },
+        "trustedUserCAKeys": {
+          "default": "",
+          "description": "SSH user-certificate authentication (CA-signed user certs). Mirrors\nOpenSSH `TrustedUserCAKeys` and MinIO `--sftp=trusted-user-ca-key`.\nAdd \"certificate\" to `authMethods` to activate; when active, plain\npublic keys are rejected on the public-key channel.\n\nInline CA public keys in OpenSSH authorized_keys format (one per\nline). Ignored when `existingCAKeysSecret` is set.",
+          "required": [],
+          "title": "trustedUserCAKeys",
           "type": "string"
         }
       },
@@ -4096,7 +4761,7 @@
           "type": "null"
         },
         "dataDirs": {
-          "description": "For each data disk you may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n dataDirs:\n  - name: data\n    type: \"persistentVolumeClaim\"\n    size: \"24Ti\"\n    storageClass: \"local-path-provisioner\"\n    annotations:\n     \"key\": \"value\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nYou may also spacify an existing claim:\n  - name: data\n    type: \"existingClaim\"\n    claimName: \"my-pvc\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nYou can also use emptyDir storage:\n  - name: data\n    type: \"emptyDir\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nIf these don't meet your needs, you can use \"custom\" here along with extraVolumes and extraVolumeMounts\nParticularly useful when using more than 1 for the volume server replicas.\n  - name: data\n    type: \"custom\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")",
+          "description": "For each data disk you may use ANY storage-class, example with local-path-provisioner\nAnnotations are optional.\n dataDirs:\n  - name: data\n    type: \"persistentVolumeClaim\"\n    size: \"24Ti\"\n    storageClass: \"local-path-provisioner\"\n    annotations:\n     \"key\": \"value\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nYou may also specify an existing claim:\n  - name: data\n    type: \"existingClaim\"\n    claimName: \"my-pvc\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nYou can also use emptyDir storage:\n  - name: data\n    type: \"emptyDir\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")\n\nIf these don't meet your needs, you can use \"custom\" here along with extraVolumes and extraVolumeMounts\nParticularly useful when using more than 1 for the volume server replicas.\n  - name: data\n    type: \"custom\"\n    maxVolumes: 0  # If set to zero on non-windows OS, the limit will be auto configured. (default \"7\")",
           "items": {
             "additionalProperties": true,
             "properties": {
@@ -4198,7 +4863,7 @@
         },
         "idx": {
           "additionalProperties": true,
-          "description": "same applies to \"logs\"",
+          "description": "idx (the volume index) may use a separate PERSISTENT volume:\n\nidx:\n type: \"hostPath\"\n hostPathPrefix: /ssd\n\nor\n\nidx:\n type: \"persistentVolumeClaim\"\n size: \"20Gi\"\n storageClass: \"local-path-provisioner\"\n\nor\n\nidx:\n  type: \"existingClaim\"\n  claimName: \"myClaim\"\n\n\"emptyDir\" is rejected for idx (the chart fails to render): an ephemeral\nindex is wiped on every restart while the data persists, forcing a full\nrebuild each start (a fatal crash on older versions). \"logs\" may still use\nany of the above or emptyDir.\n\nDefault {} keeps the index next to the data, so it persists with the data and\nneeds no separate volume. Recommended unless you must split the index onto\nits own persistent storage.",
           "required": [],
           "title": "idx",
           "type": "object"
@@ -4584,6 +5249,20 @@
           "title": "restartPolicy",
           "type": "null"
         },
+        "rust": {
+          "default": false,
+          "description": "Run the Rust volume server (/usr/bin/weed-volume) instead of the Go one.\nRequires an image that ships the Rust binary (amd64/arm64). The Go-only\nlog flags (-logtostderr/-logdir/-v) and -pulseSeconds are dropped; set log\nlevel via the RUST_LOG env var in extraEnvironmentVars if needed.",
+          "required": [],
+          "title": "rust",
+          "type": "boolean"
+        },
+        "schedulerName": {
+          "default": "",
+          "description": "used to specify a custom scheduler for volume pods\nref: https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
+        },
         "serviceAccountName": {
           "default": "",
           "description": "used to assign a service account.\nref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
@@ -4735,11 +5414,18 @@
           "type": "string"
         },
         "jobType": {
-          "default": "vacuum,volume_balance,erasure_coding",
-          "description": "Worker job types - comma-separated list\nAvailable: vacuum, volume_balance, erasure_coding",
+          "default": "all",
+          "description": "Worker job types - categories or comma-separated list of names/aliases\nCategories: all, default, heavy\n  default: vacuum, volume_balance, ec_balance, admin_script\n  heavy: erasure_coding, iceberg_maintenance\n  all: every registered job type\nExamples: \"all\", \"default\", \"heavy\", \"default,iceberg\" (default+iceberg), \"vacuum,volume_balance\"\nRefer: https://github.com/seaweedfs/seaweedfs/wiki/Worker",
           "required": [],
           "title": "jobType",
           "type": "string"
+        },
+        "lanceMetricsPort": {
+          "default": 9328,
+          "description": "Metrics port for the Lance worker container; the Go worker keeps metricsPort",
+          "required": [],
+          "title": "lanceMetricsPort",
+          "type": "integer"
         },
         "livenessProbe": {
           "additionalProperties": true,
@@ -4863,6 +5549,13 @@
           "required": [],
           "title": "metricsPort",
           "type": "integer"
+        },
+        "namespaceUrl": {
+          "default": "",
+          "description": "Lance namespace URL override; empty derives it from s3.lancePort.",
+          "required": [],
+          "title": "namespaceUrl",
+          "type": "string"
         },
         "nodeSelector": {
           "default": "",
@@ -5017,6 +5710,12 @@
           "required": [],
           "title": "restartPolicy",
           "type": "null"
+        },
+        "schedulerName": {
+          "default": "",
+          "required": [],
+          "title": "schedulerName",
+          "type": "string"
         },
         "serviceAccountName": {
           "default": "",
