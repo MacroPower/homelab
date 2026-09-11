@@ -34,6 +34,13 @@
           "required": [],
           "title": "image",
           "type": "object"
+        },
+        "runtimeClassName": {
+          "default": "",
+          "description": "A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).\n\nFor example:\n  runtimeClassName: gvisor\n+docs:property",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
         }
       },
       "required": [],
@@ -322,6 +329,13 @@
           "title": "resources",
           "type": "object"
         },
+        "runtimeClassName": {
+          "default": "",
+          "description": "A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).\n\nFor example:\n  runtimeClassName: gvisor\n+docs:property",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
+        },
         "securityContext": {
           "additionalProperties": true,
           "description": "Pod Security Context to be set on the cainjector component Pod\nFor more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).\n+docs:property",
@@ -437,7 +451,7 @@
     },
     "config": {
       "additionalProperties": true,
-      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   enableGatewayAPI: true\n   # Feature gates as of v1.20.0. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ACMEHTTP01IngressPathTypeExact: true # BETA - default=true\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: true # BETA - default=true\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics\n   # Configure PEM size limits for certificate validation\n   # Useful for certificates with many DNS names (e.g., Istio gateways with 100+ DNS names)\n   pemSizeLimitsConfig:\n     maxCertificateSize: 36500     # Maximum size in bytes for individual certificates (default: 36500)\n     maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)\n     maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)\n     maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)",
+      "description": "This property is used to configure options for the controller pod.\nThis allows setting options that would usually be provided using flags.\n\nIf `apiVersion` and `kind` are unspecified they default to the current latest\nversion (currently `controller.config.cert-manager.io/v1alpha1`). You can pin\nthe version by specifying the `apiVersion` yourself.\n\nFor example:\n config:\n   apiVersion: controller.config.cert-manager.io/v1alpha1\n   kind: ControllerConfiguration\n   logging:\n     verbosity: 2\n     format: text\n   leaderElectionConfig:\n     namespace: kube-system\n   kubernetesAPIQPS: 9000\n   kubernetesAPIBurst: 9000\n   numberOfConcurrentWorkers: 200\n   gatewayAPI:\n     enabled: true\n   # Feature gates as of v1.20.0. Listed with their default values.\n   # See https://cert-manager.io/docs/cli/controller/\n   featureGates:\n     AllAlpha: false # ALPHA - default=false\n     AllBeta: false # BETA - default=false\n     ACMEHTTP01IngressPathTypeExact: true # BETA - default=true\n     ExperimentalCertificateSigningRequestControllers: false # ALPHA - default=false\n     ExperimentalGatewayAPISupport: true # BETA - default=true\n     LiteralCertificateSubject: true # BETA - default=true\n     NameConstraints: true # BETA - default=true\n     OtherNames: true # BETA - default=true\n     SecretsFilteredCaching: true # BETA - default=true\n     ServerSideApply: false # ALPHA - default=false\n     StableCertificateRequestName: true # BETA - default=true\n     UseCertificateRequestBasicConstraints: false # ALPHA - default=false\n   # Configure the metrics server for TLS\n   # See https://cert-manager.io/docs/devops-tips/prometheus-metrics/#tls\n   metricsTLSConfig:\n     dynamic:\n       secretNamespace: \"cert-manager\"\n       secretName: \"cert-manager-metrics-ca\"\n       dnsNames:\n       - cert-manager-metrics\n   # Configure PEM size limits for certificate validation\n   # Useful for certificates with many DNS names (e.g., Istio gateways with 100+ DNS names)\n   pemSizeLimitsConfig:\n     maxCertificateSize: 36500     # Maximum size in bytes for individual certificates (default: 36500)\n     maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)\n     maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)\n     maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)\n   # Configure certificate request backoff durations\n   certificateRequestMinimumBackoffDuration: 1h\n   certificateRequestMaximumBackoffDuration: 32h",
       "required": [],
       "title": "config",
       "type": "object"
@@ -600,7 +614,7 @@
       "properties": {
         "commonLabels": {
           "additionalProperties": true,
-          "description": "Labels to apply to all resources.\nPlease note that this does not add labels to the resources created dynamically by the controllers.\nFor these resources, you have to add the labels in the template in the cert-manager custom resource:\nFor example, podTemplate/ ingressTemplate in ACMEChallengeSolverHTTP01Ingress\nFor more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEChallengeSolverHTTP01Ingress).\nFor example, secretTemplate in CertificateSpec\nFor more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec).",
+          "description": "Labels to apply to all resources.\nThese labels are also applied to dynamically-created ACME HTTP01 solver resources\n(pods, services, ingresses, or Gateway API HTTPRoutes).\nThe following ACME identity label keys are reserved and will be\nsilently ignored on dynamically-created resources: acme.cert-manager.io/http-domain,\nacme.cert-manager.io/http-token, acme.cert-manager.io/http01-solver.\nFor per-Issuer-specific labels, use the HTTP01 ingress solver podTemplate and\ningressTemplate fields for pod/ingress resources, or the gatewayHTTPRoute\nsolver labels field for Gateway API HTTPRoute resources.",
           "required": [],
           "title": "commonLabels",
           "type": "object"
@@ -694,6 +708,13 @@
           "required": [],
           "title": "rbac",
           "type": "object"
+        },
+        "runtimeClassName": {
+          "default": "",
+          "description": "A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).\n\nFor example:\n  runtimeClassName: gvisor\n+docs:property",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
         }
       },
       "required": [],
@@ -1009,13 +1030,6 @@
               "title": "labels",
               "type": "object"
             },
-            "path": {
-              "default": "/metrics",
-              "description": "The path to scrape for metrics.",
-              "required": [],
-              "title": "path",
-              "type": "string"
-            },
             "prometheusInstance": {
               "default": "default",
               "description": "Specifies the `prometheus` label on the created PodMonitor. This is\nused when different Prometheus instances have label selectors matching\ndifferent PodMonitors.",
@@ -1080,13 +1094,6 @@
               "title": "labels",
               "type": "object"
             },
-            "path": {
-              "default": "/metrics",
-              "description": "The path to scrape for metrics.",
-              "required": [],
-              "title": "path",
-              "type": "string"
-            },
             "prometheusInstance": {
               "default": "default",
               "description": "Specifies the `prometheus` label on the created ServiceMonitor. This is\nused when different Prometheus instances have label selectors matching\ndifferent ServiceMonitors.",
@@ -1099,13 +1106,6 @@
               "description": "The timeout before a metrics scrape fails.",
               "required": [],
               "title": "scrapeTimeout",
-              "type": "string"
-            },
-            "targetPort": {
-              "default": "http-metrics",
-              "description": "The target port to set on the ServiceMonitor. This must match the port that the\ncert-manager controller is listening on for metrics.\n+docs:type=string,integer",
-              "required": [],
-              "title": "targetPort",
               "type": "string"
             }
           },
@@ -1131,6 +1131,13 @@
       "required": [],
       "title": "resources",
       "type": "object"
+    },
+    "runtimeClassName": {
+      "default": "",
+      "description": "A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).\n\nFor example:\n  runtimeClassName: gvisor\n+docs:property",
+      "required": [],
+      "title": "runtimeClassName",
+      "type": "string"
     },
     "securityContext": {
       "additionalProperties": true,
@@ -1388,10 +1395,17 @@
         },
         "resources": {
           "additionalProperties": true,
-          "description": "Resources to provide to the cert-manager controller pod.\n\nFor example:\n requests:\n   cpu: 10m\n   memory: 32Mi\n\nFor more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
+          "description": "Resources to provide to the cert-manager startupapicheck pod.\n\nFor example:\n requests:\n   cpu: 10m\n   memory: 32Mi\n\nFor more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).",
           "required": [],
           "title": "resources",
           "type": "object"
+        },
+        "runtimeClassName": {
+          "default": "",
+          "description": "A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).\n\nFor example:\n  runtimeClassName: gvisor\n+docs:property",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
         },
         "securityContext": {
           "additionalProperties": true,
@@ -1932,6 +1946,13 @@
           "required": [],
           "title": "resources",
           "type": "object"
+        },
+        "runtimeClassName": {
+          "default": "",
+          "description": "A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).\n\nFor example:\n  runtimeClassName: gvisor\n+docs:property",
+          "required": [],
+          "title": "runtimeClassName",
+          "type": "string"
         },
         "securePort": {
           "default": 10250,

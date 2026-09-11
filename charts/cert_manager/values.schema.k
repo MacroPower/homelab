@@ -58,7 +58,8 @@ schema Values:
            kubernetesAPIQPS: 9000
            kubernetesAPIBurst: 9000
            numberOfConcurrentWorkers: 200
-           enableGatewayAPI: true
+           gatewayAPI:
+             enabled: true
            # Feature gates as of v1.20.0. Listed with their default values.
            # See https://cert-manager.io/docs/cli/controller/
            featureGates:
@@ -89,6 +90,9 @@ schema Values:
              maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)
              maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)
              maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)
+           # Configure certificate request backoff durations
+           certificateRequestMinimumBackoffDuration: 1h
+           certificateRequestMaximumBackoffDuration: 32h
     containerSecurityContext : ValuesContainerSecurityContext, optional
         Container Security Context to be set on the controller component container.
         For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -256,6 +260,12 @@ schema Values:
            memory: 32Mi
 
         For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+    runtimeClassName : str, optional, default is ""
+        A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).
+
+        For example:
+          runtimeClassName: gvisor
+        +docs:property
     securityContext : ValuesSecurityContext, optional
         Pod Security Context.
         For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -353,6 +363,7 @@ schema Values:
     prometheus?: ValuesPrometheus
     replicaCount?: int
     resources?: ValuesResources
+    runtimeClassName?: str
     securityContext?: ValuesSecurityContext
     serviceAccount?: ValuesServiceAccount
     startupapicheck?: ValuesStartupapicheck
@@ -370,9 +381,16 @@ schema ValuesAcmesolver:
     Attributes
     ----------
     image : ValuesAcmesolverImage, optional
+    runtimeClassName : str, optional, default is ""
+        A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).
+
+        For example:
+          runtimeClassName: gvisor
+        +docs:property
     """
     [...str]: any
     image?: ValuesAcmesolverImage
+    runtimeClassName?: str
 
 schema ValuesAcmesolverImage:
     r"""
@@ -513,6 +531,12 @@ schema ValuesCainjector:
            memory: 32Mi
 
         For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+    runtimeClassName : str, optional, default is ""
+        A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).
+
+        For example:
+          runtimeClassName: gvisor
+        +docs:property
     securityContext : ValuesCainjectorSecurityContext, optional
         Pod Security Context to be set on the cainjector component Pod
         For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -572,6 +596,7 @@ schema ValuesCainjector:
     podLabels?: ValuesCainjectorPodLabels
     replicaCount?: int
     resources?: ValuesCainjectorResources
+    runtimeClassName?: str
     securityContext?: ValuesCainjectorSecurityContext
     serviceAccount?: ValuesCainjectorServiceAccount
     serviceLabels?: ValuesCainjectorServiceLabels
@@ -884,7 +909,8 @@ schema ValuesConfig:
        kubernetesAPIQPS: 9000
        kubernetesAPIBurst: 9000
        numberOfConcurrentWorkers: 200
-       enableGatewayAPI: true
+       gatewayAPI:
+         enabled: true
        # Feature gates as of v1.20.0. Listed with their default values.
        # See https://cert-manager.io/docs/cli/controller/
        featureGates:
@@ -915,6 +941,9 @@ schema ValuesConfig:
          maxPrivateKeySize: 13000      # Maximum size in bytes for private keys (default: 13000)
          maxChainLength: 95000         # Maximum size in bytes for certificate chains (default: 95000)
          maxBundleSize: 330000         # Maximum size in bytes for certificate bundles (default: 330000)
+       # Configure certificate request backoff durations
+       certificateRequestMinimumBackoffDuration: 1h
+       certificateRequestMaximumBackoffDuration: 32h
     """
     [...str]: any
 
@@ -976,12 +1005,14 @@ schema ValuesGlobal:
     ----------
     commonLabels : ValuesGlobalCommonLabels, optional
         Labels to apply to all resources.
-        Please note that this does not add labels to the resources created dynamically by the controllers.
-        For these resources, you have to add the labels in the template in the cert-manager custom resource:
-        For example, podTemplate/ ingressTemplate in ACMEChallengeSolverHTTP01Ingress
-        For more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEChallengeSolverHTTP01Ingress).
-        For example, secretTemplate in CertificateSpec
-        For more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec).
+        These labels are also applied to dynamically-created ACME HTTP01 solver resources
+        (pods, services, ingresses, or Gateway API HTTPRoutes).
+        The following ACME identity label keys are reserved and will be
+        silently ignored on dynamically-created resources: acme.cert-manager.io/http-domain,
+        acme.cert-manager.io/http-token, acme.cert-manager.io/http01-solver.
+        For per-Issuer-specific labels, use the HTTP01 ingress solver podTemplate and
+        ingressTemplate fields for pod/ingress resources, or the gatewayHTTPRoute
+        solver labels field for Gateway API HTTPRoute resources.
     imagePullSecrets : [any], optional
         Reference to one or more secrets to be used when pulling images.
         For more information, see [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
@@ -1017,6 +1048,12 @@ schema ValuesGlobal:
         See [limitations](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/#limitations) for details.
         +docs:property
         hostUsers: false
+    runtimeClassName : str, optional, default is ""
+        A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).
+
+        For example:
+          runtimeClassName: gvisor
+        +docs:property
     """
     [...str]: any
     commonLabels?: ValuesGlobalCommonLabels
@@ -1027,16 +1064,19 @@ schema ValuesGlobal:
     podSecurityPolicy?: ValuesGlobalPodSecurityPolicy
     priorityClassName?: str
     rbac?: ValuesGlobalRbac
+    runtimeClassName?: str
 
 schema ValuesGlobalCommonLabels:
     r"""
     Labels to apply to all resources.
-    Please note that this does not add labels to the resources created dynamically by the controllers.
-    For these resources, you have to add the labels in the template in the cert-manager custom resource:
-    For example, podTemplate/ ingressTemplate in ACMEChallengeSolverHTTP01Ingress
-    For more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#acme.cert-manager.io/v1.ACMEChallengeSolverHTTP01Ingress).
-    For example, secretTemplate in CertificateSpec
-    For more information, see the [cert-manager documentation](https://cert-manager.io/docs/reference/api-docs/#cert-manager.io/v1.CertificateSpec).
+    These labels are also applied to dynamically-created ACME HTTP01 solver resources
+    (pods, services, ingresses, or Gateway API HTTPRoutes).
+    The following ACME identity label keys are reserved and will be
+    silently ignored on dynamically-created resources: acme.cert-manager.io/http-domain,
+    acme.cert-manager.io/http-token, acme.cert-manager.io/http01-solver.
+    For per-Issuer-specific labels, use the HTTP01 ingress solver podTemplate and
+    ingressTemplate fields for pod/ingress resources, or the gatewayHTTPRoute
+    solver labels field for Gateway API HTTPRoute resources.
     """
     [...str]: any
 
@@ -1341,8 +1381,6 @@ schema ValuesPrometheusPodmonitor:
         The interval to scrape metrics.
     labels : ValuesPrometheusPodmonitorLabels, optional
         Additional labels to add to the PodMonitor.
-    path : str, optional, default is "/metrics"
-        The path to scrape for metrics.
     prometheusInstance : str, optional, default is "default"
         Specifies the `prometheus` label on the created PodMonitor. This is
         used when different Prometheus instances have label selectors matching
@@ -1357,7 +1395,6 @@ schema ValuesPrometheusPodmonitor:
     honorLabels?: bool
     interval?: str
     labels?: ValuesPrometheusPodmonitorLabels
-    path?: str
     prometheusInstance?: str
     scrapeTimeout?: str
 
@@ -1428,18 +1465,12 @@ schema ValuesPrometheusServicemonitor:
         The interval to scrape metrics.
     labels : ValuesPrometheusServicemonitorLabels, optional
         Additional labels to add to the ServiceMonitor.
-    path : str, optional, default is "/metrics"
-        The path to scrape for metrics.
     prometheusInstance : str, optional, default is "default"
         Specifies the `prometheus` label on the created ServiceMonitor. This is
         used when different Prometheus instances have label selectors matching
         different ServiceMonitors.
     scrapeTimeout : str, optional, default is "30s"
         The timeout before a metrics scrape fails.
-    targetPort : str, optional, default is "http-metrics"
-        The target port to set on the ServiceMonitor. This must match the port that the
-        cert-manager controller is listening on for metrics.
-        +docs:type=string,integer
     """
     [...str]: any
     annotations?: ValuesPrometheusServicemonitorAnnotations
@@ -1448,10 +1479,8 @@ schema ValuesPrometheusServicemonitor:
     honorLabels?: bool
     interval?: str
     labels?: ValuesPrometheusServicemonitorLabels
-    path?: str
     prometheusInstance?: str
     scrapeTimeout?: str
-    targetPort?: str
 
 schema ValuesPrometheusServicemonitorAnnotations:
     r"""
@@ -1609,7 +1638,7 @@ schema ValuesStartupapicheck:
         Optional additional labels to add to the startupapicheck Pods.
     rbac : ValuesStartupapicheckRbac, optional
     resources : ValuesStartupapicheckResources, optional
-        Resources to provide to the cert-manager controller pod.
+        Resources to provide to the cert-manager startupapicheck pod.
 
         For example:
          requests:
@@ -1617,6 +1646,12 @@ schema ValuesStartupapicheck:
            memory: 32Mi
 
         For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+    runtimeClassName : str, optional, default is ""
+        A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).
+
+        For example:
+          runtimeClassName: gvisor
+        +docs:property
     securityContext : ValuesStartupapicheckSecurityContext, optional
         Pod Security Context to be set on the startupapicheck component Pod.
         For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
@@ -1655,6 +1690,7 @@ schema ValuesStartupapicheck:
     podLabels?: ValuesStartupapicheckPodLabels
     rbac?: ValuesStartupapicheckRbac
     resources?: ValuesStartupapicheckResources
+    runtimeClassName?: str
     securityContext?: ValuesStartupapicheckSecurityContext
     serviceAccount?: ValuesStartupapicheckServiceAccount
     timeout?: str
@@ -1796,7 +1832,7 @@ schema ValuesStartupapicheckRbacAnnotations:
 
 schema ValuesStartupapicheckResources:
     r"""
-    Resources to provide to the cert-manager controller pod.
+    Resources to provide to the cert-manager startupapicheck pod.
 
     For example:
      requests:
@@ -2014,6 +2050,12 @@ schema ValuesWebhook:
            memory: 32Mi
 
         For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+    runtimeClassName : str, optional, default is ""
+        A Kubernetes Runtime Class to apply to ACME HTTP01 solver pods, if required. For more information, see [Runtime Class](https://kubernetes.io/docs/concepts/containers/).
+
+        For example:
+          runtimeClassName: gvisor
+        +docs:property
     securePort : int, optional, default is 10250
         The port that the webhook listens on for requests.
         In GKE private clusters, by default Kubernetes apiservers are allowed to
@@ -2115,6 +2157,7 @@ schema ValuesWebhook:
     readinessProbe?: ValuesWebhookReadinessProbe
     replicaCount?: int
     resources?: ValuesWebhookResources
+    runtimeClassName?: str
     securePort?: int
     securityContext?: ValuesWebhookSecurityContext
     serviceAccount?: ValuesWebhookServiceAccount
