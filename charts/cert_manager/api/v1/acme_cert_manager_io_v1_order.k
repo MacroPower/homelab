@@ -48,7 +48,7 @@ schema AcmeCertManagerIoV1OrderSpec:
         This field must match the corresponding field on the DER encoded CSR.
     duration : str, default is Undefined, optional
         Duration is the duration for the not after date for the requested certificate.
-        this is set on order creation as pe the ACME spec.
+        This is set on order creation as per the ACME spec.
     ipAddresses : [str], default is Undefined, optional
         IPAddresses is a list of IP addresses that should be included as part of the Order
         validation process.
@@ -58,6 +58,13 @@ schema AcmeCertManagerIoV1OrderSpec:
     profile : str, default is Undefined, optional
         Profile allows requesting a certificate profile from the ACME server.
         Supported profiles are listed by the server's ACME directory URL.
+    replaces : str, default is Undefined, optional
+        Replaces is the ARI CertID (RFC 9773 §4.1) of the certificate that this
+        Order is intended to replace. When set, cert-manager will include the
+        "replaces" field on the newOrder request to the ACME server if and only
+        if the server advertises ARI support in its directory. The CertID has
+        the form "base64url(AKI).base64url(serial)" and is derived locally from
+        the currently issued leaf certificate.
     request : str, default is Undefined, required
         Certificate signing request bytes in DER encoding.
         This will be used when finalizing the order.
@@ -70,6 +77,7 @@ schema AcmeCertManagerIoV1OrderSpec:
     issuerRef: AcmeCertManagerIoV1OrderSpecIssuerRef
 
     profile?: str
+    replaces?: str
     request: str
 
 schema AcmeCertManagerIoV1OrderSpecIssuerRef:
