@@ -65,6 +65,10 @@ schema ArgoprojIoV1alpha1AppProjectSpec:
         Roles are user defined RBAC roles associated with this project
     signatureKeys : [ArgoprojIoV1alpha1AppProjectSpecSignatureKeysItems0], default is Undefined, optional
         SignatureKeys contains a list of PGP key IDs that commits in Git must be signed with in order to be allowed for sync
+
+        Deprecated: Use SourceIntegrity instead. SignatureKeys will be removed with the next major version.
+    sourceIntegrity : ArgoprojIoV1alpha1AppProjectSpecSourceIntegrity, default is Undefined, optional
+        source integrity
     sourceNamespaces : [str], default is Undefined, optional
         SourceNamespaces defines the namespaces application resources are allowed to be created in
     sourceRepos : [str], default is Undefined, optional
@@ -83,6 +87,7 @@ schema ArgoprojIoV1alpha1AppProjectSpec:
     permitOnlyProjectScopedClusters?: bool
     roles?: [ArgoprojIoV1alpha1AppProjectSpecRolesItems0]
     signatureKeys?: [ArgoprojIoV1alpha1AppProjectSpecSignatureKeysItems0]
+    sourceIntegrity?: ArgoprojIoV1alpha1AppProjectSpecSourceIntegrity
     sourceNamespaces?: [str]
     sourceRepos?: [str]
     syncWindows?: [ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0]
@@ -275,12 +280,78 @@ schema ArgoprojIoV1alpha1AppProjectSpecSignatureKeysItems0:
     r"""
     SignatureKey is the specification of a key required to verify commit signatures with
 
+    Deprecated: Use SourceIntegrity instead. SignatureKeys will be removed with the next major version.
+
     Attributes
     ----------
     keyID : str, default is Undefined, required
         The ID of the key in hexadecimal notation
     """
     keyID: str
+
+schema ArgoprojIoV1alpha1AppProjectSpecSourceIntegrity:
+    r"""
+    SourceIntegrity represents a constraint on manifest sources integrity to be met before they can be used.
+    Do not access directly, use EffectiveSourceIntegrity() for correct backwards compatibility handling.
+
+    Attributes
+    ----------
+    git : ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGit, default is Undefined, required
+        git
+    """
+    git: ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGit
+
+schema ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGit:
+    r"""
+    Git - policies for git source verification
+
+    Attributes
+    ----------
+    policies : [ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0], default is Undefined, required
+        policies
+    """
+    policies: [ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0]
+
+schema ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0:
+    r"""
+    argoproj io v1alpha1 app project spec source integrity git policies items0
+
+    Attributes
+    ----------
+    gpg : ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0Gpg, default is Undefined, required
+        gpg
+    repos : [ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0ReposItems0], default is Undefined, required
+        List of repository criteria restricting repositories the policy will apply to
+    """
+    gpg: ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0Gpg
+
+    repos: [ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0ReposItems0]
+
+schema ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0Gpg:
+    r"""
+    Verify GPG commit/tag signatures
+
+    Attributes
+    ----------
+    keys : [str], default is Undefined, required
+        List of key IDs to trust. The keys need to be in the repository server keyring.
+    mode : str, default is Undefined, required
+        mode
+    """
+    keys: [str]
+
+    mode: str
+
+schema ArgoprojIoV1alpha1AppProjectSpecSourceIntegrityGitPoliciesItems0ReposItems0:
+    r"""
+    argoproj io v1alpha1 app project spec source integrity git policies items0 repos items0
+
+    Attributes
+    ----------
+    url : str, default is Undefined, required
+        URL specifier, glob.
+    """
+    url: str
 
 schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
     r"""
@@ -306,6 +377,10 @@ schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
         Namespaces contains a list of namespaces that the window will apply to
     schedule : str, default is Undefined, optional
         Schedule is the time the window will begin, specified in cron format
+    syncOverrun : bool, default is Undefined, optional
+        SyncOverrun allows ongoing syncs to continue in two scenarios:
+        For deny windows: allows syncs that started before the deny window became active to continue running
+        For allow windows: allows syncs that started during the allow window to continue after the window ends
     timeZone : str, default is Undefined, optional
         TimeZone of the sync that will be applied to the schedule
     """
@@ -318,6 +393,7 @@ schema ArgoprojIoV1alpha1AppProjectSpecSyncWindowsItems0:
     manualSync?: bool
     namespaces?: [str]
     schedule?: str
+    syncOverrun?: bool
     timeZone?: str
 
 schema ArgoprojIoV1alpha1AppProjectStatus:
