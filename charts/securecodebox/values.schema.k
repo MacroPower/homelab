@@ -11,9 +11,17 @@ schema Values:
     ----------
     allowIstioSidecarInjectionInJobs : bool, optional, default is False
         Sets the value of the istio sidecar annotation ("sidecar.istio.io/inject") for jobs started by the operator (scans, parser and hooks). defaults to false to prevent jobs hanging indefinitely due to the sidecar never terminating. If you aren't using istio this setting/annotation has no effect.
+    clusterDomain : str, optional, default is "cluster.local"
+        The cluster domain to use when building the in-cluster Garage endpoint (`<release>-garage.<namespace>.svc.<clusterDomain>`). Override this if your cluster uses a custom domain instead of the Kubernetes default `cluster.local`.
     customCACertificate : ValuesCustomCacertificate, optional
         Setup for Custom CA certificates. These are automatically mounted into every secureCodeBox component (lurker, parser & hooks).
         Requires that every namespace has a configmap with the CA certificate(s)
+    extraVolumeMounts : [any], optional
+        Additional volume mounts to be mounted to the operator deployment
+    extraVolumes : [any], optional
+        Additional volumes to be mounted to the operator deployment
+    garage : ValuesGarage, optional
+        Garage configuration for direct deployment (S3-compatible quickstart storage backend). This replaces the previous `minio` configuration section; if your values file still sets `minio.enabled: false`, it will still be honored and disable Garage as well.
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     image : ValuesImage, optional
@@ -22,8 +30,6 @@ schema Values:
     lurker : ValuesLurker, optional
     metrics : ValuesMetrics, optional
         Configuration for the metrics the operator exports
-    minio : ValuesMinio, optional
-        Minio configuration for direct deployment
     nodeSelector : ValuesNodeSelector, optional
     podSecurityContext : ValuesPodSecurityContext, optional
         Sets the securityContext on the operators pod level. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
@@ -38,18 +44,19 @@ schema Values:
     securityContext : ValuesSecurityContext, optional
         Sets the securityContext on the operators container level. See: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
     serviceAccount : ValuesServiceAccount, optional
-    telemetryEnabled : bool, optional, default is True
-        telemetryEnabled -- The Operator sends anonymous telemetry data, to give the team an overview how much the secureCodeBox is used. Find out more at https://www.securecodebox.io/telemetry
     """
     [...str]: any
     allowIstioSidecarInjectionInJobs?: bool
+    clusterDomain?: str
     customCACertificate?: ValuesCustomCacertificate
+    extraVolumeMounts?: [any]
+    extraVolumes?: [any]
+    garage?: ValuesGarage
     global?: ValuesGlobal
     image?: ValuesImage
     imagePullSecrets?: [any]
     lurker?: ValuesLurker
     metrics?: ValuesMetrics
-    minio?: ValuesMinio
     nodeSelector?: ValuesNodeSelector
     podSecurityContext?: ValuesPodSecurityContext
     presignedUrlExpirationTimes?: ValuesPresignedUrlExpirationTimes
@@ -58,7 +65,6 @@ schema Values:
     s3?: ValuesS3
     securityContext?: ValuesSecurityContext
     serviceAccount?: ValuesServiceAccount
-    telemetryEnabled?: bool
 
 schema ValuesCustomCacertificate:
     r"""
@@ -75,6 +81,193 @@ schema ValuesCustomCacertificate:
     [...str]: any
     certificate?: str
     existingCertificate?: any
+
+schema ValuesGarage:
+    r"""
+    Garage configuration for direct deployment (S3-compatible quickstart storage backend). This replaces the previous `minio` configuration section; if your values file still sets `minio.enabled: false`, it will still be honored and disable Garage as well.
+
+    Attributes
+    ----------
+    auth : ValuesGarageAuth, optional
+        Authentication configuration
+    defaultBucket : str, optional, default is "securecodebox"
+        Default bucket to create on startup
+    enabled : bool, optional, default is True
+        Enable this to use Garage as storage backend instead of a cloud bucket provider like AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.
+    image : ValuesGarageImage, optional
+        Garage image configuration
+    persistence : ValuesGaragePersistence, optional
+        Persistence configuration
+    podSecurityContext : ValuesGaragePodSecurityContext, optional
+        Pod security context for garage
+    resources : ValuesGarageResources, optional
+        Resource limits and requests for garage
+    securityContext : ValuesGarageSecurityContext, optional
+        Container security context for garage
+    """
+    [...str]: any
+    auth?: ValuesGarageAuth
+    defaultBucket?: str
+    enabled?: bool
+    image?: ValuesGarageImage
+    persistence?: ValuesGaragePersistence
+    podSecurityContext?: ValuesGaragePodSecurityContext
+    resources?: ValuesGarageResources
+    securityContext?: ValuesGarageSecurityContext
+
+schema ValuesGarageAuth:
+    r"""
+    Authentication configuration
+
+    Attributes
+    ----------
+    accessKey : str, optional, default is ""
+        Default access key (leave empty to generate a secure random one)
+    adminToken : str, optional, default is ""
+        Garage admin API token (leave empty to generate a secure random one). Not used for anything outside the pod on a single-node deployment.
+    existingSecret : str, optional, default is ""
+        Name of existing secret containing garage credentials (if set, auth.accessKey, auth.secretKey, auth.rpcSecret and auth.adminToken are ignored)
+    rpcSecret : str, optional, default is ""
+        Garage inter-node RPC secret, must be exactly 64 hex characters (leave empty to generate a secure random one). Not used for anything outside the pod on a single-node deployment.
+    secretKey : str, optional, default is ""
+        Default secret key (leave empty to generate a secure random one)
+    """
+    [...str]: any
+    accessKey?: str
+    adminToken?: str
+    existingSecret?: str
+    rpcSecret?: str
+    secretKey?: str
+
+schema ValuesGarageImage:
+    r"""
+    Garage image configuration
+
+    Attributes
+    ----------
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "docker.io/dxflrs/garage"
+    tag : str, optional, default is "v2.3.0"
+        renovate: image=docker.io/dxflrs/garage
+    """
+    [...str]: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+
+schema ValuesGaragePersistence:
+    r"""
+    Persistence configuration
+
+    Attributes
+    ----------
+    size : str, optional, default is "10Gi"
+        Size of the persistent volume
+    storageClass : str, optional, default is ""
+        Storage class for garage data persistence
+    """
+    [...str]: any
+    size?: str
+    storageClass?: str
+
+schema ValuesGaragePodSecurityContext:
+    r"""
+    Pod security context for garage
+
+    Attributes
+    ----------
+    fsGroup : int, optional, default is 1000
+    runAsGroup : int, optional, default is 1000
+    runAsUser : int, optional, default is 1000
+    """
+    [...str]: any
+    fsGroup?: int
+    runAsGroup?: int
+    runAsUser?: int
+
+schema ValuesGarageResources:
+    r"""
+    Resource limits and requests for garage
+
+    Attributes
+    ----------
+    limits : ValuesGarageResourcesLimits, optional
+    requests : ValuesGarageResourcesRequests, optional
+    """
+    [...str]: any
+    limits?: ValuesGarageResourcesLimits
+    requests?: ValuesGarageResourcesRequests
+
+schema ValuesGarageResourcesLimits:
+    r"""
+    ValuesGarageResourcesLimits
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "500m"
+    "ephemeral-storage" : str, optional, default is "1Gi"
+    memory : str, optional, default is "512Mi"
+    """
+    [...str]: any
+    cpu?: str
+    "ephemeral-storage"?: str
+    memory?: str
+
+schema ValuesGarageResourcesRequests:
+    r"""
+    ValuesGarageResourcesRequests
+
+    Attributes
+    ----------
+    cpu : str, optional, default is "100m"
+    memory : str, optional, default is "256Mi"
+    """
+    [...str]: any
+    cpu?: str
+    memory?: str
+
+schema ValuesGarageSecurityContext:
+    r"""
+    Container security context for garage
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional, default is False
+    capabilities : ValuesGarageSecurityContextCapabilities, optional
+    runAsGroup : int, optional, default is 1000
+    runAsNonRoot : bool, optional, default is True
+    runAsUser : int, optional, default is 1000
+    seccompProfile : ValuesGarageSecurityContextSeccompProfile, optional
+    """
+    [...str]: any
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesGarageSecurityContextCapabilities
+    runAsGroup?: int
+    runAsNonRoot?: bool
+    runAsUser?: int
+    seccompProfile?: ValuesGarageSecurityContextSeccompProfile
+
+schema ValuesGarageSecurityContextCapabilities:
+    r"""
+    ValuesGarageSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+    [...str]: any
+    drop?: [str]
+
+schema ValuesGarageSecurityContextSeccompProfile:
+    r"""
+    ValuesGarageSecurityContextSeccompProfile
+
+    Attributes
+    ----------
+    $type : str, optional, default is "RuntimeDefault"
+    """
+    [...str]: any
+    $type?: str
 
 schema ValuesGlobal:
     r"""
@@ -152,201 +345,6 @@ schema ValuesMetricsServiceMonitor:
     [...str]: any
     enabled?: bool
 
-schema ValuesMinio:
-    r"""
-    Minio configuration for direct deployment
-
-    Attributes
-    ----------
-    auth : ValuesMinioAuth, optional
-        Authentication configuration
-    defaultBuckets : str, optional, default is "securecodebox"
-        Default buckets to create on startup
-    enabled : bool, optional, default is True
-        Enable this to use minio as storage backend instead of a cloud bucket provider like AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.
-    image : ValuesMinioImage, optional
-        Minio image configuration
-    persistence : ValuesMinioPersistence, optional
-        Persistence configuration
-    podSecurityContext : ValuesMinioPodSecurityContext, optional
-        Pod security context for minio
-    resources : ValuesMinioResources, optional
-        Resource limits and requests for minio
-    securityContext : ValuesMinioSecurityContext, optional
-        Container security context for minio
-    tls : ValuesMinioTls, optional
-        TLS configuration (currently not implemented)
-    """
-    [...str]: any
-    auth?: ValuesMinioAuth
-    defaultBuckets?: str
-    enabled?: bool
-    image?: ValuesMinioImage
-    persistence?: ValuesMinioPersistence
-    podSecurityContext?: ValuesMinioPodSecurityContext
-    resources?: ValuesMinioResources
-    securityContext?: ValuesMinioSecurityContext
-    tls?: ValuesMinioTls
-
-schema ValuesMinioAuth:
-    r"""
-    Authentication configuration
-
-    Attributes
-    ----------
-    existingSecret : str, optional, default is ""
-        Name of existing secret containing minio credentials (if set, auth.rootUser and auth.rootPassword are ignored)
-    rootPassword : str, optional, default is ""
-        Root password for minio (leave empty to generate a secure random password)
-    rootUser : str, optional, default is "admin"
-        Root user for minio
-    """
-    [...str]: any
-    existingSecret?: str
-    rootPassword?: str
-    rootUser?: str
-
-schema ValuesMinioImage:
-    r"""
-    Minio image configuration
-
-    Attributes
-    ----------
-    pullPolicy : str, optional, default is "IfNotPresent"
-    repository : str, optional, default is "docker.io/minio/minio"
-    tag : str, optional, default is "RELEASE.2025-07-23T15-54-02Z"
-        renovate: image=docker.io/minio/minio
-    """
-    [...str]: any
-    pullPolicy?: str
-    repository?: str
-    tag?: str
-
-schema ValuesMinioPersistence:
-    r"""
-    Persistence configuration
-
-    Attributes
-    ----------
-    size : str, optional, default is "10Gi"
-        Size of the persistent volume
-    storageClass : str, optional, default is ""
-        Storage class for minio data persistence
-    """
-    [...str]: any
-    size?: str
-    storageClass?: str
-
-schema ValuesMinioPodSecurityContext:
-    r"""
-    Pod security context for minio
-
-    Attributes
-    ----------
-    fsGroup : int, optional, default is 1000
-    runAsGroup : int, optional, default is 1000
-    runAsUser : int, optional, default is 1000
-    """
-    [...str]: any
-    fsGroup?: int
-    runAsGroup?: int
-    runAsUser?: int
-
-schema ValuesMinioResources:
-    r"""
-    Resource limits and requests for minio
-
-    Attributes
-    ----------
-    limits : ValuesMinioResourcesLimits, optional
-    requests : ValuesMinioResourcesRequests, optional
-    """
-    [...str]: any
-    limits?: ValuesMinioResourcesLimits
-    requests?: ValuesMinioResourcesRequests
-
-schema ValuesMinioResourcesLimits:
-    r"""
-    ValuesMinioResourcesLimits
-
-    Attributes
-    ----------
-    cpu : str, optional, default is "500m"
-    "ephemeral-storage" : str, optional, default is "1Gi"
-    memory : str, optional, default is "512Mi"
-    """
-    [...str]: any
-    cpu?: str
-    "ephemeral-storage"?: str
-    memory?: str
-
-schema ValuesMinioResourcesRequests:
-    r"""
-    ValuesMinioResourcesRequests
-
-    Attributes
-    ----------
-    cpu : str, optional, default is "100m"
-    memory : str, optional, default is "256Mi"
-    """
-    [...str]: any
-    cpu?: str
-    memory?: str
-
-schema ValuesMinioSecurityContext:
-    r"""
-    Container security context for minio
-
-    Attributes
-    ----------
-    allowPrivilegeEscalation : bool, optional, default is False
-    capabilities : ValuesMinioSecurityContextCapabilities, optional
-    runAsGroup : int, optional, default is 1000
-    runAsNonRoot : bool, optional, default is True
-    runAsUser : int, optional, default is 1000
-    seccompProfile : ValuesMinioSecurityContextSeccompProfile, optional
-    """
-    [...str]: any
-    allowPrivilegeEscalation?: bool
-    capabilities?: ValuesMinioSecurityContextCapabilities
-    runAsGroup?: int
-    runAsNonRoot?: bool
-    runAsUser?: int
-    seccompProfile?: ValuesMinioSecurityContextSeccompProfile
-
-schema ValuesMinioSecurityContextCapabilities:
-    r"""
-    ValuesMinioSecurityContextCapabilities
-
-    Attributes
-    ----------
-    drop : [str], optional
-    """
-    [...str]: any
-    drop?: [str]
-
-schema ValuesMinioSecurityContextSeccompProfile:
-    r"""
-    ValuesMinioSecurityContextSeccompProfile
-
-    Attributes
-    ----------
-    $type : str, optional, default is "RuntimeDefault"
-    """
-    [...str]: any
-    $type?: str
-
-schema ValuesMinioTls:
-    r"""
-    TLS configuration (currently not implemented)
-
-    Attributes
-    ----------
-    enabled : bool, optional, default is False
-    """
-    [...str]: any
-    enabled?: bool
-
 schema ValuesNodeSelector:
     r"""
     ValuesNodeSelector
@@ -383,7 +381,7 @@ schema ValuesProbes:
     liveness : ValuesProbesLiveness, optional
         Liveness probe configuration
     readiness : ValuesProbesReadiness, optional
-        Readiness probe configuration  
+        Readiness probe configuration
     """
     [...str]: any
     liveness?: ValuesProbesLiveness
@@ -419,7 +417,7 @@ schema ValuesProbesLivenessHttpGet:
 
 schema ValuesProbesReadiness:
     r"""
-    Readiness probe configuration  
+    Readiness probe configuration
 
     Attributes
     ----------
@@ -464,8 +462,8 @@ schema ValuesResourcesLimits:
 
     Attributes
     ----------
-    cpu : str, optional, default is "100m"
-    memory : str, optional, default is "30Mi"
+    cpu : str, optional, default is "250m"
+    memory : str, optional, default is "100Mi"
     """
     [...str]: any
     cpu?: str
@@ -478,7 +476,7 @@ schema ValuesResourcesRequests:
     Attributes
     ----------
     cpu : str, optional, default is "100m"
-    memory : str, optional, default is "20Mi"
+    memory : str, optional, default is "50Mi"
     """
     [...str]: any
     cpu?: str
@@ -496,7 +494,7 @@ schema ValuesS3:
         s3.awsStsEndpoint -- STS Endpoint used in AWS IRSA Authentication. Change this to the sts endpoint of your aws region. Only used when s3.authType is set to "aws-iam". Usually not required, even in IRSA or Pod Identity setups as the region gets injected by AWS into the pod.
     bucket : str, optional, default is "my-bucket"
     enabled : bool, optional, default is False
-        s3.enabled Enable this and disable minio if you want to directly connect against AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.
+        s3.enabled Enable this and disable garage if you want to directly connect against AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.
     endpoint : str, optional, default is "fra1.digitaloceanspaces.com"
     keySecret : str, optional, default is "my-secret"
         Name to a k8s secret in the same namespace as this release with credentials to the s3 bucket. Only used when s3.authType is set to "access-secret-key"
