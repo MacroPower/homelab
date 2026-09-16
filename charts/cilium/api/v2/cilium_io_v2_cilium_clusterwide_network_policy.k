@@ -155,12 +155,13 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0:
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     toGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0ToGroupsItems0], default is Undefined, optional
-        ToGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        ToGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        ToGroups entries are functionally equivalent to toCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
         toGroups:
@@ -370,8 +371,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0ToEndpointsIt
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0ToGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -387,13 +387,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0ToGroupsItems
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -472,7 +481,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0ToPortsItems0
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -481,7 +495,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressDenyItems0ToPortsItems0
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -644,7 +658,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0:
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     toFQDNs : [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToFQDNsItems0], default is Undefined, optional
         ToFQDN allows whitelisting DNS names in place of IPs. The IPs that result
@@ -661,9 +675,10 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0:
         ToFQDN rule will not apply to that IP.
         Note: ToFQDN cannot occur in the same policy as other To* rules.
     toGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToGroupsItems0], default is Undefined, optional
-        ToGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        ToGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        ToGroups entries are functionally equivalent to toCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
         toGroups:
@@ -925,8 +940,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToFQDNsItems0:
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -942,13 +956,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToGroupsItems0Aws
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -1032,7 +1055,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0:
         len(ports) <= 40 if ports
         len(serverNames) >= 1 if serverNames
         all serverNames in serverNames {len(serverNames) <= 255 if serverNames not in [None, Undefined]} if serverNames
-        all serverNames in serverNames {_regex_match(str(serverNames), r"^(\*?\*\.)?([-a-zA-Z0-9_]+\.?)+$") if serverNames} if serverNames
+        all serverNames in serverNames {_regex_match(str(serverNames), r"^([-a-zA-Z0-9_*]+[.]?)+$") if serverNames} if serverNames
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0Listener:
     r"""
@@ -1152,7 +1175,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0Port
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -1161,7 +1189,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0Port
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -1180,19 +1208,9 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0Rule
         DNS-specific rules.
     http : [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesHTTPItems0], default is Undefined, optional
         HTTP specific rules.
-    kafka : [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
-        Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
-    l7 : [{str:str}], default is Undefined, optional
-        Key-value pair rules.
-    l7proto : str, default is Undefined, optional
-        Name of the L7 protocol for which the Key-value pair rules apply.
     """
     dns?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesDNSItems0]
     http?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesHTTPItems0]
-    kafka?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesKafkaItems0]
-    l7?: [{str:str}]
-    l7proto?: str
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesDNSItems0:
     r"""
@@ -1329,79 +1347,6 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0Rule
     name: str
 
     namespace?: str
-
-schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0RulesKafkaItems0:
-    r"""
-    PortRule is a list of Kafka protocol constraints. All fields are
-    optional, if all fields are empty or missing, the rule will match all
-    Kafka messages.
-
-    Attributes
-    ----------
-    apiKey : str, default is Undefined, optional
-        APIKey is a case-insensitive string matched against the key of a
-        request, e.g. "produce", "fetch", "createtopic", "deletetopic", et al
-        Reference: https://kafka.apache.org/protocol#protocol_api_keys
-
-        If omitted or empty, and if Role is not specified, then all keys are allowed.
-    apiVersion : str, default is Undefined, optional
-        APIVersion is the version matched against the api version of the
-        Kafka message. If set, it has to be a string representing a positive
-        integer.
-
-        If omitted or empty, all versions are allowed.
-    clientID : str, default is Undefined, optional
-        ClientID is the client identifier as provided in the request.
-
-        From Kafka protocol documentation:
-        This is a user supplied identifier for the client application. The
-        user can use any identifier they like and it will be used when
-        logging errors, monitoring aggregates, etc. For example, one might
-        want to monitor not just the requests per second overall, but the
-        number coming from each client application (each of which could
-        reside on multiple servers). This id acts as a logical grouping
-        across all requests from a particular client.
-
-        If omitted or empty, all client identifiers are allowed.
-    role : str, default is Undefined, optional
-        Role is a case-insensitive string and describes a group of API keys
-        necessary to perform certain higher-level Kafka operations such as "produce"
-        or "consume". A Role automatically expands into all APIKeys required
-        to perform the specified higher-level operation.
-
-        The following values are supported:
-         - "produce": Allow producing to the topics specified in the rule
-         - "consume": Allow consuming from the topics specified in the rule
-
-        This field is incompatible with the APIKey field, i.e APIKey and Role
-        cannot both be specified in the same rule.
-
-        If omitted or empty, and if APIKey is not specified, then all keys are
-        allowed.
-    topic : str, default is Undefined, optional
-        Topic is the topic name contained in the message. If a Kafka request
-        contains multiple topics, then all topics must be allowed or the
-        message will be rejected.
-
-        This constraint is ignored if the matched request message type
-        doesn't contain any topic. Maximum size of Topic can be 249
-        characters as per recent Kafka spec and allowed characters are
-        a-z, A-Z, 0-9, -, . and _.
-
-        Older Kafka versions had longer topic lengths of 255, but in Kafka 0.10
-        version the length was changed from 255 to 249. For compatibility
-        reasons we are using 255.
-
-        If omitted or empty, all topics are allowed.
-    """
-    apiKey?: str
-    apiVersion?: str
-    clientID?: str
-    role?: "produce" | "consume"
-    topic?: str
-
-    check:
-        len(topic) <= 255 if topic
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecEgressItems0ToPortsItems0TerminatingTLS:
     r"""
@@ -1681,15 +1626,16 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0:
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     fromGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0FromGroupsItems0], default is Undefined, optional
-        FromGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        FromGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        FromGroups entries are functionally equivalent to FromCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
-        FromGroups:
+        fromGroups:
         - aws:
             securityGroupsIds:
             - 'sg-XXXXXXXXXXXXX'
@@ -1854,8 +1800,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0FromEndpoint
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0FromGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -1871,13 +1816,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0FromGroupsIt
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -2002,7 +1956,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0ToPortsItems
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -2011,7 +1970,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressDenyItems0ToPortsItems
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -2079,15 +2038,16 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0:
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     fromGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0FromGroupsItems0], default is Undefined, optional
-        FromGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        FromGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        FromGroups entries are functionally equivalent to FromCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
-        FromGroups:
+        fromGroups:
         - aws:
             securityGroupsIds:
             - 'sg-XXXXXXXXXXXXX'
@@ -2264,8 +2224,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0FromEndpointsIte
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0FromGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -2281,13 +2240,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0FromGroupsItems0
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -2417,7 +2385,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0:
         len(ports) <= 40 if ports
         len(serverNames) >= 1 if serverNames
         all serverNames in serverNames {len(serverNames) <= 255 if serverNames not in [None, Undefined]} if serverNames
-        all serverNames in serverNames {_regex_match(str(serverNames), r"^(\*?\*\.)?([-a-zA-Z0-9_]+\.?)+$") if serverNames} if serverNames
+        all serverNames in serverNames {_regex_match(str(serverNames), r"^([-a-zA-Z0-9_*]+[.]?)+$") if serverNames} if serverNames
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0Listener:
     r"""
@@ -2537,7 +2505,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0Por
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -2546,7 +2519,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0Por
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -2565,19 +2538,9 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0Rul
         DNS-specific rules.
     http : [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesHTTPItems0], default is Undefined, optional
         HTTP specific rules.
-    kafka : [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
-        Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
-    l7 : [{str:str}], default is Undefined, optional
-        Key-value pair rules.
-    l7proto : str, default is Undefined, optional
-        Name of the L7 protocol for which the Key-value pair rules apply.
     """
     dns?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesDNSItems0]
     http?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesHTTPItems0]
-    kafka?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesKafkaItems0]
-    l7?: [{str:str}]
-    l7proto?: str
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesDNSItems0:
     r"""
@@ -2715,79 +2678,6 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0Rul
 
     namespace?: str
 
-schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0RulesKafkaItems0:
-    r"""
-    PortRule is a list of Kafka protocol constraints. All fields are
-    optional, if all fields are empty or missing, the rule will match all
-    Kafka messages.
-
-    Attributes
-    ----------
-    apiKey : str, default is Undefined, optional
-        APIKey is a case-insensitive string matched against the key of a
-        request, e.g. "produce", "fetch", "createtopic", "deletetopic", et al
-        Reference: https://kafka.apache.org/protocol#protocol_api_keys
-
-        If omitted or empty, and if Role is not specified, then all keys are allowed.
-    apiVersion : str, default is Undefined, optional
-        APIVersion is the version matched against the api version of the
-        Kafka message. If set, it has to be a string representing a positive
-        integer.
-
-        If omitted or empty, all versions are allowed.
-    clientID : str, default is Undefined, optional
-        ClientID is the client identifier as provided in the request.
-
-        From Kafka protocol documentation:
-        This is a user supplied identifier for the client application. The
-        user can use any identifier they like and it will be used when
-        logging errors, monitoring aggregates, etc. For example, one might
-        want to monitor not just the requests per second overall, but the
-        number coming from each client application (each of which could
-        reside on multiple servers). This id acts as a logical grouping
-        across all requests from a particular client.
-
-        If omitted or empty, all client identifiers are allowed.
-    role : str, default is Undefined, optional
-        Role is a case-insensitive string and describes a group of API keys
-        necessary to perform certain higher-level Kafka operations such as "produce"
-        or "consume". A Role automatically expands into all APIKeys required
-        to perform the specified higher-level operation.
-
-        The following values are supported:
-         - "produce": Allow producing to the topics specified in the rule
-         - "consume": Allow consuming from the topics specified in the rule
-
-        This field is incompatible with the APIKey field, i.e APIKey and Role
-        cannot both be specified in the same rule.
-
-        If omitted or empty, and if APIKey is not specified, then all keys are
-        allowed.
-    topic : str, default is Undefined, optional
-        Topic is the topic name contained in the message. If a Kafka request
-        contains multiple topics, then all topics must be allowed or the
-        message will be rejected.
-
-        This constraint is ignored if the matched request message type
-        doesn't contain any topic. Maximum size of Topic can be 249
-        characters as per recent Kafka spec and allowed characters are
-        a-z, A-Z, 0-9, -, . and _.
-
-        Older Kafka versions had longer topic lengths of 255, but in Kafka 0.10
-        version the length was changed from 255 to 249. For compatibility
-        reasons we are using 255.
-
-        If omitted or empty, all topics are allowed.
-    """
-    apiKey?: str
-    apiVersion?: str
-    clientID?: str
-    role?: "produce" | "consume"
-    topic?: str
-
-    check:
-        len(topic) <= 255 if topic
-
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0TerminatingTLS:
     r"""
     TerminatingTLS is the TLS context for the connection terminated by
@@ -2844,14 +2734,14 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecIngressItems0ToPortsItems0Ter
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecLabelsItems0:
     r"""
-    Label is the Cilium's representation of a container label.
+    Label is Cilium's representation of a label.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key
     source : str, default is Undefined, optional
-        Source can be one of the above values (e.g.: LabelSourceContainer).
+        Source can be one of the above values (e.g.: LabelSourceK8s).
     value : str, default is Undefined, optional
         value
     """
@@ -3048,12 +2938,13 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0:
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     toGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0ToGroupsItems0], default is Undefined, optional
-        ToGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        ToGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        ToGroups entries are functionally equivalent to toCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
         toGroups:
@@ -3263,8 +3154,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0ToEndp
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0ToGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -3280,13 +3170,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0ToGrou
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -3365,7 +3264,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0ToPort
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -3374,7 +3278,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressDenyItems0ToPort
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -3537,7 +3441,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0:
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     toFQDNs : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToFQDNsItems0], default is Undefined, optional
         ToFQDN allows whitelisting DNS names in place of IPs. The IPs that result
@@ -3554,9 +3458,10 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0:
         ToFQDN rule will not apply to that IP.
         Note: ToFQDN cannot occur in the same policy as other To* rules.
     toGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToGroupsItems0], default is Undefined, optional
-        ToGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        ToGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        ToGroups entries are functionally equivalent to toCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
         toGroups:
@@ -3818,8 +3723,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToFQDNsIte
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -3835,13 +3739,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToGroupsIt
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -3925,7 +3838,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsIte
         len(ports) <= 40 if ports
         len(serverNames) >= 1 if serverNames
         all serverNames in serverNames {len(serverNames) <= 255 if serverNames not in [None, Undefined]} if serverNames
-        all serverNames in serverNames {_regex_match(str(serverNames), r"^(\*?\*\.)?([-a-zA-Z0-9_]+\.?)+$") if serverNames} if serverNames
+        all serverNames in serverNames {_regex_match(str(serverNames), r"^([-a-zA-Z0-9_*]+[.]?)+$") if serverNames} if serverNames
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0Listener:
     r"""
@@ -4045,7 +3958,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsIte
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -4054,7 +3972,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsIte
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -4073,19 +3991,9 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsIte
         DNS-specific rules.
     http : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesHTTPItems0], default is Undefined, optional
         HTTP specific rules.
-    kafka : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
-        Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
-    l7 : [{str:str}], default is Undefined, optional
-        Key-value pair rules.
-    l7proto : str, default is Undefined, optional
-        Name of the L7 protocol for which the Key-value pair rules apply.
     """
     dns?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesDNSItems0]
     http?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesHTTPItems0]
-    kafka?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesKafkaItems0]
-    l7?: [{str:str}]
-    l7proto?: str
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesDNSItems0:
     r"""
@@ -4222,79 +4130,6 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsIte
     name: str
 
     namespace?: str
-
-schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesKafkaItems0:
-    r"""
-    PortRule is a list of Kafka protocol constraints. All fields are
-    optional, if all fields are empty or missing, the rule will match all
-    Kafka messages.
-
-    Attributes
-    ----------
-    apiKey : str, default is Undefined, optional
-        APIKey is a case-insensitive string matched against the key of a
-        request, e.g. "produce", "fetch", "createtopic", "deletetopic", et al
-        Reference: https://kafka.apache.org/protocol#protocol_api_keys
-
-        If omitted or empty, and if Role is not specified, then all keys are allowed.
-    apiVersion : str, default is Undefined, optional
-        APIVersion is the version matched against the api version of the
-        Kafka message. If set, it has to be a string representing a positive
-        integer.
-
-        If omitted or empty, all versions are allowed.
-    clientID : str, default is Undefined, optional
-        ClientID is the client identifier as provided in the request.
-
-        From Kafka protocol documentation:
-        This is a user supplied identifier for the client application. The
-        user can use any identifier they like and it will be used when
-        logging errors, monitoring aggregates, etc. For example, one might
-        want to monitor not just the requests per second overall, but the
-        number coming from each client application (each of which could
-        reside on multiple servers). This id acts as a logical grouping
-        across all requests from a particular client.
-
-        If omitted or empty, all client identifiers are allowed.
-    role : str, default is Undefined, optional
-        Role is a case-insensitive string and describes a group of API keys
-        necessary to perform certain higher-level Kafka operations such as "produce"
-        or "consume". A Role automatically expands into all APIKeys required
-        to perform the specified higher-level operation.
-
-        The following values are supported:
-         - "produce": Allow producing to the topics specified in the rule
-         - "consume": Allow consuming from the topics specified in the rule
-
-        This field is incompatible with the APIKey field, i.e APIKey and Role
-        cannot both be specified in the same rule.
-
-        If omitted or empty, and if APIKey is not specified, then all keys are
-        allowed.
-    topic : str, default is Undefined, optional
-        Topic is the topic name contained in the message. If a Kafka request
-        contains multiple topics, then all topics must be allowed or the
-        message will be rejected.
-
-        This constraint is ignored if the matched request message type
-        doesn't contain any topic. Maximum size of Topic can be 249
-        characters as per recent Kafka spec and allowed characters are
-        a-z, A-Z, 0-9, -, . and _.
-
-        Older Kafka versions had longer topic lengths of 255, but in Kafka 0.10
-        version the length was changed from 255 to 249. For compatibility
-        reasons we are using 255.
-
-        If omitted or empty, all topics are allowed.
-    """
-    apiKey?: str
-    apiVersion?: str
-    clientID?: str
-    role?: "produce" | "consume"
-    topic?: str
-
-    check:
-        len(topic) <= 255 if topic
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0EgressItems0ToPortsItems0TerminatingTLS:
     r"""
@@ -4574,15 +4409,16 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0:
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     fromGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0FromGroupsItems0], default is Undefined, optional
-        FromGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        FromGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        FromGroups entries are functionally equivalent to FromCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
-        FromGroups:
+        fromGroups:
         - aws:
             securityGroupsIds:
             - 'sg-XXXXXXXXXXXXX'
@@ -4747,8 +4583,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0FromE
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0FromGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -4764,13 +4599,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0FromG
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -4895,7 +4739,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0ToPor
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -4904,7 +4753,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressDenyItems0ToPor
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -4972,15 +4821,16 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0:
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
-        `world`, `cluster`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
+        `world`, `cluster`, `cluster-mesh`, `host`, `remote-node`, `kube-apiserver`, `ingress`, `init`,
         `health`, `unmanaged`, `none` and `all`.
     fromGroups : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0FromGroupsItems0], default is Undefined, optional
-        FromGroups is a directive that allows the integration with multiple outside
-        providers. Currently, only AWS is supported, and the rule can select by
-        multiple sub directives:
+        FromGroups allows policies to reference CIDRs provided by external integrations.
+        Currently, only AWS is supported, and the rule can select by multiple sub directives.
+        FromGroups entries are functionally equivalent to FromCIDR, and have the same
+        limitiations. They cannot select traffic originating from within the cluster.
 
         Example:
-        FromGroups:
+        fromGroups:
         - aws:
             securityGroupsIds:
             - 'sg-XXXXXXXXXXXXX'
@@ -5157,8 +5007,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0FromEndpo
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0FromGroupsItems0:
     r"""
-    Groups structure to store all kinds of new integrations that needs a new
-    derivative policy.
+    Groups allows referencing CIDRs that are resolved from an external integration.
 
     Attributes
     ----------
@@ -5174,13 +5023,22 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0FromGroup
     Attributes
     ----------
     labels : {str:str}, default is Undefined, optional
-        labels
+        Labels selects AWS ENIs by labels.
+        Multiple labels are AND-ed together.
     region : str, default is Undefined, optional
-        region
+        Deprecated: Region is unused.
     securityGroupsIds : [str], default is Undefined, optional
-        security groups ids
+        SecurityGroupsIds selects VPC SecurityGroups by IDs.
+        If multiple IDs are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any Names specified. Specifying both
+        IDs and Names is not recommended.
     securityGroupsNames : [str], default is Undefined, optional
-        security groups names
+        SecurityGroupsNames selects VPC SecurityGroups by name.
+        If multiple names are specified, they are OR-ed together.
+
+        Note that this may be AND-ed with any IDs specified. Specifying both
+        IDs and Names is not recommended.
     """
     labels?: {str:str}
     region?: str
@@ -5310,7 +5168,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsIt
         len(ports) <= 40 if ports
         len(serverNames) >= 1 if serverNames
         all serverNames in serverNames {len(serverNames) <= 255 if serverNames not in [None, Undefined]} if serverNames
-        all serverNames in serverNames {_regex_match(str(serverNames), r"^(\*?\*\.)?([-a-zA-Z0-9_]+\.?)+$") if serverNames} if serverNames
+        all serverNames in serverNames {_regex_match(str(serverNames), r"^([-a-zA-Z0-9_*]+[.]?)+$") if serverNames} if serverNames
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0Listener:
     r"""
@@ -5430,7 +5288,12 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsIt
         Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
         with transport ports (TCP, UDP, SCTP) match.
 
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "GRE", "IPIP",
+        "IPV6", "ESP", "AH", "ANY"
+
+        Tunnel/encapsulation protocols (GRE, IPIP, IPV6, ESP, AH) and other
+        extended IP protocols (VRRP, IGMP) require the --enable-extended-ip-protocols
+        flag to be set. These protocols do not use transport-layer ports.
 
         Matching on ICMP is not supported.
 
@@ -5439,7 +5302,7 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsIt
     """
     endPort?: int
     port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "GRE" | "IPIP" | "IPV6" | "ESP" | "AH" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
@@ -5458,19 +5321,9 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsIt
         DNS-specific rules.
     http : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesHTTPItems0], default is Undefined, optional
         HTTP specific rules.
-    kafka : [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
-        Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
-    l7 : [{str:str}], default is Undefined, optional
-        Key-value pair rules.
-    l7proto : str, default is Undefined, optional
-        Name of the L7 protocol for which the Key-value pair rules apply.
     """
     dns?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesDNSItems0]
     http?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesHTTPItems0]
-    kafka?: [CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesKafkaItems0]
-    l7?: [{str:str}]
-    l7proto?: str
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesDNSItems0:
     r"""
@@ -5608,79 +5461,6 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsIt
 
     namespace?: str
 
-schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesKafkaItems0:
-    r"""
-    PortRule is a list of Kafka protocol constraints. All fields are
-    optional, if all fields are empty or missing, the rule will match all
-    Kafka messages.
-
-    Attributes
-    ----------
-    apiKey : str, default is Undefined, optional
-        APIKey is a case-insensitive string matched against the key of a
-        request, e.g. "produce", "fetch", "createtopic", "deletetopic", et al
-        Reference: https://kafka.apache.org/protocol#protocol_api_keys
-
-        If omitted or empty, and if Role is not specified, then all keys are allowed.
-    apiVersion : str, default is Undefined, optional
-        APIVersion is the version matched against the api version of the
-        Kafka message. If set, it has to be a string representing a positive
-        integer.
-
-        If omitted or empty, all versions are allowed.
-    clientID : str, default is Undefined, optional
-        ClientID is the client identifier as provided in the request.
-
-        From Kafka protocol documentation:
-        This is a user supplied identifier for the client application. The
-        user can use any identifier they like and it will be used when
-        logging errors, monitoring aggregates, etc. For example, one might
-        want to monitor not just the requests per second overall, but the
-        number coming from each client application (each of which could
-        reside on multiple servers). This id acts as a logical grouping
-        across all requests from a particular client.
-
-        If omitted or empty, all client identifiers are allowed.
-    role : str, default is Undefined, optional
-        Role is a case-insensitive string and describes a group of API keys
-        necessary to perform certain higher-level Kafka operations such as "produce"
-        or "consume". A Role automatically expands into all APIKeys required
-        to perform the specified higher-level operation.
-
-        The following values are supported:
-         - "produce": Allow producing to the topics specified in the rule
-         - "consume": Allow consuming from the topics specified in the rule
-
-        This field is incompatible with the APIKey field, i.e APIKey and Role
-        cannot both be specified in the same rule.
-
-        If omitted or empty, and if APIKey is not specified, then all keys are
-        allowed.
-    topic : str, default is Undefined, optional
-        Topic is the topic name contained in the message. If a Kafka request
-        contains multiple topics, then all topics must be allowed or the
-        message will be rejected.
-
-        This constraint is ignored if the matched request message type
-        doesn't contain any topic. Maximum size of Topic can be 249
-        characters as per recent Kafka spec and allowed characters are
-        a-z, A-Z, 0-9, -, . and _.
-
-        Older Kafka versions had longer topic lengths of 255, but in Kafka 0.10
-        version the length was changed from 255 to 249. For compatibility
-        reasons we are using 255.
-
-        If omitted or empty, all topics are allowed.
-    """
-    apiKey?: str
-    apiVersion?: str
-    clientID?: str
-    role?: "produce" | "consume"
-    topic?: str
-
-    check:
-        len(topic) <= 255 if topic
-
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsItems0TerminatingTLS:
     r"""
     TerminatingTLS is the TLS context for the connection terminated by
@@ -5737,14 +5517,14 @@ schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0IngressItems0ToPortsIt
 
 schema CiliumIoV2CiliumClusterwideNetworkPolicySpecsItems0LabelsItems0:
     r"""
-    Label is the Cilium's representation of a container label.
+    Label is Cilium's representation of a label.
 
     Attributes
     ----------
     key : str, default is Undefined, required
         key
     source : str, default is Undefined, optional
-        Source can be one of the above values (e.g.: LabelSourceContainer).
+        Source can be one of the above values (e.g.: LabelSourceK8s).
     value : str, default is Undefined, optional
         value
     """
