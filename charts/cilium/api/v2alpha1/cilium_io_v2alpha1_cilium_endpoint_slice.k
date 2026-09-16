@@ -53,6 +53,8 @@ schema CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0:
         swagger:model NamedPorts
     networking : CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Networking, default is Undefined, optional
         networking
+    "pod-uid" : str, default is Undefined, optional
+        PodUID is the UID of the Pod that owns this endpoint.
     "service-account" : str, default is Undefined, optional
         ServiceAccount is the service account of the endpoint.
     """
@@ -61,6 +63,7 @@ schema CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0:
     name?: str
     "named-ports"?: [CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0NamedPortsItems0]
     networking?: CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Networking
+    "pod-uid"?: str
     "service-account"?: str
 
 schema CiliumIoV2alpha1CiliumEndpointSliceEndpointsItems0Encryption:
