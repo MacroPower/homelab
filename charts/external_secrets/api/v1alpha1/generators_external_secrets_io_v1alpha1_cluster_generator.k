@@ -43,7 +43,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpec:
     """
     generator: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator
 
-    kind: "ACRAccessToken" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana"
+    kind: "ACRAccessToken" | "BeyondtrustWorkloadCredentialsDynamicSecret" | "CloudsmithAccessToken" | "ECRAuthorizationToken" | "Fake" | "GCRAccessToken" | "GithubAccessToken" | "GitlabDeployToken" | "QuayAccessToken" | "Password" | "SSHKey" | "STSSessionToken" | "UUID" | "VaultDynamicSecret" | "Webhook" | "Grafana" | "MFA"
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator:
     r"""
@@ -53,6 +53,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator:
     ----------
     acrAccessTokenSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpec, default is Undefined, optional
         acr access token spec
+    beyondtrustWorkloadCredentialsDynamicSecretSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpec, default is Undefined, optional
+        beyondtrust workload credentials dynamic secret spec
     cloudsmithAccessTokenSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorCloudsmithAccessTokenSpec, default is Undefined, optional
         cloudsmith access token spec
     ecrAuthorizationTokenSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpec, default is Undefined, optional
@@ -63,6 +65,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator:
         gcr access token spec
     githubAccessTokenSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpec, default is Undefined, optional
         github access token spec
+    gitlabDeployTokenSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpec, default is Undefined, optional
+        gitlab deploy token spec
     grafanaSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpec, default is Undefined, optional
         grafana spec
     mfaSpec : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorMfaSpec, default is Undefined, optional
@@ -83,11 +87,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGenerator:
         webhook spec
     """
     acrAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccessTokenSpec
+    beyondtrustWorkloadCredentialsDynamicSecretSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpec
     cloudsmithAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorCloudsmithAccessTokenSpec
     ecrAuthorizationTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthorizationTokenSpec
     fakeSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorFakeSpec
     gcrAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpec
     githubAccessTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpec
+    gitlabDeployTokenSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpec
     grafanaSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSpec
     mfaSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorMfaSpec
     passwordSpec?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorPasswordSpec
@@ -271,8 +277,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -291,6 +297,193 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorAcrAccess
         len(namespace) <= 63 if namespace
         len(namespace) >= 1 if namespace
         _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpec:
+    r"""
+    BeyondtrustWorkloadCredentialsDynamicSecretSpec defines the desired spec for BeyondtrustWorkloadCredentials dynamic generator.
+    This generator enables obtaining temporary, short-lived credentials from BeyondTrust Workload Credentials.
+    For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api
+
+    Attributes
+    ----------
+    controller : str, default is Undefined, optional
+        Controller selects the controller that should handle this generator.
+        Leave empty to use the default controller.
+    provider : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProvider, default is Undefined, required
+        provider
+    retrySettings : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecRetrySettings, default is Undefined, optional
+        retry settings
+    """
+    controller?: str
+    provider: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProvider
+
+    retrySettings?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecRetrySettings
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProvider:
+    r"""
+    Provider contains the BeyondtrustWorkloadCredentials provider configuration including authentication,
+    server connection details, and the folder path to the dynamic secret definition.
+    The folderPath should point to a dynamic secret definition that has been created in
+    BeyondTrust Workload Credentials (e.g., "production/aws-temp").
+    For setup details, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api
+
+    Attributes
+    ----------
+    auth : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuth, default is Undefined, required
+        auth
+    caBundle : str, default is Undefined, optional
+        CABundle is a base64-encoded CA certificate used to validate the BeyondTrust Workload Credentials API TLS certificate.
+        Use this when your BeyondTrust instance uses a self-signed certificate or internal CA.
+        If not set, the system's trusted root certificates are used.
+    caProvider : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderCaProvider, default is Undefined, optional
+        ca provider
+    folderPath : str, default is Undefined, optional
+        FolderPath specifies the default folder path for secret retrieval.
+        Secrets will be fetched from this folder unless overridden in the ExternalSecret spec.
+        Example: "production/database" or "dev/api-keys"
+        Leave empty to retrieve secrets from the root folder.
+        For folder organization, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#folders
+    server : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderServer, default is Undefined, required
+        server
+    """
+    auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuth
+
+    caBundle?: str
+    caProvider?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderCaProvider
+    folderPath?: str
+    server: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderServer
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuth:
+    r"""
+    Auth configures how the Operator authenticates with the BeyondTrust Workload Credentials API.
+    Currently supports API key authentication via Kubernetes secret reference.
+    For authentication setup, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#authentication
+
+    Attributes
+    ----------
+    apikey : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuthApikey, default is Undefined, required
+        apikey
+    """
+    apikey: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuthApikey
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuthApikey:
+    r"""
+    APIKey configures API token authentication for BeyondTrust Workload Credentials.
+    The token is retrieved from a Kubernetes secret and used as a Bearer token for API requests.
+
+    Attributes
+    ----------
+    token : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuthApikeyToken, default is Undefined, required
+        token
+    """
+    token: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuthApikeyToken
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderAuthApikeyToken:
+    r"""
+    Token references the Kubernetes secret containing the BeyondTrust Workload Credentials API token.
+    The secret should contain the API key used to authenticate with BeyondTrust Workload Credentials.
+    Create an API token in your BeyondTrust Workload Credentials console and store it in a Kubernetes secret.
+    For details on creating API tokens, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#authentication
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderCaProvider:
+    r"""
+    CAProvider points to a Secret or ConfigMap containing a PEM-encoded CA certificate.
+    This is used to validate the BeyondTrust Workload Credentials API TLS certificate.
+    Use this as an alternative to CABundle when you want to reference an existing Kubernetes resource.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        The key where the CA certificate can be found in the Secret or ConfigMap.
+    name : str, default is Undefined, required
+        The name of the object located at the provider type.
+    namespace : str, default is Undefined, optional
+        The namespace the Provider type is in.
+        Can only be defined when used in a ClusterSecretStore.
+    $type : str, default is Undefined, required
+        The type of provider to use such as "Secret", or "ConfigMap".
+    """
+    key?: str
+    name: str
+
+    namespace?: str
+    $type: "Secret" | "ConfigMap"
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecProviderServer:
+    r"""
+    Server configures the BeyondTrust Workload Credentials server connection details.
+    Includes the API URL and Site ID for your BeyondTrust instance.
+    For API reference, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api
+
+    Attributes
+    ----------
+    apiUrl : str, default is Undefined, required
+        APIURL is the base URL of your BeyondTrust Workload Credentials API server.
+        This should be the full URL to your BeyondTrust instance.
+        Example: https://api.beyondtrust.io/siie
+        For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api#base-url
+    siteId : str, default is Undefined, required
+        SiteID is your BeyondTrust Workload Credentials site identifier (UUID format).
+        This identifier is unique to your BeyondTrust Workload Credentials instance.
+        You can find your Site ID in the BeyondTrust Workload Credentials admin console.
+        Example: a1b2c3d4-e5f6-4890-abcd-ef1234567890
+        For more information, see: https://docs.beyondtrust.com/bt-docs/docs/secrets-api
+    """
+    apiUrl: str
+
+    siteId: str
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorBeyondtrustWorkloadCredentialsDynamicSecretSpecRetrySettings:
+    r"""
+    RetrySettings configures exponential backoff for failed API requests.
+    If not specified, uses the default retry settings.
+
+    Attributes
+    ----------
+    maxRetries : int, default is Undefined, optional
+        max retries
+    retryInterval : str, default is Undefined, optional
+        retry interval
+    """
+    maxRetries?: int
+    retryInterval?: str
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorCloudsmithAccessTokenSpec:
     r"""
@@ -322,8 +515,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorCloudsmit
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -399,8 +592,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorEcrAuthor
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -659,6 +852,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
         externalTokenEndpoint is the endpoint explicitly set up to provide tokens, which will be matched against the
         credential_source.url in the provided credConfig. This field is merely to double-check the external token source
         URL is having the expected value.
+    gcpServiceAccountEmail : str, default is Undefined, optional
+        GCPServiceAccountEmail is the email of the Google Cloud service account to impersonate
+        after Workload Identity Federation. Use this to grant access through the service account's
+        IAM bindings (for example roles/secretmanager.secretAccessor). When set, it overrides
+        service_account_impersonation_url in the external account JSON from credConfig;
+        when serviceAccountRef is set, it also overrides the "iam.gke.io/gcp-service-account" annotation
+        on that ServiceAccount.
     serviceAccountRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef, default is Undefined, optional
         service account ref
     """
@@ -666,7 +866,12 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     awsSecurityCredentials?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials
     credConfig?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationCredConfig
     externalTokenEndpoint?: str
+    gcpServiceAccountEmail?: str
     serviceAccountRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationServiceAccountRef
+
+    check:
+        len(gcpServiceAccountEmail) >= 1 if gcpServiceAccountEmail
+        _regex_match(str(gcpServiceAccountEmail), r"^.*@.*\.iam\.gserviceaccount\.com$") if gcpServiceAccountEmail
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccessTokenSpecAuthWorkloadIdentityFederationAwsSecurityCredentials:
     r"""
@@ -757,8 +962,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -786,8 +991,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGcrAccess
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -860,6 +1065,108 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAcc
     secretRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKeySecretRef
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGithubAccessTokenSpecAuthPrivateKeySecretRef:
+    r"""
+    SecretKeySelector is a reference to a specific 'key' within a Secret resource.
+    In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpec:
+    r"""
+    GitlabDeployTokenSpec defines the desired state to generate a GitLab deploy token.
+
+    Attributes
+    ----------
+    auth : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuth, default is Undefined, required
+        auth
+    expiresAt : str, default is Undefined, optional
+        ExpiresAt is an optional expiry for the deploy token. If omitted the token does
+        not expire on the GitLab side and is revoked only when the generator state is
+        cleaned up (on regeneration or when the consuming ExternalSecret is deleted).
+    groupID : str, default is Undefined, optional
+        GroupID is the numeric ID or unescaped path (e.g. parent/group) of the group to
+        create the deploy token in. The generator URL-escapes paths before calling the
+        GitLab API, so do not pre-encode. Mutually exclusive with projectID.
+    name : str, default is Undefined, required
+        Name of the deploy token.
+    projectID : str, default is Undefined, optional
+        ProjectID is the numeric ID or unescaped path (e.g. group/project) of the
+        project to create the deploy token in. The generator URL-escapes paths before
+        calling the GitLab API, so do not pre-encode. Mutually exclusive with groupID.
+    scopes : [str], default is Undefined, required
+        Scopes granted to the deploy token. At least one scope is required.
+    url : str, default is Undefined, optional
+        URL configures the GitLab instance URL. Defaults to https://gitlab.com.
+    username : str, default is Undefined, optional
+        Username is an optional username for the deploy token. GitLab defaults it to
+        gitlab+deploy-token-{n} when omitted.
+    """
+    auth: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuth
+
+    expiresAt?: str
+    groupID?: str
+    name: str
+
+    projectID?: str
+    scopes: [str]
+
+    url?: str
+    username?: str
+
+    check:
+        len(groupID) >= 1 if groupID
+        len(name) >= 1
+        len(projectID) >= 1 if projectID
+        len(scopes) >= 1
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuth:
+    r"""
+    Auth configures how ESO authenticates with the GitLab API.
+
+    Attributes
+    ----------
+    token : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuthToken, default is Undefined, required
+        token
+    """
+    token: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuthToken
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuthToken:
+    r"""
+    Token references a secret containing a GitLab access token (personal, group, or
+    project) with the api scope and at least the Maintainer role on the target.
+
+    Attributes
+    ----------
+    secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuthTokenSecretRef, default is Undefined, required
+        secret ref
+    """
+    secretRef: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuthTokenSecretRef
+
+schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGitlabDeployTokenSpecAuthTokenSecretRef:
     r"""
     SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
@@ -1002,10 +1309,18 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorGrafanaSp
         Role is the role of the service account.
         See here for the documentation on basic roles offered by Grafana:
         https://grafana.com/docs/grafana/latest/administration/roles-and-permissions/access-control/rbac-fixed-basic-role-definitions/
+    secondsToLive : int, default is Undefined, optional
+        SecondsToLive is the number of seconds before the generated service account token will expire.
+        Some Grafana deployments (e.g. AWS Managed Grafana) require this value to be set.
     """
     name: str
 
     role: str
+
+    secondsToLive?: int
+
+    check:
+        secondsToLive >= 1 if secondsToLive not in [None, Undefined]
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorMfaSpec:
     r"""
@@ -1137,8 +1452,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorQuayAcces
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -1237,8 +1552,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorStsSessio
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -1399,6 +1714,10 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     controller : str, default is Undefined, optional
         Used to select the correct ESO controller (think: ingress.ingressClassName)
         The ESO controller is instantiated with a specific controller name and filters VDS based on this property
+    getParameters : {str:[str]}, default is Undefined, optional
+        GetParameters are query-string parameters passed to Vault on GET calls.
+        Each key may map to multiple values, matching HTTP query-string semantics.
+        Ignored for non-GET methods; use Parameters for write bodies.
     method : str, default is Undefined, optional
         Vault API method to use (GET/POST/other)
     parameters : any, default is Undefined, optional
@@ -1419,6 +1738,7 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     """
     allowEmptyResponse?: bool = False
     controller?: str
+    getParameters?: {str:[str]}
     method?: str
     parameters?: any
     path: str
@@ -1634,10 +1954,13 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
         in Vault, e.g: "cert"
     secretRef : GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef, default is Undefined, optional
         secret ref
+    vaultRole : str, default is Undefined, optional
+        VaultRole specifies the Vault role to use for TLS certificate authentication.
     """
     clientCert?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert
     path?: str = "cert"
     secretRef?: GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertSecretRef
+    vaultRole?: str
 
 schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDynamicSecretSpecProviderAuthCertClientCert:
     r"""
@@ -1781,8 +2104,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -1833,8 +2156,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -1906,8 +2229,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -2095,8 +2418,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -2216,8 +2539,8 @@ schema GeneratorsExternalSecretsIoV1alpha1ClusterGeneratorSpecGeneratorVaultDyna
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
