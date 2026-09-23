@@ -140,6 +140,8 @@ schema PostgresqlCnpgIoV1ClusterSpec:
         The UID of the `postgres` user inside the image, defaults to `26`
     postgresql : PostgresqlCnpgIoV1ClusterSpecPostgresql, default is Undefined, optional
         postgresql
+    primaryLease : PostgresqlCnpgIoV1ClusterSpecPrimaryLease, default is Undefined, optional
+        primary lease
     primaryUpdateMethod : str, default is "restart", optional
         Method to follow to upgrade the primary server during a rolling
         update procedure, after all replicas have been successfully updated:
@@ -246,6 +248,7 @@ schema PostgresqlCnpgIoV1ClusterSpec:
     postgresGID?: int = 26
     postgresUID?: int = 26
     postgresql?: PostgresqlCnpgIoV1ClusterSpecPostgresql
+    primaryLease?: PostgresqlCnpgIoV1ClusterSpecPrimaryLease
     primaryUpdateMethod?: "switchover" | "restart" = "restart"
     primaryUpdateStrategy?: "unsupervised" | "supervised" = "unsupervised"
     priorityClassName?: str
@@ -1361,7 +1364,7 @@ schema PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreData:
     compression : str, default is Undefined, optional
         Compress a backup file (a tar file per tablespace) while streaming it
         to the object store. Available options are empty string (no
-        compression, default), `gzip`, `bzip2`, and `snappy`.
+        compression, default), `gzip`, `bzip2`, `lz4`, and `snappy`.
     encryption : str, default is Undefined, optional
         Whenever to force the encryption of files (if the bucket is
         not already configured for that).
@@ -1376,12 +1379,28 @@ schema PostgresqlCnpgIoV1ClusterSpecBackupBarmanObjectStoreData:
     jobs : int, default is Undefined, optional
         The number of parallel jobs to be used to upload the backup, defaults
         to 2
+    restoreAdditionalCommandArgs : [str], default is Undefined, optional
+        Additional arguments that can be appended to the 'barman-cloud-restore'
+        command-line invocation. These arguments provide flexibility to customize
+        the data restore process further, according to specific requirements or
+        configurations.
+
+        Example:
+        In a scenario where specialized restore options are required, such as setting
+        a specific read timeout or defining custom behavior, users can use this field
+        to specify additional command arguments.
+
+        Note:
+        It's essential to ensure that the provided arguments are valid and supported
+        by the 'barman-cloud-restore' command, to avoid potential errors or unintended
+        behavior during execution.
     """
     additionalCommandArgs?: [str]
-    compression?: "bzip2" | "gzip" | "snappy"
+    compression?: "bzip2" | "gzip" | "lz4" | "snappy"
     encryption?: "AES256" | "aws:kms"
     immediateCheckpoint?: bool
     jobs?: int
+    restoreAdditionalCommandArgs?: [str]
 
     check:
         jobs >= 1 if jobs not in [None, Undefined]
@@ -1667,8 +1686,10 @@ schema PostgresqlCnpgIoV1ClusterSpecBootstrapInitdb:
         This option requires `localeProvider` to be set to `builtin`.
         Available from PostgreSQL 17.
     dataChecksums : bool, default is Undefined, optional
-        Whether the `-k` option should be passed to initdb,
-        enabling checksums on data pages (default: `false`)
+        Whether data checksums are enabled on data pages, to help detect
+        corruption by the I/O system that would otherwise be silent
+        (default: `false` before PostgreSQL 18, `true` from PostgreSQL 18 on,
+        matching the initdb default in each case).
     database : str, default is Undefined, optional
         Name of the database used by the application. Default: `app`.
     encoding : str, default is Undefined, optional
@@ -2408,7 +2429,8 @@ schema PostgresqlCnpgIoV1ClusterSpecEnvItems0ValueFromConfigMapKeyRef:
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -2617,8 +2639,8 @@ schema PostgresqlCnpgIoV1ClusterSpecEphemeralVolumeSourceVolumeClaimTemplateSpec
     * An existing PVC (PersistentVolumeClaim)
     If the provisioner or an external controller can support the specified data source,
     it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be
+    copied to dataSource when dataSourceRef.namespace is not specified.
     If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
@@ -2660,7 +2682,6 @@ schema PostgresqlCnpgIoV1ClusterSpecEphemeralVolumeSourceVolumeClaimTemplateSpec
       specified.
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
     (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
@@ -2971,7 +2992,7 @@ schema PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreData:
     compression : str, default is Undefined, optional
         Compress a backup file (a tar file per tablespace) while streaming it
         to the object store. Available options are empty string (no
-        compression, default), `gzip`, `bzip2`, and `snappy`.
+        compression, default), `gzip`, `bzip2`, `lz4`, and `snappy`.
     encryption : str, default is Undefined, optional
         Whenever to force the encryption of files (if the bucket is
         not already configured for that).
@@ -2986,12 +3007,28 @@ schema PostgresqlCnpgIoV1ClusterSpecExternalClustersItems0BarmanObjectStoreData:
     jobs : int, default is Undefined, optional
         The number of parallel jobs to be used to upload the backup, defaults
         to 2
+    restoreAdditionalCommandArgs : [str], default is Undefined, optional
+        Additional arguments that can be appended to the 'barman-cloud-restore'
+        command-line invocation. These arguments provide flexibility to customize
+        the data restore process further, according to specific requirements or
+        configurations.
+
+        Example:
+        In a scenario where specialized restore options are required, such as setting
+        a specific read timeout or defining custom behavior, users can use this field
+        to specify additional command arguments.
+
+        Note:
+        It's essential to ensure that the provided arguments are valid and supported
+        by the 'barman-cloud-restore' command, to avoid potential errors or unintended
+        behavior during execution.
     """
     additionalCommandArgs?: [str]
-    compression?: "bzip2" | "gzip" | "snappy"
+    compression?: "bzip2" | "gzip" | "lz4" | "snappy"
     encryption?: "AES256" | "aws:kms"
     immediateCheckpoint?: bool
     jobs?: int
+    restoreAdditionalCommandArgs?: [str]
 
     check:
         jobs >= 1 if jobs not in [None, Undefined]
@@ -3407,9 +3444,11 @@ schema PostgresqlCnpgIoV1ClusterSpecManagedRolesItems0:
     inRoles : [str], default is Undefined, optional
         List of one or more existing roles to which this role will be
         immediately added as a new member. Default empty.
+        Changes to the list are applied to an existing role through
+        `GRANT` and `REVOKE` statements, not only at role creation.
     inherit : bool, default is True, optional
         Whether a role "inherits" the privileges of roles it is a member of.
-        Defaults is `true`.
+        Default is `true`.
     login : bool, default is Undefined, optional
         Whether the role is allowed to log in. A role having the `login`
         attribute can be thought of as a user. Roles without this attribute
@@ -3455,8 +3494,10 @@ schema PostgresqlCnpgIoV1ClusterSpecManagedRolesItems0:
 
 schema PostgresqlCnpgIoV1ClusterSpecManagedRolesItems0PasswordSecret:
     r"""
-    Secret containing the password of the role (if present)
-    If null, the password will be ignored unless DisablePassword is set
+    Secret containing the password of the role (if present).
+    If null, the password will be ignored unless DisablePassword is set.
+    When set, the secret must follow the `kubernetes.io/basic-auth` format
+    and contain both a `username` and a `password` field.
 
     Attributes
     ----------
@@ -3973,6 +4014,9 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorMetricRelabelingsItems0:
     sourceLabels?: [str]
     targetLabel?: str
 
+    check:
+        modulus >= 0 if modulus not in [None, Undefined]
+
 schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0:
     r"""
     RelabelConfig allows dynamic rewriting of the label set for targets, alerts,
@@ -4021,6 +4065,9 @@ schema PostgresqlCnpgIoV1ClusterSpecMonitoringPodMonitorRelabelingsItems0:
     separator?: str
     sourceLabels?: [str]
     targetLabel?: str
+
+    check:
+        modulus >= 0 if modulus not in [None, Undefined]
 
 schema PostgresqlCnpgIoV1ClusterSpecMonitoringTLS:
     r"""
@@ -4139,11 +4186,8 @@ schema PostgresqlCnpgIoV1ClusterSpecPodSecurityContext:
         Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes
         whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their
         CSIDriver instance. Other volumes are always re-labelled recursively.
-        "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
 
-        If not specified and SELinuxMount feature gate is enabled, "MountOption" is used.
-        If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes
-        and "Recursive" for all other volumes.
+        If not specified, "MountOption" is used.
 
         This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
 
@@ -4444,7 +4488,9 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0:
     ld_library_path : [str], default is Undefined, optional
         The list of directories inside the image which should be added to ld_library_path.
     name : str, default is Undefined, required
-        The name of the extension, required
+        The name of the extension, required. The limit of 59 characters
+        leaves room for the prefix the operator adds when deriving the
+        extension's Kubernetes Volume name (capped at 63 characters).
     """
     bin_path?: [str]
     dynamic_library_path?: [str]
@@ -4455,6 +4501,7 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresqlExtensionsItems0:
     name: str
 
     check:
+        len(name) <= 59
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$")
 
@@ -4660,6 +4707,46 @@ schema PostgresqlCnpgIoV1ClusterSpecPostgresqlSynchronous:
     standbyNamesPost?: [str]
     standbyNamesPre?: [str]
 
+schema PostgresqlCnpgIoV1ClusterSpecPrimaryLease:
+    r"""
+    Configuration of the Kubernetes `Lease` used to coordinate safe primary
+    election within the cluster. When omitted, the operator applies built-in
+    defaults; tune these values only if you understand the consequences for
+    failover timing.
+
+    Attributes
+    ----------
+    leaseDurationSeconds : int, default is 15, optional
+        How long, in seconds, the primary lease is considered valid before it
+        expires and another instance may acquire it. It must be greater than
+        `renewDeadlineSeconds`.
+        Defaults to 15.
+    releasedLeaseDurationSeconds : int, default is 1, optional
+        The TTL, in seconds, written when the primary explicitly releases the
+        lease on a clean shutdown, allowing a replica to promote without waiting
+        for the full lease duration to expire.
+        Defaults to 1.
+    renewDeadlineSeconds : int, default is 10, optional
+        How long, in seconds, the current primary keeps retrying to renew the
+        lease before giving up and stopping. It must be smaller than
+        `leaseDurationSeconds`.
+        Defaults to 10.
+    retryPeriodSeconds : int, default is 2, optional
+        How frequently, in seconds, a non-holder instance retries acquiring or
+        renewing the lease.
+        Defaults to 2.
+    """
+    leaseDurationSeconds?: int = 15
+    releasedLeaseDurationSeconds?: int = 1
+    renewDeadlineSeconds?: int = 10
+    retryPeriodSeconds?: int = 2
+
+    check:
+        leaseDurationSeconds >= 1 if leaseDurationSeconds not in [None, Undefined]
+        releasedLeaseDurationSeconds >= 1 if releasedLeaseDurationSeconds not in [None, Undefined]
+        renewDeadlineSeconds >= 1 if renewDeadlineSeconds not in [None, Undefined]
+        retryPeriodSeconds >= 1 if retryPeriodSeconds not in [None, Undefined]
+
 schema PostgresqlCnpgIoV1ClusterSpecProbes:
     r"""
     The configuration of the probes to be injected
@@ -4725,10 +4812,12 @@ schema PostgresqlCnpgIoV1ClusterSpecProbesLiveness:
 schema PostgresqlCnpgIoV1ClusterSpecProbesLivenessIsolationCheck:
     r"""
     Configure the feature that extends the liveness probe for a primary
-    instance. In addition to the basic checks, this verifies whether the
+    instance. In addition to the basic checks, this reports whether the
     primary is isolated from the Kubernetes API server and from its
-    replicas, ensuring that it can be safely shut down if network
-    partition or API unavailability is detected. Enabled by default.
+    replicas, so the kubelet restarts it through the normal
+    container-termination path (a smart shutdown, bounded by
+    `.spec.smartShutdownTimeout`) when a network partition or API
+    unavailability is detected. Enabled by default.
 
     Attributes
     ----------
@@ -4857,11 +4946,16 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplate:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     sources : [PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0], default is Undefined, optional
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
     defaultMode?: int
+    defaultUser?: int
     sources?: [PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0]
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0:
@@ -4926,6 +5020,10 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ClusterT
         Select all ClusterTrustBundles that match this signer name.
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     labelSelector?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -4933,6 +5031,7 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ClusterT
     path: str
 
     signerName?: str
+    user?: int
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -5024,11 +5123,17 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ConfigMa
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPI:
     r"""
@@ -5060,12 +5165,17 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Downward
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -5192,6 +5302,10 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCerti
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     userAnnotations : {str:str}, default is Undefined, optional
         userAnnotations allow pod authors to pass additional information to
         the signer implementation.  Kubernetes does not restrict or validate this
@@ -5215,6 +5329,7 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0PodCerti
     maxExpirationSeconds?: int
     signerName: str
 
+    user?: int
     userAnnotations?: {str:str}
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0Secret:
@@ -5264,11 +5379,17 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0SecretIt
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ServiceAccountToken:
     r"""
@@ -5291,10 +5412,16 @@ schema PostgresqlCnpgIoV1ClusterSpecProjectedVolumeTemplateSourcesItems0ServiceA
     path : str, default is Undefined, required
         path is the path relative to the mount point of the file to project the
         token into.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     audience?: str
     expirationSeconds?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1ClusterSpecReplica:
     r"""
@@ -5508,7 +5635,6 @@ schema PostgresqlCnpgIoV1ClusterSpecSecurityContext:
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -5786,8 +5912,8 @@ schema PostgresqlCnpgIoV1ClusterSpecStoragePvcTemplateDataSource:
     * An existing PVC (PersistentVolumeClaim)
     If the provisioner or an external controller can support the specified data source,
     it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be
+    copied to dataSource when dataSourceRef.namespace is not specified.
     If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
@@ -5829,7 +5955,6 @@ schema PostgresqlCnpgIoV1ClusterSpecStoragePvcTemplateDataSourceRef:
       specified.
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
     (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
@@ -6048,8 +6173,8 @@ schema PostgresqlCnpgIoV1ClusterSpecTablespacesItems0StoragePvcTemplateDataSourc
     * An existing PVC (PersistentVolumeClaim)
     If the provisioner or an external controller can support the specified data source,
     it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be
+    copied to dataSource when dataSourceRef.namespace is not specified.
     If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
@@ -6091,7 +6216,6 @@ schema PostgresqlCnpgIoV1ClusterSpecTablespacesItems0StoragePvcTemplateDataSourc
       specified.
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
     (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
@@ -6417,8 +6541,8 @@ schema PostgresqlCnpgIoV1ClusterSpecWalStoragePvcTemplateDataSource:
     * An existing PVC (PersistentVolumeClaim)
     If the provisioner or an external controller can support the specified data source,
     it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be
+    copied to dataSource when dataSourceRef.namespace is not specified.
     If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
@@ -6460,7 +6584,6 @@ schema PostgresqlCnpgIoV1ClusterSpecWalStoragePvcTemplateDataSourceRef:
       specified.
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
     (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
@@ -6629,10 +6752,16 @@ schema PostgresqlCnpgIoV1ClusterStatus:
         Deprecated: the field is not set for backup plugins.
     latestGeneratedNode : int, default is Undefined, optional
         ID of the latest generated node (used to avoid node name clashing)
+
+        Deprecated: this field is not set anymore
     managedRolesStatus : PostgresqlCnpgIoV1ClusterStatusManagedRolesStatus, default is Undefined, optional
         managed roles status
     onlineUpdateEnabled : bool, default is Undefined, optional
         OnlineUpdateEnabled shows if the online upgrade is enabled inside the cluster
+    operatorCertificateFingerprint : str, default is Undefined, optional
+        OperatorCertificateFingerprint is the SHA256 fingerprint of the operator's
+        in-memory client certificate public key. The instance manager pins this
+        fingerprint to authenticate requests from the operator.
     pgDataImageInfo : PostgresqlCnpgIoV1ClusterStatusPgDataImageInfo, default is Undefined, optional
         pg data image info
     phase : str, default is Undefined, optional
@@ -6656,12 +6785,19 @@ schema PostgresqlCnpgIoV1ClusterStatus:
         List of all the PVCs that have ResizingPVC condition.
     secretsResourceVersion : PostgresqlCnpgIoV1ClusterStatusSecretsResourceVersion, default is Undefined, optional
         secrets resource version
+    selector : str, default is Undefined, optional
+        Selector is the serialized form of the label selector that identifies
+        the pods managed by this cluster. Populated by the operator and exposed
+        through the scale sub-resource so an autoscaler (such as HPA or VPA)
+        can discover the managed instance pods.
     switchReplicaClusterStatus : PostgresqlCnpgIoV1ClusterStatusSwitchReplicaClusterStatus, default is Undefined, optional
         switch replica cluster status
     systemID : str, default is Undefined, optional
         SystemID is the latest detected PostgreSQL SystemID
     tablespacesStatus : [PostgresqlCnpgIoV1ClusterStatusTablespacesStatusItems0], default is Undefined, optional
         TablespacesStatus reports the state of the declarative tablespaces in the cluster
+    targetPgDataImageInfo : PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfo, default is Undefined, optional
+        target pg data image info
     targetPrimary : str, default is Undefined, optional
         Target primary instance, this is different from the previous one
         during a switchover or a failover
@@ -6704,6 +6840,7 @@ schema PostgresqlCnpgIoV1ClusterStatus:
     latestGeneratedNode?: int
     managedRolesStatus?: PostgresqlCnpgIoV1ClusterStatusManagedRolesStatus
     onlineUpdateEnabled?: bool
+    operatorCertificateFingerprint?: str
     pgDataImageInfo?: PostgresqlCnpgIoV1ClusterStatusPgDataImageInfo
     phase?: str
     phaseReason?: str
@@ -6715,9 +6852,11 @@ schema PostgresqlCnpgIoV1ClusterStatus:
     readyInstances?: int
     resizingPVC?: [str]
     secretsResourceVersion?: PostgresqlCnpgIoV1ClusterStatusSecretsResourceVersion
+    selector?: str
     switchReplicaClusterStatus?: PostgresqlCnpgIoV1ClusterStatusSwitchReplicaClusterStatus
     systemID?: str
     tablespacesStatus?: [PostgresqlCnpgIoV1ClusterStatusTablespacesStatusItems0]
+    targetPgDataImageInfo?: PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfo
     targetPrimary?: str
     targetPrimaryTimestamp?: str
     timelineID?: int
@@ -6877,8 +7016,10 @@ schema PostgresqlCnpgIoV1ClusterStatusManagedRolesStatus:
     byStatus : {str:[str]}, default is Undefined, optional
         ByStatus gives the list of roles in each state
     cannotReconcile : {str:[str]}, default is Undefined, optional
-        CannotReconcile lists roles that cannot be reconciled in PostgreSQL,
-        with an explanation of the cause
+        CannotReconcile lists roles that cannot be reconciled, with an
+        explanation of the cause. Failures may originate in PostgreSQL
+        (e.g. dropping a role that owns objects) or in Kubernetes (e.g.
+        the referenced password Secret cannot be fetched).
     passwordStatus : {str:PostgresqlCnpgIoV1ClusterStatusManagedRolesStatusPasswordStatusAnon}, default is Undefined, optional
         PasswordStatus gives the last transaction id and password secret version for each managed role
     """
@@ -6945,7 +7086,9 @@ schema PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0:
     ld_library_path : [str], default is Undefined, optional
         The list of directories inside the image which should be added to ld_library_path.
     name : str, default is Undefined, required
-        The name of the extension, required
+        The name of the extension, required. The limit of 59 characters
+        leaves room for the prefix the operator adds when deriving the
+        extension's Kubernetes Volume name (capped at 63 characters).
     """
     bin_path?: [str]
     dynamic_library_path?: [str]
@@ -6956,6 +7099,7 @@ schema PostgresqlCnpgIoV1ClusterStatusPgDataImageInfoExtensionsItems0:
     name: str
 
     check:
+        len(name) <= 59
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$")
 
@@ -7028,6 +7172,9 @@ schema PostgresqlCnpgIoV1ClusterStatusPluginStatusItems0:
     operatorCapabilities : [str], default is Undefined, optional
         OperatorCapabilities are the list of capabilities of the
         plugin regarding the reconciler
+    postgresCapabilities : [str], default is Undefined, optional
+        PostgresCapabilities are the list of capabilities of the
+        plugin regarding the PostgreSQL configuration
     restoreJobHookCapabilities : [str], default is Undefined, optional
         RestoreJobHookCapabilities are the list of capabilities of the
         plugin regarding the RestoreJobHook management
@@ -7045,6 +7192,7 @@ schema PostgresqlCnpgIoV1ClusterStatusPluginStatusItems0:
     name: str
 
     operatorCapabilities?: [str]
+    postgresCapabilities?: [str]
     restoreJobHookCapabilities?: [str]
     status?: str
     version: str
@@ -7164,6 +7312,122 @@ schema PostgresqlCnpgIoV1ClusterStatusTablespacesStatusItems0:
 
     owner?: str
     state: str
+
+schema PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfo:
+    r"""
+    TargetPGDataImageInfo contains the details of the target image for an
+    in-progress major upgrade. It is set before the upgrade Job is created,
+    and cleared on successful completion or when the upgrade is rolled back.
+
+    Attributes
+    ----------
+    extensions : [PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0], default is Undefined, optional
+        Extensions contains the container image extensions available for the current Image
+    image : str, default is Undefined, required
+        Image is the image name
+    majorVersion : int, default is Undefined, required
+        MajorVersion is the major version of the image
+    """
+    extensions?: [PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0]
+    image: str
+
+    majorVersion: int
+
+schema PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0:
+    r"""
+    ExtensionConfiguration is the configuration used to add
+    PostgreSQL extensions to the Cluster.
+
+    Attributes
+    ----------
+    bin_path : [str], default is Undefined, optional
+        A list of directories within the image to be appended to the
+        PostgreSQL process's `PATH` environment variable.
+    dynamic_library_path : [str], default is Undefined, optional
+        The list of directories inside the image which should be added to dynamic_library_path.
+        If not defined, defaults to "/lib".
+    env : [PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0EnvItems0], default is Undefined, optional
+        Env is a list of custom environment variables to be set in the
+        PostgreSQL process for this extension. It is the responsibility of the
+        cluster administrator to ensure the variables are correct for the
+        specific extension. Note that changes to these variables require
+        a manual cluster restart to take effect.
+    extension_control_path : [str], default is Undefined, optional
+        The list of directories inside the image which should be added to extension_control_path.
+        If not defined, defaults to "/share".
+    image : PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0Image, default is Undefined, optional
+        image
+    ld_library_path : [str], default is Undefined, optional
+        The list of directories inside the image which should be added to ld_library_path.
+    name : str, default is Undefined, required
+        The name of the extension, required. The limit of 59 characters
+        leaves room for the prefix the operator adds when deriving the
+        extension's Kubernetes Volume name (capped at 63 characters).
+    """
+    bin_path?: [str]
+    dynamic_library_path?: [str]
+    env?: [PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0EnvItems0]
+    extension_control_path?: [str]
+    image?: PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0Image
+    ld_library_path?: [str]
+    name: str
+
+    check:
+        len(name) <= 59
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$")
+
+schema PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0EnvItems0:
+    r"""
+    ExtensionEnvVar defines an environment variable for a specific extension
+    image volume.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the environment variable to be injected into the
+        PostgreSQL process.
+    value : str, default is Undefined, required
+        Value of the environment variable. CloudNativePG performs a direct
+        replacement of this value, with support for placeholder expansion.
+        The ${`image_root`} placeholder resolves to the absolute mount path
+        of the extension's volume (e.g., `/extensions/my-extension`). This
+        is particularly useful for allowing applications or libraries to
+        locate specific directories within the mounted image.
+        Unrecognized placeholders are rejected. To include a literal ${...}
+        in the value, escape it as $${...}.
+    """
+    name: str
+
+    value: str
+
+    check:
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-zA-Z_][a-zA-Z0-9_]*$")
+        len(value) >= 1
+
+schema PostgresqlCnpgIoV1ClusterStatusTargetPgDataImageInfoExtensionsItems0Image:
+    r"""
+    The image containing the extension.
+
+    Attributes
+    ----------
+    pullPolicy : str, default is Undefined, optional
+        Policy for pulling OCI objects. Possible values are:
+        Always: the kubelet always attempts to pull the reference. Container creation will fail If the pull fails.
+        Never: the kubelet never pulls the reference and only uses a local image or artifact. Container creation will fail if the reference isn't present.
+        IfNotPresent: the kubelet pulls if the reference isn't already present on disk. Container creation will fail if the reference isn't present and the pull fails.
+        Defaults to Always if :latest tag is specified, or IfNotPresent otherwise.
+    reference : str, default is Undefined, optional
+        Required: Image or artifact reference to be used.
+        Behaves in the same way as pod.spec.containers[*].image.
+        Pull secrets will be assembled in the same way as for the container image by looking up node credentials, SA image pull secrets, and pod spec image pull secrets.
+        More info: https://kubernetes.io/docs/concepts/containers/images
+        This field is optional to allow higher level config management to default or override
+        container images in workload controllers like Deployments and StatefulSets.
+    """
+    pullPolicy?: str
+    reference?: str
 
 schema PostgresqlCnpgIoV1ClusterStatusTopology:
     r"""

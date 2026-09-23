@@ -38,14 +38,38 @@ schema PostgresqlCnpgIoV1ImageCatalogSpec:
 
     Attributes
     ----------
+    componentImages : [PostgresqlCnpgIoV1ImageCatalogSpecComponentImagesItems0], default is Undefined, optional
+        ComponentImages is a list of named images for components other than PostgreSQL
+        (e.g. pgbouncer). Keys must be unique within a catalog.
     images : [PostgresqlCnpgIoV1ImageCatalogSpecImagesItems0], default is Undefined, required
         List of CatalogImages available in the catalog
     """
+    componentImages?: [PostgresqlCnpgIoV1ImageCatalogSpecComponentImagesItems0]
     images: [PostgresqlCnpgIoV1ImageCatalogSpecImagesItems0]
 
     check:
+        len(componentImages) <= 32 if componentImages
         len(images) >= 1
         len(images) <= 8
+
+schema PostgresqlCnpgIoV1ImageCatalogSpecComponentImagesItems0:
+    r"""
+    CatalogComponentImage is a named image entry for a non-PostgreSQL component.
+
+    Attributes
+    ----------
+    image : str, default is Undefined, required
+        Image is the container image reference.
+    key : str, default is Undefined, required
+        Key is the unique identifier for this image within the catalog.
+    """
+    image: str
+
+    key: str
+
+    check:
+        len(key) <= 63
+        _regex_match(str(key), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
 
 schema PostgresqlCnpgIoV1ImageCatalogSpecImagesItems0:
     r"""
@@ -95,7 +119,9 @@ schema PostgresqlCnpgIoV1ImageCatalogSpecImagesItems0ExtensionsItems0:
     ld_library_path : [str], default is Undefined, optional
         The list of directories inside the image which should be added to ld_library_path.
     name : str, default is Undefined, required
-        The name of the extension, required
+        The name of the extension, required. The limit of 59 characters
+        leaves room for the prefix the operator adds when deriving the
+        extension's Kubernetes Volume name (capped at 63 characters).
     """
     bin_path?: [str]
     dynamic_library_path?: [str]
@@ -106,6 +132,7 @@ schema PostgresqlCnpgIoV1ImageCatalogSpecImagesItems0ExtensionsItems0:
     name: str
 
     check:
+        len(name) <= 59
         len(name) >= 1
         _regex_match(str(name), r"^[a-z0-9]([-a-z0-9_]*[a-z0-9])?$")
 

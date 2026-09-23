@@ -148,6 +148,8 @@ schema PostgresqlCnpgIoV1ScheduledBackupStatus:
 
     Attributes
     ----------
+    error : str, default is Undefined, optional
+        Error is the latest admission validation error
     lastCheckTime : str, default is Undefined, optional
         The latest time the schedule
     lastScheduleTime : str, default is Undefined, optional
@@ -155,6 +157,7 @@ schema PostgresqlCnpgIoV1ScheduledBackupStatus:
     nextScheduleTime : str, default is Undefined, optional
         Next time we will run a backup
     """
+    error?: str
     lastCheckTime?: str
     lastScheduleTime?: str
     nextScheduleTime?: str
