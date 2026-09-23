@@ -145,21 +145,30 @@ schema PostgresqlCnpgIoV1PoolerSpecMonitoring:
     r"""
     The configuration of the monitoring infrastructure of this pooler.
 
-    Deprecated: This feature will be removed in an upcoming release. If
-    you need this functionality, you can create a PodMonitor manually.
-
     Attributes
     ----------
     enablePodMonitor : bool, default is Undefined, optional
         Enable or disable the `PodMonitor`
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     podMonitorMetricRelabelings : [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0], default is Undefined, optional
         The list of metric relabelings for the `PodMonitor`. Applied to samples before ingestion.
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
     podMonitorRelabelings : [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0], default is Undefined, optional
         The list of relabelings for the `PodMonitor`. Applied to samples before scraping.
+
+        Deprecated: This feature will be removed in an upcoming release. If
+        you need this functionality, you can create a PodMonitor manually.
+    tls : PostgresqlCnpgIoV1PoolerSpecMonitoringTLS, default is Undefined, optional
+        tls
     """
     enablePodMonitor?: bool = False
     podMonitorMetricRelabelings?: [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0]
     podMonitorRelabelings?: [PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0]
+    tls?: PostgresqlCnpgIoV1PoolerSpecMonitoringTLS
 
 schema PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0:
     r"""
@@ -210,6 +219,9 @@ schema PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorMetricRelabelingsItems0:
     sourceLabels?: [str]
     targetLabel?: str
 
+    check:
+        modulus >= 0 if modulus not in [None, Undefined]
+
 schema PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0:
     r"""
     RelabelConfig allows dynamic rewriting of the label set for targets, alerts,
@@ -259,6 +271,22 @@ schema PostgresqlCnpgIoV1PoolerSpecMonitoringPodMonitorRelabelingsItems0:
     sourceLabels?: [str]
     targetLabel?: str
 
+    check:
+        modulus >= 0 if modulus not in [None, Undefined]
+
+schema PostgresqlCnpgIoV1PoolerSpecMonitoringTLS:
+    r"""
+    Configure TLS communication for the metrics endpoint.
+    Changing tls.enabled option will force a rollout of all instances.
+
+    Attributes
+    ----------
+    enabled : bool, default is Undefined, optional
+        Enable TLS for the monitoring endpoint.
+        Changing this option will force a rollout of all instances.
+    """
+    enabled?: bool = False
+
 schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
     r"""
     The PgBouncer configuration
@@ -276,6 +304,12 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
         client c a secret
     clientTLSSecret : PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret, default is Undefined, optional
         client TLS secret
+    image : str, default is Undefined, optional
+        Image is the pgbouncer container image to use. When set, it takes
+        precedence over ImageCatalogRef and the operator default, but is
+        overridden by an explicit image set in the pod template.
+    imageCatalogRef : PostgresqlCnpgIoV1PoolerSpecPgbouncerImageCatalogRef, default is Undefined, optional
+        image catalog ref
     parameters : {str:str}, default is Undefined, optional
         Additional parameters to be passed to PgBouncer - please check
         the CNPG documentation for a list of options you can configure
@@ -298,6 +332,8 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncer:
     authQuerySecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerAuthQuerySecret
     clientCASecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientCASecret
     clientTLSSecret?: PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret
+    image?: str
+    imageCatalogRef?: PostgresqlCnpgIoV1PoolerSpecPgbouncerImageCatalogRef
     parameters?: {str:str}
     paused?: bool = False
     pg_hba?: [str]
@@ -344,6 +380,35 @@ schema PostgresqlCnpgIoV1PoolerSpecPgbouncerClientTLSSecret:
         Name of the referent.
     """
     name: str
+
+schema PostgresqlCnpgIoV1PoolerSpecPgbouncerImageCatalogRef:
+    r"""
+    ImageCatalogRef points to an entry in an ImageCatalog or ClusterImageCatalog.
+    Mutually exclusive with Image.
+
+    Attributes
+    ----------
+    apiGroup : str, default is Undefined, optional
+        APIGroup is the group for the resource being referenced.
+        If APIGroup is not specified, the specified Kind must be in the core API group.
+        For any other third-party types, APIGroup is required.
+    key : str, default is Undefined, required
+        Key identifies the entry within the catalog's componentImages list.
+    kind : str, default is Undefined, required
+        Kind is the type of resource being referenced
+    name : str, default is Undefined, required
+        Name is the name of resource being referenced
+    """
+    apiGroup?: str
+    key: str
+
+    kind: str
+
+    name: str
+
+    check:
+        len(key) <= 63
+        _regex_match(str(key), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$")
 
 schema PostgresqlCnpgIoV1PoolerSpecPgbouncerServerCASecret:
     r"""
@@ -790,6 +855,22 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         pod to perform user-initiated actions such as debugging. This list cannot be specified when
         creating a pod, and it cannot be modified by updating the pod spec. In order to add an
         ephemeral container to an existing pod, use the pod's ephemeralcontainers subresource.
+    evictionResponders : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecEvictionRespondersItems0], default is Undefined, optional
+        evictionResponders reference responders that react to Evictions based on EvictionRequests.
+        Responders should observe and communicate through the Eviction Resource API to help with
+        the graceful termination of a pod. The responders are selected sequentially, according to
+        their specified priority.
+
+        Responders should periodically report on an eviction progress by updating the
+        .status.responders[].heartbeatTime field of the Eviction object. If this field is not updated
+        within the heartbeat deadline defined by the Eviction API (currently 20 minutes), the eviction
+        is passed over to the next responder with a lower priority. If there is no other responder,
+        the last default imperative-eviction.k8s.io/evictor responder with a priority of 100 will
+        evict the pod using the imperative Eviction API (pods/<name>/eviction subresource).
+
+        The maximum length of the responders list is 10.
+        Responders are not supported when the pod is part of a PodGroup (.spec.schedulingGroup is set).
+        This field can only be set on creation and is immutable afterwards.
     hostAliases : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecHostAliasesItems0], default is Undefined, optional
         HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
         file if specified.
@@ -814,7 +895,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         When set to false, a new userns is created for the pod. Setting false is useful for
         mitigating container breakout vulnerabilities even allowing users to run their
         containers as root without actually having root privileges on the host.
-        This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.
     hostname : str, default is Undefined, optional
         Specifies the hostname of the Pod
         If not specified, the pod's hostname will be set to a system-defined value.
@@ -828,7 +908,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         - `hostNetwork` must be set to false.
 
         This field must be a valid DNS subdomain as defined in RFC 1123 and contain at most 64 characters.
-        Requires the HostnameOverride feature gate to be enabled.
     imagePullSecrets : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecImagePullSecretsItems0], default is Undefined, optional
         ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
         If specified, these secrets will be passed to individual puller implementations for them to use.
@@ -870,6 +949,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     preemptionPolicy : str, default is Undefined, optional
         PreemptionPolicy is the Policy for preempting pods with lower priority.
         One of Never, PreemptLowerPriority.
+        When Priority Admission Controller is enabled, it prevents users from setting
+        this field. The admission controller populates this field from PriorityClassName.
         Defaults to PreemptLowerPriority if unset.
     priority : int, default is Undefined, optional
         The priority value. Various system components use this field to find the
@@ -921,6 +1002,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
         scheduler will not attempt to schedule the pod.
 
         SchedulingGates can only be set at pod creation time, and be removed only afterwards.
+    schedulingGroup : PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGroup, default is Undefined, optional
+        scheduling group
     securityContext : PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccount : str, default is Undefined, optional
@@ -962,8 +1045,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     volumes : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0], default is Undefined, optional
         List of volumes that can be mounted by containers belonging to the pod.
         More info: https://kubernetes.io/docs/concepts/storage/volumes
-    workloadRef : PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef, default is Undefined, optional
-        workload ref
     """
     activeDeadlineSeconds?: int
     affinity?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecAffinity
@@ -974,6 +1055,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     dnsPolicy?: str
     enableServiceLinks?: bool
     ephemeralContainers?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0]
+    evictionResponders?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecEvictionRespondersItems0]
     hostAliases?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecHostAliasesItems0]
     hostIPC?: bool
     hostNetwork?: bool
@@ -997,6 +1079,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     runtimeClassName?: str
     schedulerName?: str
     schedulingGates?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGatesItems0]
+    schedulingGroup?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGroup
     securityContext?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext
     serviceAccount?: str
     serviceAccountName?: str
@@ -1007,7 +1090,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpec:
     tolerations?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecTolerationsItems0]
     topologySpreadConstraints?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecTopologySpreadConstraintsItems0]
     volumes?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0]
-    workloadRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef
 
     check:
         all _, overhead in overhead {_regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead} if overhead
@@ -2118,7 +2200,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0EnvItems0ValueFro
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -2298,6 +2381,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LifecyclePostStar
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2307,6 +2393,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LifecyclePostStar
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -2414,6 +2501,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LifecyclePreStopH
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2423,6 +2513,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LifecyclePreStopH
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -2547,6 +2638,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LivenessProbeGrpc
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2555,6 +2651,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LivenessProbeGrpc
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2576,6 +2673,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LivenessProbeHTTP
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2585,6 +2685,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LivenessProbeHTTP
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -2727,6 +2828,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0ReadinessProbeGrp
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2735,6 +2841,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0ReadinessProbeGrp
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2756,6 +2863,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0ReadinessProbeHTT
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2765,6 +2875,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0ReadinessProbeHTT
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -2935,7 +3046,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0SecurityContext:
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -3179,6 +3289,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0StartupProbeGrpc:
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -3187,6 +3302,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0StartupProbeGrpc:
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -3208,6 +3324,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0StartupProbeHTTPG
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3217,6 +3336,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0StartupProbeHTTPG
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -3272,9 +3392,15 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0VolumeMountsItems
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
+        This field is not supported with image volumes.
+        This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -3313,6 +3439,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecContainersItems0VolumeMountsItems
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -3629,7 +3756,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0EnvItems
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -3808,6 +3936,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Lifecycl
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3817,6 +3948,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Lifecycl
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -3924,6 +4056,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Lifecycl
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3933,6 +4068,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Lifecycl
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -4054,6 +4190,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Liveness
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -4062,6 +4203,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Liveness
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -4083,6 +4225,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Liveness
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4092,6 +4237,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Liveness
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -4231,6 +4377,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Readines
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -4239,6 +4390,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Readines
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -4260,6 +4412,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Readines
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4269,6 +4424,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Readines
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -4437,7 +4593,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0Security
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -4675,6 +4830,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0StartupP
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -4683,6 +4843,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0StartupP
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -4704,6 +4865,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0StartupP
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4713,6 +4877,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0StartupP
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -4768,9 +4933,15 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0VolumeMo
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
+        This field is not supported with image volumes.
+        This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -4809,6 +4980,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0VolumeMo
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -4818,6 +4990,39 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEphemeralContainersItems0VolumeMo
     recursiveReadOnly?: str
     subPath?: str
     subPathExpr?: str
+
+schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecEvictionRespondersItems0:
+    r"""
+    EvictionResponder allows you to specify the responder reacting to an Eviction.
+    Responders should observe and communicate through the Eviction Resource API to help with
+    the graceful eviction of a target (e.g. termination of a pod).
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        name allows you to identify the responder responding to the Eviction.
+
+        It must be a valid domain-prefixed key (such as "acme.io/foo").
+        Domain names *.k8s.io and *.kubernetes.io are reserved.
+        This field must be unique for each responder.
+        This field is required.
+    priority : int, default is Undefined, required
+        priority for this responder. Higher priorities are selected first by the evictionrequest-controller.
+        If there are responders with the same priority, the responder whose domain name comes first in the
+        alphabetical higher domain order, will be picked. This means that the top domain labels are compared
+        alphabetically first, followed by the lower domain labels. The key is compared last.
+
+        The responder that is the managing controller of the pod should set the value of
+        this field to 10000 to allow both for preemption or fallback registration by other
+        responders.
+
+        The minimum value is 0 and the maximum value is 100000.
+        The interval 0-999 is reserved for responders with *.k8s.io suffix.
+        This field is required.
+    """
+    name: str
+
+    priority: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecHostAliasesItems0:
     r"""
@@ -5130,7 +5335,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0EnvItems0Valu
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -5310,6 +5516,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LifecyclePost
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5319,6 +5528,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LifecyclePost
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -5426,6 +5636,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LifecyclePreS
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5435,6 +5648,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LifecyclePreS
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -5559,6 +5773,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LivenessProbe
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -5567,6 +5786,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LivenessProbe
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -5588,6 +5808,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LivenessProbe
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5597,6 +5820,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LivenessProbe
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -5739,6 +5963,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0ReadinessProb
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -5747,6 +5976,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0ReadinessProb
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -5768,6 +5998,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0ReadinessProb
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5777,6 +6010,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0ReadinessProb
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -5947,7 +6181,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0SecurityConte
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -6191,6 +6424,11 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0StartupProbeG
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -6199,6 +6437,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0StartupProbeG
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -6220,6 +6459,9 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0StartupProbeH
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -6229,6 +6471,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0StartupProbeH
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -6284,9 +6527,15 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0VolumeMountsI
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
+        This field is not supported with image volumes.
+        This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -6325,6 +6574,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecInitContainersItems0VolumeMountsI
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -6400,6 +6650,14 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecResourceClaimsItems0:
     It adds a name to it that uniquely identifies the ResourceClaim inside the Pod.
     Containers that need access to the ResourceClaim reference it with this name.
 
+    When the DRAWorkloadResourceClaims feature gate is enabled and this Pod
+    belongs to a PodGroup, a PodResourceClaim is matched to a
+    PodGroupResourceClaim if all of their fields are equal (Name,
+    ResourceClaimName, and ResourceClaimTemplateName). A matched claim references
+    a single ResourceClaim shared across all Pods in the PodGroup, reserved for
+    the PodGroup in ResourceClaimStatus.ReservedFor rather than for individual
+    Pods.
+
     Attributes
     ----------
     name : str, default is Undefined, required
@@ -6420,6 +6678,16 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecResourceClaimsItems0:
         will also be deleted. The pod name and resource name, along with a
         generated component, will be used to form a unique name for the
         ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
+
+        When the DRAWorkloadResourceClaims feature gate is enabled and the pod
+        belongs to a PodGroup that defines a PodGroupResourceClaim with the same
+        Name and ResourceClaimTemplateName, this PodResourceClaim resolves to the
+        ResourceClaim generated for the PodGroup. All pods in the group that
+        define an equivalent PodResourceClaim matching the
+        PodGroupResourceClaim's Name and ResourceClaimTemplateName share the same
+        generated ResourceClaim. ResourceClaims generated for a PodGroup are
+        owned by the PodGroup and their lifecycles are tied to the PodGroup
+        instead of any individual pod.
 
         This field is immutable and no changes will be made to the
         corresponding ResourceClaim by the control plane after creating the
@@ -6503,6 +6771,30 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGatesItems0:
     """
     name: str
 
+schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSchedulingGroup:
+    r"""
+    SchedulingGroup provides a reference to the immediate scheduling runtime
+    grouping object that this Pod belongs to.
+    This field is used by the scheduler to identify the group and apply the
+    correct group scheduling policies. The association with a group also
+    impacts other lifecycle aspects of a Pod that are relevant in a wider context
+    of scheduling like preemption, resource attachment, etc. If not specified,
+    the Pod is treated as a single unit in all of these aspects.
+    The group object referenced by this field may not exist at the time the
+    Pod is created.
+    This field is immutable, but a group object with the same name may be
+    recreated with different policies. Doing this during pod scheduling
+    may result in the placement not conforming to the expected policies.
+
+    Attributes
+    ----------
+    podGroupName : str, default is Undefined, optional
+        PodGroupName specifies the name of the standalone PodGroup object
+        that represents the runtime instance of this group.
+        Must be a DNS subdomain.
+    """
+    podGroupName?: str
+
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext:
     r"""
     SecurityContext holds pod-level security attributes and common container settings.
@@ -6566,11 +6858,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecSecurityContext:
         Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes
         whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their
         CSIDriver instance. Other volumes are always re-labelled recursively.
-        "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
 
-        If not specified and SELinuxMount feature gate is enabled, "MountOption" is used.
-        If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes
-        and "Recursive" for all other volumes.
+        If not specified, "MountOption" is used.
 
         This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
 
@@ -7221,6 +7510,10 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ConfigMap:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ConfigMapItemsItems0], default is Undefined, optional
         items if unspecified, each key-value pair in the Data field of the referenced
         ConfigMap will be projected into the volume as a file whose name is the
@@ -7239,6 +7532,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ConfigMap:
         optional specify whether the ConfigMap or its keys must be defined
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ConfigMapItemsItems0]
     name?: str = ""
     optional?: bool
@@ -7263,11 +7557,17 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ConfigMapItemsItems0
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Csi:
     r"""
@@ -7332,10 +7632,15 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPI:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of downward API volume file
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0]
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0:
@@ -7357,12 +7662,17 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItem
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -7411,6 +7721,15 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0EmptyDir:
         The default is "" which means to use the node's default medium.
         Must be an empty string (default) or Memory.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    mode : int, default is Undefined, optional
+        mode specifies the permission bits for the emptyDir directory, in numeric
+        notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+        If not specified, defaults to 0777.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup. If fsGroup is specified, the fsGroup permissions
+        will override the mode specified here.
+        This field has no effect on Windows.
+        This field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.
     sizeLimit : int | str, default is Undefined, optional
         sizeLimit is the total amount of local storage required for this EmptyDir volume.
         The size limit is also applicable for memory medium.
@@ -7420,6 +7739,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0EmptyDir:
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
     """
     medium?: str
+    mode?: int
     sizeLimit?: int | str
 
     check:
@@ -7552,8 +7872,8 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0EphemeralVolumeClaim
     * An existing PVC (PersistentVolumeClaim)
     If the provisioner or an external controller can support the specified data source,
     it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be
+    copied to dataSource when dataSourceRef.namespace is not specified.
     If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
@@ -7595,7 +7915,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0EphemeralVolumeClaim
       specified.
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
     (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
@@ -7895,7 +8214,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Image:
     A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message.
     The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
     The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
-    The volume will be mounted read-only (ro) and non-executable files (noexec).
+    The volume will be mounted read-only (ro).
     Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
     The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
 
@@ -8050,8 +8369,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0PortworxVolume:
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate
-    is on.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -8082,11 +8400,16 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Projected:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     sources : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0], default is Undefined, optional
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
     defaultMode?: int
+    defaultUser?: int
     sources?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0]
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0:
@@ -8151,6 +8474,10 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
         Select all ClusterTrustBundles that match this signer name.
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     labelSelector?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -8158,6 +8485,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
     path: str
 
     signerName?: str
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -8249,11 +8577,17 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
@@ -8285,12 +8619,17 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -8417,6 +8756,10 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     userAnnotations : {str:str}, default is Undefined, optional
         userAnnotations allow pod authors to pass additional information to
         the signer implementation.  Kubernetes does not restrict or validate this
@@ -8440,6 +8783,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
     maxExpirationSeconds?: int
     signerName: str
 
+    user?: int
     userAnnotations?: {str:str}
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
@@ -8489,11 +8833,17 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
@@ -8516,10 +8866,16 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0ProjectedSourcesItem
     path : str, default is Undefined, required
         path is the path relative to the mount point of the file to project the
         token into.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     audience?: str
     expirationSeconds?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Quobyte:
     r"""
@@ -8700,6 +9056,10 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Secret:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0SecretItemsItems0], default is Undefined, optional
         items If unspecified, each key-value pair in the Data field of the referenced
         Secret will be projected into the volume as a file whose name is the
@@ -8715,6 +9075,7 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Secret:
         More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0SecretItemsItems0]
     optional?: bool
     secretName?: str
@@ -8739,11 +9100,17 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0SecretItemsItems0:
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0Storageos:
     r"""
@@ -8818,41 +9185,6 @@ schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecVolumesItems0VsphereVolume:
     storagePolicyName?: str
     volumePath: str
 
-schema PostgresqlCnpgIoV1PoolerSpecTemplateSpecWorkloadRef:
-    r"""
-    WorkloadRef provides a reference to the Workload object that this Pod belongs to.
-    This field is used by the scheduler to identify the PodGroup and apply the
-    correct group scheduling policies. The Workload object referenced
-    by this field may not exist at the time the Pod is created.
-    This field is immutable, but a Workload object with the same name
-    may be recreated with different policies. Doing this during pod scheduling
-    may result in the placement not conforming to the expected policies.
-
-    Attributes
-    ----------
-    name : str, default is Undefined, required
-        Name defines the name of the Workload object this Pod belongs to.
-        Workload must be in the same namespace as the Pod.
-        If it doesn't match any existing Workload, the Pod will remain unschedulable
-        until a Workload object is created and observed by the kube-scheduler.
-        It must be a DNS subdomain.
-    podGroup : str, default is Undefined, required
-        PodGroup is the name of the PodGroup within the Workload that this Pod
-        belongs to. If it doesn't match any existing PodGroup within the Workload,
-        the Pod will remain unschedulable until the Workload object is recreated
-        and observed by the kube-scheduler. It must be a DNS label.
-    podGroupReplicaKey : str, default is Undefined, optional
-        PodGroupReplicaKey specifies the replica key of the PodGroup to which this
-        Pod belongs. It is used to distinguish pods belonging to different replicas
-        of the same pod group. The pod group policy is applied separately to each replica.
-        When set, it must be a DNS label.
-    """
-    name: str
-
-    podGroup: str
-
-    podGroupReplicaKey?: str
-
 schema PostgresqlCnpgIoV1PoolerStatus:
     r"""
     Most recently observed status of the Pooler. This data may not be up to
@@ -8861,12 +9193,29 @@ schema PostgresqlCnpgIoV1PoolerStatus:
 
     Attributes
     ----------
+    error : str, default is Undefined, optional
+        Error is the latest admission validation error
+    image : str, default is Undefined, optional
+        Image is the resolved pgbouncer container image that the operator is
+        using for this Pooler, including any override coming from spec.template.
+        While Phase is Active or Paused this field reflects what the Deployment
+        actually runs; while Phase is Inactive or Failed it may carry the last
+        successfully resolved value (or be empty if the Pooler has never reconciled
+        successfully).
     instances : int, default is Undefined, optional
         The number of pods trying to be scheduled
+    phase : str, default is Undefined, optional
+        Phase summarizes the overall lifecycle state of the Pooler.
+    phaseReason : str, default is Undefined, optional
+        PhaseReason is a human-readable explanation of the current Phase.
     secrets : PostgresqlCnpgIoV1PoolerStatusSecrets, default is Undefined, optional
         secrets
     """
+    error?: str
+    image?: str
     instances?: int
+    phase?: "active" | "paused" | "inactive" | "failed"
+    phaseReason?: str
     secrets?: PostgresqlCnpgIoV1PoolerStatusSecrets
 
 schema PostgresqlCnpgIoV1PoolerStatusSecrets:
