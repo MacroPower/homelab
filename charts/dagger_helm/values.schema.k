@@ -15,6 +15,7 @@ schema Values:
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     magicache : ValuesMagicache, optional
     nameOverride : str, optional, default is ""
+    service : ValuesService, optional
     """
     [...str]: any
     engine?: ValuesEngine
@@ -22,6 +23,7 @@ schema Values:
     global?: ValuesGlobal
     magicache?: ValuesMagicache
     nameOverride?: str
+    service?: ValuesService
 
 schema ValuesEngine:
     r"""
@@ -415,9 +417,43 @@ schema ValuesMagicache:
     Attributes
     ----------
     enabled : bool, optional, default is False
+    token : str, optional
     url : str, optional, default is "https://api.dagger.cloud/magicache"
     """
     [...str]: any
     enabled?: bool
+    token?: str
     url?: str
+
+schema ValuesService:
+    r"""
+    ValuesService
+
+    Attributes
+    ----------
+    annotations : ValuesServiceAnnotations, optional
+        ## Additional service annotations
+    labels : ValuesServiceLabels, optional
+        ## Additional service labels
+    $type : str, optional, default is "ClusterIP"
+        ## Kubernetes Service is created automatically when engine.port is defined
+
+        ## Service type (ClusterIP, NodePort, LoadBalancer)
+    """
+    [...str]: any
+    annotations?: ValuesServiceAnnotations
+    labels?: ValuesServiceLabels
+    $type?: str
+
+schema ValuesServiceAnnotations:
+    r"""
+    ## Additional service annotations
+    """
+    [...str]: any
+
+schema ValuesServiceLabels:
+    r"""
+    ## Additional service labels
+    """
+    [...str]: any
 
