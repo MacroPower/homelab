@@ -16,8 +16,33 @@
     },
     "flags": {
       "additionalProperties": true,
-      "description": "# If `metrics:` object is not provided, or commented out, the following flags\n# will be applied the controller-manager and listener pods with empty values:\n# `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.\n# This will disable metrics.\n#\n# To enable metrics, uncomment the following lines.\nmetrics:\n  controllerManagerAddr: \":8080\"\n  listenerAddr: \":8080\"\n  listenerEndpoint: \"/metrics\"",
       "properties": {
+        "autoscalingListenerMaxConcurrentReconciles": {
+          "default": 2,
+          "required": [],
+          "title": "autoscalingListenerMaxConcurrentReconciles",
+          "type": "integer"
+        },
+        "autoscalingRunnerSetMaxConcurrentReconciles": {
+          "default": 2,
+          "description": "# The maximum number of concurrent reconciles for each controller, set directly per controller.\nIncrease these values to improve the throughput of the controller when running many runner scale sets.\nThey may also increase the load on the API server and the external service (e.g. GitHub API).",
+          "required": [],
+          "title": "autoscalingRunnerSetMaxConcurrentReconciles",
+          "type": "integer"
+        },
+        "ephemeralRunnerMaxConcurrentReconciles": {
+          "default": 4,
+          "description": "# The EphemeralRunner controller is higher because it is the only one of the four that routinely\n# has many distinct objects to reconcile at once, one per runner. controller-runtime serialises\n# reconciles per object, so extra workers on the other three only pay off when many runner scale\n# sets exist.",
+          "required": [],
+          "title": "ephemeralRunnerMaxConcurrentReconciles",
+          "type": "integer"
+        },
+        "ephemeralRunnerSetMaxConcurrentReconciles": {
+          "default": 2,
+          "required": [],
+          "title": "ephemeralRunnerSetMaxConcurrentReconciles",
+          "type": "integer"
+        },
         "logFormat": {
           "default": "text",
           "description": "# Log format can be set with one of the following values: \"text\", \"json\"\n# Defaults to \"text\"",
@@ -30,20 +55,6 @@
           "description": "# Log level can be set here with one of the following values: \"debug\", \"info\", \"warn\", \"error\".\n# Defaults to \"debug\".",
           "required": [],
           "title": "logLevel",
-          "type": "string"
-        },
-        "runnerMaxConcurrentReconciles": {
-          "default": 2,
-          "description": "# The maximum number of concurrent reconciles which can be run by the EphemeralRunner controller.\nIncrease this value to improve the throughput of the controller.\nIt may also increase the load on the API server and the external service (e.g. GitHub API).",
-          "required": [],
-          "title": "runnerMaxConcurrentReconciles",
-          "type": "integer"
-        },
-        "updateStrategy": {
-          "default": "immediate",
-          "description": "# Defines how the controller should handle upgrades while having running jobs.\n#\n# The strategies available are:\n# - \"immediate\": (default) The controller will immediately apply the change causing the\n#   recreation of the listener and ephemeral runner set. This can lead to an\n#   overprovisioning of runners, if there are pending / running jobs. This should not\n#   be a problem at a small scale, but it could lead to a significant increase of\n#   resources if you have a lot of jobs running concurrently.\n#\n# - \"eventual\": The controller will remove the listener and ephemeral runner set\n#   immediately, but will not recreate them (to apply changes) until all\n#   pending / running jobs have completed.\n#   This can lead to a longer time to apply the change but it will ensure\n#   that you don't have any overprovisioning of runners.",
-          "required": [],
-          "title": "updateStrategy",
           "type": "string"
         }
       },
@@ -144,6 +155,13 @@
       "title": "podSecurityContext",
       "type": "object"
     },
+    "pprof": {
+      "additionalProperties": true,
+      "description": "# To enable pprof, uncomment the addr field below.",
+      "required": [],
+      "title": "pprof",
+      "type": "object"
+    },
     "priorityClassName": {
       "default": "",
       "description": "Leverage a PriorityClass to ensure your pods survive resource shortages\nref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/\nPriorityClass: system-cluster-critical",
@@ -199,6 +217,13 @@
       "required": [],
       "title": "serviceAccount",
       "type": "object"
+    },
+    "terminationGracePeriodSeconds": {
+      "default": 35,
+      "description": "# This must stay above the manager's graceful shutdown timeout (30s, controller-runtime's\n# default) so in-flight reconciles have a chance to finish before the kubelet sends SIGKILL.",
+      "required": [],
+      "title": "terminationGracePeriodSeconds",
+      "type": "integer"
     },
     "tolerations": {
       "items": {
