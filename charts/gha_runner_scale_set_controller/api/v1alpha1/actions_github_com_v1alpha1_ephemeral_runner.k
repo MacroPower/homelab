@@ -41,9 +41,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpec:
     ----------
     ephemeralRunnerConfigSecretMetadata : ActionsGithubComV1alpha1EphemeralRunnerSpecEphemeralRunnerConfigSecretMetadata, default is Undefined, optional
         ephemeral runner config secret metadata
-    githubConfigSecret : str, default is Undefined, required
+    githubConfigSecret : str, default is Undefined, optional
         github config secret
-    githubConfigUrl : str, default is Undefined, required
+    githubConfigUrl : str, default is Undefined, optional
         github config Url
     githubServerTLS : ActionsGithubComV1alpha1EphemeralRunnerSpecGithubServerTLS, default is Undefined, optional
         github server TLS
@@ -53,7 +53,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpec:
         proxy
     proxySecretRef : str, default is Undefined, optional
         proxy secret ref
-    runnerScaleSetId : int, default is Undefined, required
+    runnerScaleSetId : int, default is Undefined, optional
         runner scale set Id
     spec : ActionsGithubComV1alpha1EphemeralRunnerSpecSpec, default is Undefined, optional
         spec
@@ -61,16 +61,13 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpec:
         vault config
     """
     ephemeralRunnerConfigSecretMetadata?: ActionsGithubComV1alpha1EphemeralRunnerSpecEphemeralRunnerConfigSecretMetadata
-    githubConfigSecret: str
-
-    githubConfigUrl: str
-
+    githubConfigSecret?: str
+    githubConfigUrl?: str
     githubServerTLS?: ActionsGithubComV1alpha1EphemeralRunnerSpecGithubServerTLS
     metadata?: ActionsGithubComV1alpha1EphemeralRunnerSpecMetadata
     proxy?: ActionsGithubComV1alpha1EphemeralRunnerSpecProxy
     proxySecretRef?: str
-    runnerScaleSetId: int
-
+    runnerScaleSetId?: int
     spec?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpec
     vaultConfig?: ActionsGithubComV1alpha1EphemeralRunnerSpecVaultConfig
 
@@ -117,7 +114,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecGithubServerTLSCertificateFrom
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -239,6 +237,22 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
         pod to perform user-initiated actions such as debugging. This list cannot be specified when
         creating a pod, and it cannot be modified by updating the pod spec. In order to add an
         ephemeral container to an existing pod, use the pod's ephemeralcontainers subresource.
+    evictionResponders : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEvictionRespondersItems0], default is Undefined, optional
+        evictionResponders reference responders that react to Evictions based on EvictionRequests.
+        Responders should observe and communicate through the Eviction Resource API to help with
+        the graceful termination of a pod. The responders are selected sequentially, according to
+        their specified priority.
+
+        Responders should periodically report on an eviction progress by updating the
+        .status.responders[].heartbeatTime field of the Eviction object. If this field is not updated
+        within the heartbeat deadline defined by the Eviction API (currently 20 minutes), the eviction
+        is passed over to the next responder with a lower priority. If there is no other responder,
+        the last default imperative-eviction.k8s.io/evictor responder with a priority of 100 will
+        evict the pod using the imperative Eviction API (pods/<name>/eviction subresource).
+
+        The maximum length of the responders list is 10.
+        Responders are not supported when the pod is part of a PodGroup (.spec.schedulingGroup is set).
+        This field can only be set on creation and is immutable afterwards.
     hostAliases : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecHostAliasesItems0], default is Undefined, optional
         HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
         file if specified.
@@ -263,7 +277,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
         When set to false, a new userns is created for the pod. Setting false is useful for
         mitigating container breakout vulnerabilities even allowing users to run their
         containers as root without actually having root privileges on the host.
-        This field is alpha-level and is only honored by servers that enable the UserNamespacesSupport feature.
     hostname : str, default is Undefined, optional
         Specifies the hostname of the Pod
         If not specified, the pod's hostname will be set to a system-defined value.
@@ -277,7 +290,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
         - `hostNetwork` must be set to false.
 
         This field must be a valid DNS subdomain as defined in RFC 1123 and contain at most 64 characters.
-        Requires the HostnameOverride feature gate to be enabled.
     imagePullSecrets : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecImagePullSecretsItems0], default is Undefined, optional
         ImagePullSecrets is an optional list of references to secrets in the same namespace to use for pulling any of the images used by this PodSpec.
         If specified, these secrets will be passed to individual puller implementations for them to use.
@@ -319,6 +331,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
     preemptionPolicy : str, default is Undefined, optional
         PreemptionPolicy is the Policy for preempting pods with lower priority.
         One of Never, PreemptLowerPriority.
+        When Priority Admission Controller is enabled, it prevents users from setting
+        this field. The admission controller populates this field from PriorityClassName.
         Defaults to PreemptLowerPriority if unset.
     priority : int, default is Undefined, optional
         The priority value. Various system components use this field to find the
@@ -370,6 +384,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
         scheduler will not attempt to schedule the pod.
 
         SchedulingGates can only be set at pod creation time, and be removed only afterwards.
+    schedulingGroup : ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSchedulingGroup, default is Undefined, optional
+        scheduling group
     securityContext : ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccount : str, default is Undefined, optional
@@ -411,8 +427,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
     volumes : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0], default is Undefined, optional
         List of volumes that can be mounted by containers belonging to the pod.
         More info: https://kubernetes.io/docs/concepts/storage/volumes
-    workloadRef : ActionsGithubComV1alpha1EphemeralRunnerSpecSpecWorkloadRef, default is Undefined, optional
-        workload ref
     """
     activeDeadlineSeconds?: int
     affinity?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecAffinity
@@ -423,6 +437,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
     dnsPolicy?: str
     enableServiceLinks?: bool
     ephemeralContainers?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0]
+    evictionResponders?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEvictionRespondersItems0]
     hostAliases?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecHostAliasesItems0]
     hostIPC?: bool
     hostNetwork?: bool
@@ -446,6 +461,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
     runtimeClassName?: str
     schedulerName?: str
     schedulingGates?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSchedulingGatesItems0]
+    schedulingGroup?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSchedulingGroup
     securityContext?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSecurityContext
     serviceAccount?: str
     serviceAccountName?: str
@@ -456,7 +472,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpec:
     tolerations?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecTolerationsItems0]
     topologySpreadConstraints?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecTopologySpreadConstraintsItems0]
     volumes?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0]
-    workloadRef?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecWorkloadRef
 
     check:
         all _, overhead in overhead {_regex_match(str(overhead), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if overhead} if overhead
@@ -1567,7 +1582,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0EnvItems0V
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -1747,6 +1763,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LifecycleP
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1756,6 +1775,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LifecycleP
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -1863,6 +1883,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LifecycleP
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1872,6 +1895,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LifecycleP
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -1996,6 +2020,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LivenessPr
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2004,6 +2033,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LivenessPr
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2025,6 +2055,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LivenessPr
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2034,6 +2067,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LivenessPr
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -2176,6 +2210,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0ReadinessP
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2184,6 +2223,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0ReadinessP
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2205,6 +2245,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0ReadinessP
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2214,6 +2257,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0ReadinessP
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -2384,7 +2428,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0SecurityCo
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -2628,6 +2671,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0StartupPro
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2636,6 +2684,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0StartupPro
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2657,6 +2706,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0StartupPro
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2666,6 +2718,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0StartupPro
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -2721,9 +2774,15 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0VolumeMoun
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
+        This field is not supported with image volumes.
+        This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -2762,6 +2821,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecContainersItems0VolumeMoun
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -3078,7 +3138,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0E
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -3257,6 +3318,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3266,6 +3330,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -3373,6 +3438,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3382,6 +3450,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -3503,6 +3572,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -3511,6 +3585,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -3532,6 +3607,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3541,6 +3619,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0L
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -3680,6 +3759,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0R
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -3688,6 +3772,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0R
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -3709,6 +3794,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0R
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3718,6 +3806,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0R
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -3886,7 +3975,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0S
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -4124,6 +4212,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0S
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -4132,6 +4225,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0S
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -4153,6 +4247,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0S
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4162,6 +4259,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0S
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -4217,9 +4315,15 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0V
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
+        This field is not supported with image volumes.
+        This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -4258,6 +4362,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0V
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -4267,6 +4372,39 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEphemeralContainersItems0V
     recursiveReadOnly?: str
     subPath?: str
     subPathExpr?: str
+
+schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecEvictionRespondersItems0:
+    r"""
+    EvictionResponder allows you to specify the responder reacting to an Eviction.
+    Responders should observe and communicate through the Eviction Resource API to help with
+    the graceful eviction of a target (e.g. termination of a pod).
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        name allows you to identify the responder responding to the Eviction.
+
+        It must be a valid domain-prefixed key (such as "acme.io/foo").
+        Domain names *.k8s.io and *.kubernetes.io are reserved.
+        This field must be unique for each responder.
+        This field is required.
+    priority : int, default is Undefined, required
+        priority for this responder. Higher priorities are selected first by the evictionrequest-controller.
+        If there are responders with the same priority, the responder whose domain name comes first in the
+        alphabetical higher domain order, will be picked. This means that the top domain labels are compared
+        alphabetically first, followed by the lower domain labels. The key is compared last.
+
+        The responder that is the managing controller of the pod should set the value of
+        this field to 10000 to allow both for preemption or fallback registration by other
+        responders.
+
+        The minimum value is 0 and the maximum value is 100000.
+        The interval 0-999 is reserved for responders with *.k8s.io suffix.
+        This field is required.
+    """
+    name: str
+
+    priority: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecHostAliasesItems0:
     r"""
@@ -4579,7 +4717,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0EnvIte
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -4759,6 +4898,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Lifecy
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4768,6 +4910,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Lifecy
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -4875,6 +5018,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Lifecy
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4884,6 +5030,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Lifecy
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -5008,6 +5155,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Livene
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -5016,6 +5168,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Livene
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -5037,6 +5190,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Livene
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5046,6 +5202,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Livene
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -5188,6 +5345,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Readin
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -5196,6 +5358,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Readin
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -5217,6 +5380,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Readin
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5226,6 +5392,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Readin
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -5396,7 +5563,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Securi
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -5640,6 +5806,11 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Startu
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
+        If not specified, the probe uses a plaintext (insecure) connection.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -5648,6 +5819,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Startu
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -5669,6 +5841,9 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Startu
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5678,6 +5853,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Startu
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -5733,9 +5909,15 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Volume
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
+        This field is not supported with image volumes.
+        This is an alpha field and requires enabling the VolumeBindMountOptions feature gate.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -5774,6 +5956,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecInitContainersItems0Volume
         Defaults to "" (volume's root).
         SubPathExpr and SubPath are mutually exclusive.
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -5849,6 +6032,14 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecResourceClaimsItems0:
     It adds a name to it that uniquely identifies the ResourceClaim inside the Pod.
     Containers that need access to the ResourceClaim reference it with this name.
 
+    When the DRAWorkloadResourceClaims feature gate is enabled and this Pod
+    belongs to a PodGroup, a PodResourceClaim is matched to a
+    PodGroupResourceClaim if all of their fields are equal (Name,
+    ResourceClaimName, and ResourceClaimTemplateName). A matched claim references
+    a single ResourceClaim shared across all Pods in the PodGroup, reserved for
+    the PodGroup in ResourceClaimStatus.ReservedFor rather than for individual
+    Pods.
+
     Attributes
     ----------
     name : str, default is Undefined, required
@@ -5869,6 +6060,16 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecResourceClaimsItems0:
         will also be deleted. The pod name and resource name, along with a
         generated component, will be used to form a unique name for the
         ResourceClaim, which will be recorded in pod.status.resourceClaimStatuses.
+
+        When the DRAWorkloadResourceClaims feature gate is enabled and the pod
+        belongs to a PodGroup that defines a PodGroupResourceClaim with the same
+        Name and ResourceClaimTemplateName, this PodResourceClaim resolves to the
+        ResourceClaim generated for the PodGroup. All pods in the group that
+        define an equivalent PodResourceClaim matching the
+        PodGroupResourceClaim's Name and ResourceClaimTemplateName share the same
+        generated ResourceClaim. ResourceClaims generated for a PodGroup are
+        owned by the PodGroup and their lifecycles are tied to the PodGroup
+        instead of any individual pod.
 
         This field is immutable and no changes will be made to the
         corresponding ResourceClaim by the control plane after creating the
@@ -5952,6 +6153,30 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSchedulingGatesItems0:
     """
     name: str
 
+schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSchedulingGroup:
+    r"""
+    SchedulingGroup provides a reference to the immediate scheduling runtime
+    grouping object that this Pod belongs to.
+    This field is used by the scheduler to identify the group and apply the
+    correct group scheduling policies. The association with a group also
+    impacts other lifecycle aspects of a Pod that are relevant in a wider context
+    of scheduling like preemption, resource attachment, etc. If not specified,
+    the Pod is treated as a single unit in all of these aspects.
+    The group object referenced by this field may not exist at the time the
+    Pod is created.
+    This field is immutable, but a group object with the same name may be
+    recreated with different policies. Doing this during pod scheduling
+    may result in the placement not conforming to the expected policies.
+
+    Attributes
+    ----------
+    podGroupName : str, default is Undefined, optional
+        PodGroupName specifies the name of the standalone PodGroup object
+        that represents the runtime instance of this group.
+        Must be a DNS subdomain.
+    """
+    podGroupName?: str
+
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSecurityContext:
     r"""
     SecurityContext holds pod-level security attributes and common container settings.
@@ -6015,11 +6240,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecSecurityContext:
         Eligible volumes are in-tree FibreChannel and iSCSI volumes, and all CSI volumes
         whose CSI driver announces SELinux support by setting spec.seLinuxMount: true in their
         CSIDriver instance. Other volumes are always re-labelled recursively.
-        "MountOption" value is allowed only when SELinuxMount feature gate is enabled.
 
-        If not specified and SELinuxMount feature gate is enabled, "MountOption" is used.
-        If not specified and SELinuxMount feature gate is disabled, "MountOption" is used for ReadWriteOncePod volumes
-        and "Recursive" for all other volumes.
+        If not specified, "MountOption" is used.
 
         This field affects only Pods that have SELinux label set, either in PodSecurityContext or in SecurityContext of all containers.
 
@@ -6670,6 +6892,10 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ConfigMap:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ConfigMapItemsItems0], default is Undefined, optional
         items if unspecified, each key-value pair in the Data field of the referenced
         ConfigMap will be projected into the volume as a file whose name is the
@@ -6688,6 +6914,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ConfigMap:
         optional specify whether the ConfigMap or its keys must be defined
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ConfigMapItemsItems0]
     name?: str = ""
     optional?: bool
@@ -6712,11 +6939,17 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ConfigMapItem
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Csi:
     r"""
@@ -6781,10 +7014,15 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPI:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of downward API volume file
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0]
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0:
@@ -6806,12 +7044,17 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIIt
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -6860,6 +7103,15 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0EmptyDir:
         The default is "" which means to use the node's default medium.
         Must be an empty string (default) or Memory.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    mode : int, default is Undefined, optional
+        mode specifies the permission bits for the emptyDir directory, in numeric
+        notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+        If not specified, defaults to 0777.
+        This might be in conflict with other options that affect the file
+        mode, like fsGroup. If fsGroup is specified, the fsGroup permissions
+        will override the mode specified here.
+        This field has no effect on Windows.
+        This field is alpha and requires EmptyDirVolumeMode featuregate to be enabled.
     sizeLimit : int | str, default is Undefined, optional
         sizeLimit is the total amount of local storage required for this EmptyDir volume.
         The size limit is also applicable for memory medium.
@@ -6869,6 +7121,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0EmptyDir:
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
     """
     medium?: str
+    mode?: int
     sizeLimit?: int | str
 
     check:
@@ -7024,8 +7277,8 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0EphemeralVolu
     * An existing PVC (PersistentVolumeClaim)
     If the provisioner or an external controller can support the specified data source,
     it will create a new volume based on the contents of the specified data source.
-    When the AnyVolumeDataSource feature gate is enabled, dataSource contents will be copied to dataSourceRef,
-    and dataSourceRef contents will be copied to dataSource when dataSourceRef.namespace is not specified.
+    dataSource contents will be copied to dataSourceRef, and dataSourceRef contents will be
+    copied to dataSource when dataSourceRef.namespace is not specified.
     If the namespace is specified, then dataSourceRef will not be copied to dataSource.
 
     Attributes
@@ -7067,7 +7320,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0EphemeralVolu
       specified.
     * While dataSource only allows local objects, dataSourceRef allows objects
       in any namespaces.
-    (Beta) Using this field requires the AnyVolumeDataSource feature gate to be enabled.
     (Alpha) Using the namespace field of dataSourceRef requires the CrossNamespaceVolumeDataSource feature gate to be enabled.
 
     Attributes
@@ -7367,7 +7619,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Image:
     A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message.
     The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
     The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
-    The volume will be mounted read-only (ro) and non-executable files (noexec).
+    The volume will be mounted read-only (ro).
     Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
     The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
 
@@ -7522,8 +7774,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0PortworxVolum
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate
-    is on.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -7554,11 +7805,16 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Projected:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     sources : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0], default is Undefined, optional
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
     defaultMode?: int
+    defaultUser?: int
     sources?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0]
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0:
@@ -7623,6 +7879,10 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
         Select all ClusterTrustBundles that match this signer name.
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     labelSelector?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -7630,6 +7890,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
     path: str
 
     signerName?: str
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -7721,11 +7982,17 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
@@ -7757,12 +8024,17 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -7889,6 +8161,10 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
         longer than 24 hours.
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     userAnnotations : {str:str}, default is Undefined, optional
         userAnnotations allow pod authors to pass additional information to
         the signer implementation.  Kubernetes does not restrict or validate this
@@ -7912,6 +8188,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
     maxExpirationSeconds?: int
     signerName: str
 
+    user?: int
     userAnnotations?: {str:str}
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0Secret:
@@ -7961,11 +8238,17 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
@@ -7988,10 +8271,16 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0ProjectedSour
     path : str, default is Undefined, required
         path is the path relative to the mount point of the file to project the
         token into.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     audience?: str
     expirationSeconds?: int
     path: str
+
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Quobyte:
     r"""
@@ -8172,6 +8461,10 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Secret:
         Directories within the path are not affected by this setting.
         This might be in conflict with other options that affect the file
         mode, like fsGroup, and the result can be other mode bits set.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0SecretItemsItems0], default is Undefined, optional
         items If unspecified, each key-value pair in the Data field of the referenced
         Secret will be projected into the volume as a file whose name is the
@@ -8187,6 +8480,7 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Secret:
         More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0SecretItemsItems0]
     optional?: bool
     secretName?: str
@@ -8211,11 +8505,17 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0SecretItemsIt
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0Storageos:
     r"""
@@ -8289,41 +8589,6 @@ schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecVolumesItems0VsphereVolume
     storagePolicyID?: str
     storagePolicyName?: str
     volumePath: str
-
-schema ActionsGithubComV1alpha1EphemeralRunnerSpecSpecWorkloadRef:
-    r"""
-    WorkloadRef provides a reference to the Workload object that this Pod belongs to.
-    This field is used by the scheduler to identify the PodGroup and apply the
-    correct group scheduling policies. The Workload object referenced
-    by this field may not exist at the time the Pod is created.
-    This field is immutable, but a Workload object with the same name
-    may be recreated with different policies. Doing this during pod scheduling
-    may result in the placement not conforming to the expected policies.
-
-    Attributes
-    ----------
-    name : str, default is Undefined, required
-        Name defines the name of the Workload object this Pod belongs to.
-        Workload must be in the same namespace as the Pod.
-        If it doesn't match any existing Workload, the Pod will remain unschedulable
-        until a Workload object is created and observed by the kube-scheduler.
-        It must be a DNS subdomain.
-    podGroup : str, default is Undefined, required
-        PodGroup is the name of the PodGroup within the Workload that this Pod
-        belongs to. If it doesn't match any existing PodGroup within the Workload,
-        the Pod will remain unschedulable until the Workload object is recreated
-        and observed by the kube-scheduler. It must be a DNS label.
-    podGroupReplicaKey : str, default is Undefined, optional
-        PodGroupReplicaKey specifies the replica key of the PodGroup to which this
-        Pod belongs. It is used to distinguish pods belonging to different replicas
-        of the same pod group. The pod group policy is applied separately to each replica.
-        When set, it must be a DNS label.
-    """
-    name: str
-
-    podGroup: str
-
-    podGroupReplicaKey?: str
 
 schema ActionsGithubComV1alpha1EphemeralRunnerSpecVaultConfig:
     r"""
@@ -8441,6 +8706,10 @@ schema ActionsGithubComV1alpha1EphemeralRunnerStatus:
 
         The PodSucceded phase should be set only when confirmed that EphemeralRunner
         actually executed the job and has been removed from the service.
+
+        Running means a job has been assigned to this EphemeralRunner. It does not
+        mean the runner is merely online and waiting for work; an idle registered
+        runner stays Pending.
     ready : bool, default is Undefined, optional
         Turns true only if the runner is online.
     reason : str, default is Undefined, optional
