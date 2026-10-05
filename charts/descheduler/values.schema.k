@@ -46,7 +46,17 @@ schema Values:
     namespaceOverride : str, optional, default is ""
         Override the deployment namespace; defaults to .Release.Namespace
     nodeSelector : ValuesNodeSelector, optional
+        Set the Pod spec `hostUsers` field to control user-namespace sharing.
+        Default is not set (the cluster default applies). Set to `false` to opt into
+        user-namespace isolation, or `true` to share the host user namespace.
+        hostUsers: false
     podAnnotations : ValuesPodAnnotations, optional
+    podDisruptionBudget : ValuesPodDisruptionBudget, optional
+        Pod Disruption Budget for the descheduler Deployment. Optional.
+        Only rendered when kind is "Deployment". The descheduler runs a single replica
+        by default, so this is disabled by default. Enable it for highly available
+        setups (replicas > 1 with leaderElection enabled) to keep a descheduler pod
+        available during voluntary node disruptions.
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
         podSecurityContext -- [Security context for pod](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
@@ -60,7 +70,14 @@ schema Values:
         only if that node is in the same zone as at least one already-running descheduler
     resources : ValuesResources, optional
           - name: container-registry-secret
+    revisionHistoryLimit : int, optional, default is 10
+    runtimeClassName : str, optional, default is ""
+        runtimeClassName is the RuntimeClass applied to the descheduler pods.
+        Leave empty to use the cluster default runtime.
     schedule : str, optional, default is "*/2 * * * *"
+    schedulerName : str, optional, default is ""
+        schedulerName is the name of the scheduler used to schedule the descheduler pods.
+        Leave empty to use the cluster default scheduler.
     securityContext : ValuesSecurityContext, optional
     service : ValuesService, optional
     serviceAccount : ValuesServiceAccount, optional
@@ -120,6 +137,7 @@ schema Values:
     namespaceOverride?: str
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
+    podDisruptionBudget?: ValuesPodDisruptionBudget
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     ports?: [ValuesPortsItems0]
@@ -127,7 +145,10 @@ schema Values:
     rbac?: ValuesRbac
     replicas?: int
     resources?: ValuesResources
+    revisionHistoryLimit?: int
+    runtimeClassName?: str
     schedule?: str
+    schedulerName?: str
     securityContext?: ValuesSecurityContext
     service?: ValuesService
     serviceAccount?: ValuesServiceAccount
@@ -411,13 +432,47 @@ schema ValuesLivenessProbeHttpGet:
 
 schema ValuesNodeSelector:
     r"""
-    ValuesNodeSelector
+    Set the Pod spec `hostUsers` field to control user-namespace sharing.
+    Default is not set (the cluster default applies). Set to `false` to opt into
+    user-namespace isolation, or `true` to share the host user namespace.
+    hostUsers: false
     """
     [...str]: any
 
 schema ValuesPodAnnotations:
     r"""
     ValuesPodAnnotations
+    """
+    [...str]: any
+
+schema ValuesPodDisruptionBudget:
+    r"""
+    Pod Disruption Budget for the descheduler Deployment. Optional.
+    Only rendered when kind is "Deployment". The descheduler runs a single replica
+    by default, so this is disabled by default. Enable it for highly available
+    setups (replicas > 1 with leaderElection enabled) to keep a descheduler pod
+    available during voluntary node disruptions.
+
+    Attributes
+    ----------
+    annotations : ValuesPodDisruptionBudgetAnnotations, optional
+        See https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+        unhealthyPodEvictionPolicy: IfHealthyBudget
+    enabled : bool, optional, default is False
+    maxUnavailable : str, optional, default is ""
+    minAvailable : int, optional, default is 1
+        minAvailable and maxUnavailable are mutually exclusive; set only one.
+    """
+    [...str]: any
+    annotations?: ValuesPodDisruptionBudgetAnnotations
+    enabled?: bool
+    maxUnavailable?: str
+    minAvailable?: int
+
+schema ValuesPodDisruptionBudgetAnnotations:
+    r"""
+    See https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+    unhealthyPodEvictionPolicy: IfHealthyBudget
     """
     [...str]: any
 
@@ -587,6 +642,7 @@ schema ValuesServiceMonitor:
         The namespace where Prometheus expects to find service monitors.
         namespace: ""
         Add custom labels to the ServiceMonitor resource
+    apiVersion : str, optional, default is "monitoring.coreos.com/v1"
     enabled : bool, optional, default is False
     insecureSkipVerify : bool, optional, default is True
         honorLabels: true
@@ -601,6 +657,7 @@ schema ValuesServiceMonitor:
     """
     [...str]: any
     additionalLabels?: ValuesServiceMonitorAdditionalLabels
+    apiVersion?: str
     enabled?: bool
     insecureSkipVerify?: bool
     interval?: str
