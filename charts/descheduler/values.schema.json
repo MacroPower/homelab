@@ -432,6 +432,7 @@
     },
     "nodeSelector": {
       "additionalProperties": true,
+      "description": "Set the Pod spec `hostUsers` field to control user-namespace sharing.\nDefault is not set (the cluster default applies). Set to `false` to opt into\nuser-namespace isolation, or `true` to share the host user namespace.\nhostUsers: false",
       "required": [],
       "title": "nodeSelector",
       "type": "object"
@@ -440,6 +441,41 @@
       "additionalProperties": true,
       "required": [],
       "title": "podAnnotations",
+      "type": "object"
+    },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "description": "Pod Disruption Budget for the descheduler Deployment. Optional.\nOnly rendered when kind is \"Deployment\". The descheduler runs a single replica\nby default, so this is disabled by default. Enable it for highly available\nsetups (replicas \u003e 1 with leaderElection enabled) to keep a descheduler pod\navailable during voluntary node disruptions.",
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "See https://kubernetes.io/docs/tasks/run-application/configure-pdb/\nunhealthyPodEvictionPolicy: IfHealthyBudget",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxUnavailable": {
+          "default": "",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "string"
+        },
+        "minAvailable": {
+          "default": 1,
+          "description": "minAvailable and maxUnavailable are mutually exclusive; set only one.",
+          "required": [],
+          "title": "minAvailable",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
       "type": "object"
     },
     "podLabels": {
@@ -556,10 +592,30 @@
       "title": "resources",
       "type": "object"
     },
+    "revisionHistoryLimit": {
+      "default": 10,
+      "required": [],
+      "title": "revisionHistoryLimit",
+      "type": "integer"
+    },
+    "runtimeClassName": {
+      "default": "",
+      "description": "runtimeClassName is the RuntimeClass applied to the descheduler pods.\nLeave empty to use the cluster default runtime.",
+      "required": [],
+      "title": "runtimeClassName",
+      "type": "string"
+    },
     "schedule": {
       "default": "*/2 * * * *",
       "required": [],
       "title": "schedule",
+      "type": "string"
+    },
+    "schedulerName": {
+      "default": "",
+      "description": "schedulerName is the name of the scheduler used to schedule the descheduler pods.\nLeave empty to use the cluster default scheduler.",
+      "required": [],
+      "title": "schedulerName",
       "type": "string"
     },
     "securityContext": {
@@ -685,6 +741,12 @@
           "required": [],
           "title": "additionalLabels",
           "type": "object"
+        },
+        "apiVersion": {
+          "default": "monitoring.coreos.com/v1",
+          "required": [],
+          "title": "apiVersion",
+          "type": "string"
         },
         "enabled": {
           "default": false,
