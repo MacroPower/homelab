@@ -339,8 +339,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAkeylessAuthSecretRefKuber
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -705,8 +705,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAwsAuthJwtServiceAccountRe
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -1057,8 +1057,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderAzurekvServiceAccountRef:
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -1840,8 +1840,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderConjurAuthJwtServiceAccoun
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -2346,8 +2346,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderGcpsmAuthWorkloadIdentityS
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -2985,8 +2985,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderKubernetesAuthServiceAccou
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -3406,8 +3406,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderOracleServiceAccountRef:
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -4332,8 +4332,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthIamJwtServiceAcco
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -4521,8 +4521,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthJwtKubernetesServ
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
@@ -4642,8 +4642,8 @@ schema ExternalSecretsIoV1beta1SecretStoreSpecProviderVaultAuthKubernetesService
     ----------
     audiences : [str], default is Undefined, optional
         Audience specifies the `aud` claim for the service account token
-        If the service account uses a well-known annotation for e.g. IRSA or GCP Workload Identity
-        then this audiences will be appended to the list
+        Some providers automatically extend the audience field based on well-known annotations for workload
+        identity (e.g. IRSA or GCP Workload Identity)
     name : str, default is Undefined, required
         The name of the ServiceAccount resource being referred to.
     namespace : str, default is Undefined, optional
