@@ -48,7 +48,7 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     affinity : DragonflydbIoV1alpha1DragonflySpecAffinity, default is Undefined, optional
         affinity
     annotations : {str:str}, default is Undefined, optional
-        (Optional) Annotations to add to the Dragonfly pods.
+        Deprecated: use spec.podMetadata.annotations instead.
     args : [str], default is Undefined, optional
         (Optional) Dragonfly container args to pass to the container
         Refer to the Dragonfly documentation for the list of supported args
@@ -56,6 +56,12 @@ schema DragonflydbIoV1alpha1DragonflySpec:
         authentication
     containerSecurityContext : DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext, default is Undefined, optional
         container security context
+    customLivenessProbeConfigMap : DragonflydbIoV1alpha1DragonflySpecCustomLivenessProbeConfigMap, default is Undefined, optional
+        custom liveness probe config map
+    customReadinessProbeConfigMap : DragonflydbIoV1alpha1DragonflySpecCustomReadinessProbeConfigMap, default is Undefined, optional
+        custom readiness probe config map
+    customStartupProbeConfigMap : DragonflydbIoV1alpha1DragonflySpecCustomStartupProbeConfigMap, default is Undefined, optional
+        custom startup probe config map
     enableReplicationReadinessGate : bool, default is Undefined, optional
         (Optional) When enabled, adds a custom readiness gate to pods that prevents
         them from being considered Ready until replication is fully synced.
@@ -72,19 +78,17 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     initContainers : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0], default is Undefined, optional
         (Optional) Dragonfly pod init containers
     labels : {str:str}, default is Undefined, optional
-        (Optional) Labels to add to the Dragonfly pods.
+        Deprecated: use spec.podMetadata.labels instead.
     memcachedPort : int, default is Undefined, optional
         (Optional) Dragonfly memcached port
-    networkPolicyEnabled : bool, default is True, optional
-        (Optional) Whether to create a NetworkPolicy for this Dragonfly instance.
-        The NetworkPolicy restricts admin port access to operator and peer pods only.
-        Defaults to true.
     nodeSelector : {str:str}, default is Undefined, optional
         (Optional) Dragonfly pod node selector
     ownedObjectsMetadata : DragonflydbIoV1alpha1DragonflySpecOwnedObjectsMetadata, default is Undefined, optional
         owned objects metadata
     pdb : DragonflydbIoV1alpha1DragonflySpecPdb, default is Undefined, optional
         pdb
+    podMetadata : DragonflydbIoV1alpha1DragonflySpecPodMetadata, default is Undefined, optional
+        pod metadata
     podSecurityContext : DragonflydbIoV1alpha1DragonflySpecPodSecurityContext, default is Undefined, optional
         pod security context
     priorityClassName : str, default is Undefined, optional
@@ -118,6 +122,9 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     args?: [str]
     authentication?: DragonflydbIoV1alpha1DragonflySpecAuthentication
     containerSecurityContext?: DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext
+    customLivenessProbeConfigMap?: DragonflydbIoV1alpha1DragonflySpecCustomLivenessProbeConfigMap
+    customReadinessProbeConfigMap?: DragonflydbIoV1alpha1DragonflySpecCustomReadinessProbeConfigMap
+    customStartupProbeConfigMap?: DragonflydbIoV1alpha1DragonflySpecCustomStartupProbeConfigMap
     enableReplicationReadinessGate?: bool
     env?: [DragonflydbIoV1alpha1DragonflySpecEnvItems0]
     image?: str
@@ -126,10 +133,10 @@ schema DragonflydbIoV1alpha1DragonflySpec:
     initContainers?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0]
     labels?: {str:str}
     memcachedPort?: int
-    networkPolicyEnabled?: bool = True
     nodeSelector?: {str:str}
     ownedObjectsMetadata?: DragonflydbIoV1alpha1DragonflySpecOwnedObjectsMetadata
     pdb?: DragonflydbIoV1alpha1DragonflySpecPdb
+    podMetadata?: DragonflydbIoV1alpha1DragonflySpecPodMetadata
     podSecurityContext?: DragonflydbIoV1alpha1DragonflySpecPodSecurityContext
     priorityClassName?: str
     replicas?: int
@@ -194,8 +201,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0:
         Cannot be updated.
     envFrom : [DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -230,14 +237,15 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0:
         readiness probe
     resizePolicy : [DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -248,6 +256,18 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0:
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0StartupProbe, default is Undefined, optional
@@ -309,6 +329,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0:
     resizePolicy?: [DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0ResizePolicyItems0]
     resources?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0RestartPolicyRulesItems0]
     securityContext?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0SecurityContext
     startupProbe?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0StartupProbe
     stdin?: bool
@@ -322,14 +343,15 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0:
 
 schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvFromItems0:
     r"""
-    EnvFromSource represents the source of a set of ConfigMaps
+    EnvFromSource represents the source of a set of ConfigMaps or Secrets
 
     Attributes
     ----------
     configMapRef : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -380,7 +402,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -409,6 +432,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0Valu
         config map key ref
     fieldRef : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -416,6 +441,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0Valu
     """
     configMapKeyRef?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -455,6 +481,38 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0Valu
     """
     apiVersion?: str
     fieldPath: str
+
+schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -510,9 +568,14 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0Lifecycle:
         post start
     preStop : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
+    stopSignal : str, default is Undefined, optional
+        StopSignal defines which signal will be sent to a container when it is being stopped.
+        If not specified, the default is defined by the container runtime in use.
+        StopSignal can only be set for Pods with a non-empty .spec.os.name
     """
     postStart?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0LifecyclePostStart
     preStop?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0LifecyclePreStop
+    stopSignal?: str
 
 schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0LifecyclePostStart:
     r"""
@@ -1099,7 +1162,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0Resources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -1139,6 +1202,44 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0ResourcesClai
 
     request?: str
 
+schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
+
 schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0SecurityContext:
     r"""
     SecurityContext defines the security options the container should be run with.
@@ -1168,7 +1269,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalContainersItems0SecurityConte
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -2155,15 +2255,13 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0EphemeralVolumeC
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -2258,7 +2356,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0EphemeralVolumeC
 schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -2475,13 +2573,11 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0Glusterfs:
     r"""
     glusterfs represents a Glusterfs mount on the host that shares a pod's lifetime.
     Deprecated: Glusterfs is deprecated and the in-tree glusterfs type is no longer supported.
-    More info: https://examples.k8s.io/volumes/glusterfs/README.md
 
     Attributes
     ----------
     endpoints : str, default is Undefined, required
         endpoints is the endpoint name that details Glusterfs topology.
-        More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
     path : str, default is Undefined, required
         path is the Glusterfs volume path.
         More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod
@@ -2532,8 +2628,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0Image:
     A failure to resolve or pull the image during pod startup will block containers from starting and may add significant latency. Failures will be retried using normal volume backoff and will be reported on the pod reason and message.
     The types of objects that may be mounted by this volume are defined by the container runtime implementation on a host machine and at minimum must include all valid types supported by the container image field.
     The OCI object gets mounted in a single directory (spec.containers[*].volumeMounts.mountPath) by merging the manifest layers in the same way as for container images.
-    The volume will be mounted read-only (ro) and non-executable files (noexec).
-    Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath).
+    The volume will be mounted read-only (ro).
+    Sub path mounts for containers are not supported (spec.containers[*].volumeMounts.subpath) before 1.33.
     The field spec.securityContext.fsGroupChangePolicy has no effect on this volume type.
 
     Attributes
@@ -2559,7 +2655,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0Iscsi:
     r"""
     iscsi represents an ISCSI Disk resource that is attached to a
     kubelet's host machine and then exposed to the pod.
-    More info: https://examples.k8s.io/volumes/iscsi/README.md
+    More info: https://kubernetes.io/docs/concepts/storage/volumes/#iscsi
 
     Attributes
     ----------
@@ -2687,8 +2783,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0PortworxVolume:
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.com CSI driver when the CSIMigrationPortworx feature-gate
-    is on.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -2739,6 +2834,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSources
         config map
     downwardAPI : DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0DownwardAPI, default is Undefined, optional
         downward API
+    podCertificate : DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0PodCertificate, default is Undefined, optional
+        pod certificate
     secret : DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0Secret, default is Undefined, optional
         secret
     serviceAccountToken : DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0ServiceAccountToken, default is Undefined, optional
@@ -2747,6 +2844,7 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSources
     clusterTrustBundle?: DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0ClusterTrustBundle
     configMap?: DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0ConfigMap
     downwardAPI?: DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0DownwardAPI
+    podCertificate?: DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0PodCertificate
     secret?: DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0Secret
     serviceAccountToken?: DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0ServiceAccountToken
 
@@ -2961,6 +3059,121 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSources
     check:
         _regex_match(str(divisor), r"^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$") if divisor
 
+schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0PodCertificate:
+    r"""
+    Projects an auto-rotating credential bundle (private key and certificate
+    chain) that the pod can use either as a TLS client or server.
+
+    Kubelet generates a private key and uses it to send a
+    PodCertificateRequest to the named signer.  Once the signer approves the
+    request and issues a certificate chain, Kubelet writes the key and
+    certificate chain to the pod filesystem.  The pod does not start until
+    certificates have been issued for each podCertificate projected volume
+    source in its spec.
+
+    Kubelet will begin trying to rotate the certificate at the time indicated
+    by the signer using the PodCertificateRequest.Status.BeginRefreshAt
+    timestamp.
+
+    Kubelet can write a single file, indicated by the credentialBundlePath
+    field, or separate files, indicated by the keyPath and
+    certificateChainPath fields.
+
+    The credential bundle is a single file in PEM format.  The first PEM
+    entry is the private key (in PKCS#8 format), and the remaining PEM
+    entries are the certificate chain issued by the signer (typically,
+    signers will return their certificate chain in leaf-to-root order).
+
+    Prefer using the credential bundle format, since your application code
+    can read it atomically.  If you use keyPath and certificateChainPath,
+    your application must make two separate file reads. If these coincide
+    with a certificate rotation, it is possible that the private key and leaf
+    certificate you read may not correspond to each other.  Your application
+    will need to check for this condition, and re-read until they are
+    consistent.
+
+    The named signer controls chooses the format of the certificate it
+    issues; consult the signer implementation's documentation to learn how to
+    use the certificates it issues.
+
+    Attributes
+    ----------
+    certificateChainPath : str, default is Undefined, optional
+        Write the certificate chain at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    credentialBundlePath : str, default is Undefined, optional
+        Write the credential bundle at this path in the projected volume.
+
+        The credential bundle is a single file that contains multiple PEM blocks.
+        The first PEM block is a PRIVATE KEY block, containing a PKCS#8 private
+        key.
+
+        The remaining blocks are CERTIFICATE blocks, containing the issued
+        certificate chain from the signer (leaf and any intermediates).
+
+        Using credentialBundlePath lets your Pod's application code make a single
+        atomic read that retrieves a consistent key and certificate chain.  If you
+        project them to separate files, your application code will need to
+        additionally check that the leaf certificate was issued to the key.
+    keyPath : str, default is Undefined, optional
+        Write the key at this path in the projected volume.
+
+        Most applications should use credentialBundlePath.  When using keyPath
+        and certificateChainPath, your application needs to check that the key
+        and leaf certificate are consistent, because it is possible to read the
+        files mid-rotation.
+    keyType : str, default is Undefined, required
+        The type of keypair Kubelet will generate for the pod.
+
+        Valid values are "RSA3072", "RSA4096", "ECDSAP256", "ECDSAP384",
+        "ECDSAP521", and "ED25519".
+    maxExpirationSeconds : int, default is Undefined, optional
+        maxExpirationSeconds is the maximum lifetime permitted for the
+        certificate.
+
+        Kubelet copies this value verbatim into the PodCertificateRequests it
+        generates for this projection.
+
+        If omitted, kube-apiserver will set it to 86400(24 hours). kube-apiserver
+        will reject values shorter than 3600 (1 hour).  The maximum allowable
+        value is 7862400 (91 days).
+
+        The signer implementation is then free to issue a certificate with any
+        lifetime *shorter* than MaxExpirationSeconds, but no shorter than 3600
+        seconds (1 hour).  This constraint is enforced by kube-apiserver.
+        `kubernetes.io` signers will never issue certificates with a lifetime
+        longer than 24 hours.
+    signerName : str, default is Undefined, required
+        Kubelet's generated CSRs will be addressed to this signer.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.unverifiedUserAnnotations` field of
+        the PodCertificateRequest objects that Kubelet creates.
+
+        Entries are subject to the same validation as object metadata annotations,
+        with the addition that all keys must be domain-prefixed. No restrictions
+        are placed on values, except an overall size limitation on the entire field.
+
+        Signers should document the keys and values they support. Signers should
+        deny requests that contain keys they do not recognize.
+    """
+    certificateChainPath?: str
+    credentialBundlePath?: str
+    keyPath?: str
+    keyType: str
+
+    maxExpirationSeconds?: int
+    signerName: str
+
+    userAnnotations?: {str:str}
+
 schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0ProjectedSourcesItems0Secret:
     r"""
     secret information about the secret data to project
@@ -3078,7 +3291,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAdditionalVolumesItems0Rbd:
     r"""
     rbd represents a Rados Block Device mount on the host that shares a pod's lifetime.
     Deprecated: RBD is deprecated and the in-tree rbd type is no longer supported.
-    More info: https://examples.k8s.io/volumes/rbd/README.md
 
     Attributes
     ----------
@@ -3599,7 +3811,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3609,7 +3820,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSched
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -3738,7 +3948,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedu
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3748,7 +3957,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedu
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -3868,8 +4076,8 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinity:
         most preferred is the one with the greatest sum of weights, i.e.
         for each node that meets all of the scheduling requirements (resource
         request, requiredDuringScheduling anti-affinity expressions, etc.),
-        compute a sum by iterating through the elements of this field and adding
-        "weight" to the sum if the node has pods which matches the corresponding podAffinityTerm; the
+        compute a sum by iterating through the elements of this field and subtracting
+        "weight" from the sum if the node has pods which matches the corresponding podAffinityTerm; the
         node(s) with the highest sum are the most preferred.
     requiredDuringSchedulingIgnoredDuringExecution : [DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0], default is Undefined, optional
         If the anti-affinity requirements specified by this field are not met at
@@ -3916,7 +4124,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -3926,7 +4133,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringS
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityPreferredDuringSchedulingIgnoredDuringExecutionItems0PodAffinityTermNamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -4055,7 +4261,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSc
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both matchLabelKeys and labelSelector.
         Also, matchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     mismatchLabelKeys : [str], default is Undefined, optional
         MismatchLabelKeys is a set of pod label keys to select which pods will
         be taken into consideration. The keys are used to lookup values from the
@@ -4065,7 +4270,6 @@ schema DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSc
         pod labels will be ignored. The default value is empty.
         The same key is forbidden to exist in both mismatchLabelKeys and labelSelector.
         Also, mismatchLabelKeys cannot be set when labelSelector isn't set.
-        This is a beta field and requires enabling MatchLabelKeysInPodAffinity feature gate (enabled by default).
     namespaceSelector : DragonflydbIoV1alpha1DragonflySpecAffinityPodAntiAffinityRequiredDuringSchedulingIgnoredDuringExecutionItems0NamespaceSelector, default is Undefined, optional
         namespace selector
     namespaces : [str], default is Undefined, optional
@@ -4258,7 +4462,6 @@ schema DragonflydbIoV1alpha1DragonflySpecContainerSecurityContext:
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -4422,6 +4625,54 @@ schema DragonflydbIoV1alpha1DragonflySpecContainerSecurityContextWindowsOptions:
     hostProcess?: bool
     runAsUserName?: str
 
+schema DragonflydbIoV1alpha1DragonflySpecCustomLivenessProbeConfigMap:
+    r"""
+    Custom ConfigMap providing key "liveness-check.sh" to override the default liveness probe.
+    An additionalVolumes entry named "liveness-probe" takes precedence.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
+schema DragonflydbIoV1alpha1DragonflySpecCustomReadinessProbeConfigMap:
+    r"""
+    Custom ConfigMap providing key "readiness-check.sh" to override the default readiness probe.
+    An additionalVolumes entry named "readiness-probe" takes precedence.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
+schema DragonflydbIoV1alpha1DragonflySpecCustomStartupProbeConfigMap:
+    r"""
+    Custom ConfigMap providing key "startup-check.sh" to override the default startup probe.
+    An additionalVolumes entry named "startup-probe" takes precedence.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, optional
+        Name of the referent.
+        This field is effectively required, but due to backwards compatibility is
+        allowed to be empty. Instances of this type with an empty value here are
+        almost certainly wrong.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
+    name?: str = ""
+
 schema DragonflydbIoV1alpha1DragonflySpecEnvItems0:
     r"""
     EnvVar represents an environment variable present in a Container.
@@ -4429,7 +4680,8 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -4458,6 +4710,8 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFrom:
         config map key ref
     fieldRef : DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -4465,6 +4719,7 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFrom:
     """
     configMapKeyRef?: DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromConfigMapKeyRef
     fieldRef?: DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFieldRef
+    fileKeyRef?: DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFileKeyRef
     resourceFieldRef?: DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromResourceFieldRef
     secretKeyRef?: DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromSecretKeyRef
 
@@ -4504,6 +4759,38 @@ schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFieldRef:
     """
     apiVersion?: str
     fieldPath: str
+
+schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema DragonflydbIoV1alpha1DragonflySpecEnvItems0ValueFromResourceFieldRef:
     r"""
@@ -4593,8 +4880,8 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0:
         Cannot be updated.
     envFrom : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0], default is Undefined, optional
         List of sources to populate environment variables in the container.
-        The keys defined within a source must be a C_IDENTIFIER. All invalid keys
-        will be reported as an event when the container is starting. When a key exists in multiple
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        When a key exists in multiple
         sources, the value associated with the last source will take precedence.
         Values defined by an Env with a duplicate key will take precedence.
         Cannot be updated.
@@ -4629,14 +4916,15 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0:
         readiness probe
     resizePolicy : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
         RestartPolicy defines the restart behavior of individual containers in a pod.
-        This field may only be set for init containers, and the only allowed value is "Always".
-        For non-init containers or when this field is not specified,
+        This overrides the pod-level restart policy. When this field is not specified,
         the restart behavior is defined by the Pod's restart policy and the container type.
-        Setting the RestartPolicy as "Always" for the init container will have the following effect:
+        Additionally, setting the RestartPolicy as "Always" for the init container will
+        have the following effect:
         this init container will be continually restarted on
         exit until all regular containers have terminated. Once all regular
         containers have completed, all init containers with restartPolicy "Always"
@@ -4647,6 +4935,18 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0:
         container. Instead, the next init container starts immediately after this
         init container is started, or after any startupProbe has successfully
         completed.
+    restartPolicyRules : [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0RestartPolicyRulesItems0], default is Undefined, optional
+        Represents a list of rules to be checked to determine if the
+        container should be restarted on exit. The rules are evaluated in
+        order. Once a rule matches a container exit condition, the remaining
+        rules are ignored. If no rule matches the container exit condition,
+        the Container-level restart policy determines the whether the container
+        is restarted or not. Constraints on the rules:
+        - At most 20 rules are allowed.
+        - Rules can have the same action.
+        - Identical rules are not forbidden in validations.
+        When rules are specified, container MUST set RestartPolicy explicitly
+        even it if matches the Pod's RestartPolicy.
     securityContext : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext, default is Undefined, optional
         security context
     startupProbe : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbe, default is Undefined, optional
@@ -4708,6 +5008,7 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0:
     resizePolicy?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResizePolicyItems0]
     resources?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Resources
     restartPolicy?: str
+    restartPolicyRules?: [DragonflydbIoV1alpha1DragonflySpecInitContainersItems0RestartPolicyRulesItems0]
     securityContext?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext
     startupProbe?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0StartupProbe
     stdin?: bool
@@ -4721,14 +5022,15 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0:
 
 schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0:
     r"""
-    EnvFromSource represents the source of a set of ConfigMaps
+    EnvFromSource represents the source of a set of ConfigMaps or Secrets
 
     Attributes
     ----------
     configMapRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0ConfigMapRef, default is Undefined, optional
         config map ref
     prefix : str, default is Undefined, optional
-        An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER.
+        Optional text to prepend to the name of each environment variable.
+        May consist of any printable ASCII characters except '='.
     secretRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvFromItems0SecretRef, default is Undefined, optional
         secret ref
     """
@@ -4779,7 +5081,8 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0:
     Attributes
     ----------
     name : str, default is Undefined, required
-        Name of the environment variable. Must be a C_IDENTIFIER.
+        Name of the environment variable.
+        May consist of any printable ASCII characters except '='.
     value : str, default is Undefined, optional
         Variable references $(VAR_NAME) are expanded
         using the previously defined environment variables in the container and
@@ -4808,6 +5111,8 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFrom:
         config map key ref
     fieldRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFieldRef, default is Undefined, optional
         field ref
+    fileKeyRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFileKeyRef, default is Undefined, optional
+        file key ref
     resourceFieldRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromResourceFieldRef, default is Undefined, optional
         resource field ref
     secretKeyRef : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromSecretKeyRef, default is Undefined, optional
@@ -4815,6 +5120,7 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFrom:
     """
     configMapKeyRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromConfigMapKeyRef
     fieldRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFieldRef
+    fileKeyRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFileKeyRef
     resourceFieldRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromResourceFieldRef
     secretKeyRef?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromSecretKeyRef
 
@@ -4854,6 +5160,38 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromF
     """
     apiVersion?: str
     fieldPath: str
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromFileKeyRef:
+    r"""
+    FileKeyRef selects a key of the env file.
+    Requires the EnvFiles feature gate to be enabled.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        The key within the env file. An invalid key will prevent the pod from starting.
+        The keys defined within a source may consist of any printable ASCII characters except '='.
+        During Alpha stage of the EnvFiles feature gate, the key size is limited to 128 characters.
+    optional : bool, default is Undefined, optional
+        Specify whether the file or its key must be defined. If the file or key
+        does not exist, then the env var is not published.
+        If optional is set to true and the specified key does not exist,
+        the environment variable will not be set in the Pod's containers.
+
+        If optional is set to false and the specified key does not exist,
+        an error will be returned during Pod creation.
+    path : str, default is Undefined, required
+        The path within the volume from which to select the file.
+        Must be relative and may not contain the '..' path or start with '..'.
+    volumeName : str, default is Undefined, required
+        The name of the volume mount containing the env file.
+    """
+    key: str
+
+    optional?: bool = False
+    path: str
+
+    volumeName: str
 
 schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0EnvItems0ValueFromResourceFieldRef:
     r"""
@@ -4909,9 +5247,14 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Lifecycle:
         post start
     preStop : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStop, default is Undefined, optional
         pre stop
+    stopSignal : str, default is Undefined, optional
+        StopSignal defines which signal will be sent to a container when it is being stopped.
+        If not specified, the default is defined by the container runtime in use.
+        StopSignal can only be set for Pods with a non-empty .spec.os.name
     """
     postStart?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStart
     preStop?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePreStop
+    stopSignal?: str
 
 schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0LifecyclePostStart:
     r"""
@@ -5498,7 +5841,7 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0Resources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -5538,6 +5881,44 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0ResourcesClaimsItem
 
     request?: str
 
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0RestartPolicyRulesItems0:
+    r"""
+    ContainerRestartRule describes how a container exit is handled.
+
+    Attributes
+    ----------
+    action : str, default is Undefined, required
+        Specifies the action taken on a container exit if the requirements
+        are satisfied. The only possible value is "Restart" to restart the
+        container.
+    exitCodes : DragonflydbIoV1alpha1DragonflySpecInitContainersItems0RestartPolicyRulesItems0ExitCodes, default is Undefined, optional
+        exit codes
+    """
+    action: str
+
+    exitCodes?: DragonflydbIoV1alpha1DragonflySpecInitContainersItems0RestartPolicyRulesItems0ExitCodes
+
+schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0RestartPolicyRulesItems0ExitCodes:
+    r"""
+    Represents the exit codes to check on container exits.
+
+    Attributes
+    ----------
+    operator : str, default is Undefined, required
+        Represents the relationship between the container exit code(s) and the
+        specified values. Possible values are:
+        - In: the requirement is satisfied if the container exit code is in the
+          set of specified values.
+        - NotIn: the requirement is satisfied if the container exit code is
+          not in the set of specified values.
+    values : [int], default is Undefined, optional
+        Specifies the set of values to check for container exit codes.
+        At most 255 elements are allowed.
+    """
+    operator: str
+
+    values?: [int]
+
 schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext:
     r"""
     SecurityContext defines the security options the container should be run with.
@@ -5567,7 +5948,6 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0SecurityContext:
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
         Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
@@ -5957,7 +6337,7 @@ schema DragonflydbIoV1alpha1DragonflySpecInitContainersItems0VolumeMountsItems0:
 
 schema DragonflydbIoV1alpha1DragonflySpecOwnedObjectsMetadata:
     r"""
-    (Optional) Dragonfly direct child resources additional annotations and labels
+    (Optional) Labels and annotations to add to all owned resources (StatefulSet, Service, PDB, etc).
 
     Attributes
     ----------
@@ -5986,6 +6366,20 @@ schema DragonflydbIoV1alpha1DragonflySpecPdb:
     """
     maxUnavailable?: int | str
     minAvailable?: int | str
+
+schema DragonflydbIoV1alpha1DragonflySpecPodMetadata:
+    r"""
+    (Optional) Labels and annotations to add to the Dragonfly pods.
+
+    Attributes
+    ----------
+    annotations : {str:str}, default is Undefined, optional
+        annotations
+    labels : {str:str}, default is Undefined, optional
+        labels
+    """
+    annotations?: {str:str}
+    labels?: {str:str}
 
 schema DragonflydbIoV1alpha1DragonflySpecPodSecurityContext:
     r"""
@@ -6227,7 +6621,7 @@ schema DragonflydbIoV1alpha1DragonflySpecResources:
         Claims lists the names of resources, defined in spec.resourceClaims,
         that are used by this container.
 
-        This is an alpha field and requires enabling the
+        This field depends on the
         DynamicResourceAllocation feature gate.
 
         This field is immutable. It can only be set for containers.
@@ -6339,15 +6733,13 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpec:
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -6442,7 +6834,7 @@ schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecDataSo
 schema DragonflydbIoV1alpha1DragonflySpecSnapshotPersistentVolumeClaimSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -6556,15 +6948,13 @@ schema DragonflydbIoV1alpha1DragonflySpecTieringPersistentVolumeClaimSpec:
         volumeAttributesClassName may be used to set the VolumeAttributesClass used by this claim.
         If specified, the CSI driver will create or update the volume with the attributes defined
         in the corresponding VolumeAttributesClass. This has a different purpose than storageClassName,
-        it can be changed after the claim is created. An empty string value means that no VolumeAttributesClass
-        will be applied to the claim but it's not allowed to reset this field to empty string once it is set.
-        If unspecified and the PersistentVolumeClaim is unbound, the default VolumeAttributesClass
-        will be set by the persistentvolume controller if it exists.
+        it can be changed after the claim is created. An empty string or nil value indicates that no
+        VolumeAttributesClass will be applied to the claim. If the claim enters an Infeasible error state,
+        this field can be reset to its previous value (including nil) to cancel the modification.
         If the resource referred to by volumeAttributesClass does not exist, this PersistentVolumeClaim will be
         set to a Pending state, as reflected by the modifyVolumeStatus field, until such as a resource
         exists.
         More info: https://kubernetes.io/docs/concepts/storage/volume-attributes-classes/
-        (Beta) Using this field requires the VolumeAttributesClass feature gate to be enabled (off by default).
     volumeMode : str, default is Undefined, optional
         volumeMode defines what type of volume is required by the claim.
         Value of Filesystem is implied when not included in claim spec.
@@ -6659,7 +7049,7 @@ schema DragonflydbIoV1alpha1DragonflySpecTieringPersistentVolumeClaimSpecDataSou
 schema DragonflydbIoV1alpha1DragonflySpecTieringPersistentVolumeClaimSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
-    If RecoverVolumeExpansionFailure feature is enabled users are allowed to specify resource requirements
+    Users are allowed to specify resource requirements
     that are lower than previous value but must still be higher than capacity recorded in the
     status field of the claim.
     More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#resources
@@ -6737,9 +7127,10 @@ schema DragonflydbIoV1alpha1DragonflySpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
     tolerationSeconds : int, default is Undefined, optional
         TolerationSeconds represents the period of time the toleration (which must be
         of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
@@ -6819,7 +7210,6 @@ schema DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0:
         - Ignore: nodeAffinity/nodeSelector are ignored. All nodes are included in the calculations.
 
         If this value is nil, the behavior is equivalent to the Honor policy.
-        This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
     nodeTaintsPolicy : str, default is Undefined, optional
         NodeTaintsPolicy indicates how we will treat node taints when calculating
         pod topology spread skew. Options are:
@@ -6828,7 +7218,6 @@ schema DragonflydbIoV1alpha1DragonflySpecTopologySpreadConstraintsItems0:
         - Ignore: node taints are ignored. All nodes are included.
 
         If this value is nil, the behavior is equivalent to the Ignore policy.
-        This is a beta-level feature default enabled by the NodeInclusionPolicyInPodTopologySpread feature flag.
     topologyKey : str, default is Undefined, required
         TopologyKey is the key of node labels. Nodes that have a label with this key
         and identical values are considered to be in the same topology.
@@ -6924,9 +7313,11 @@ schema DragonflydbIoV1alpha1DragonflyStatus:
     phase : str, default is Undefined, optional
         Status of the Dragonfly Instance
         It can be one of the following:
-        - "ready": The Dragonfly instance is ready to serve requests
-        - "configuring-replication": The controller is updating the master of the Dragonfly instance
-        - "resources-created": The Dragonfly instance resources were created but not yet configured
+        - "Ready": The Dragonfly instance is ready to serve requests
+        - "NotReady": The Dragonfly instance was ready but has no healthy master
+        - "Configuring": The controller is updating the master of the Dragonfly instance
+        - "RollingUpdate": The Dragonfly instance pods are being updated to a new version
+        - "ResourcesCreated": The Dragonfly instance resources were created but not yet configured
     """
     isRollingUpdate?: bool
     phase?: str
