@@ -37,6 +37,24 @@
       "title": "daemonsetAnnotations",
       "type": "object"
     },
+    "extraInitContainers": {
+      "description": "Add additional initContainers *before* Spegel's own configuration init container\nto run additional node init configuration tasks",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraInitContainers",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "Add additional volumes to the daemonset. This can be helpful when adding custom init containers that need\nhost path mounts to different locations than the already configured ones.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
     "fullnameOverride": {
       "default": "",
       "description": "Overrides the full name of the chart.",
@@ -51,84 +69,11 @@
       "title": "global",
       "type": "object"
     },
-    "grafanaDashboard": {
-      "additionalProperties": true,
-      "properties": {
-        "annotations": {
-          "additionalProperties": true,
-          "description": "grafana_dashboard: \"1\"\nAnnotations to add to the Sidecar configMap or GrafanaDashboard.",
-          "required": [],
-          "title": "annotations",
-          "type": "object"
-        },
-        "enabled": {
-          "default": false,
-          "description": "If true creates a Grafana dashboard.",
-          "required": [],
-          "title": "enabled",
-          "type": "boolean"
-        },
-        "grafanaOperator": {
-          "additionalProperties": true,
-          "description": "grafana_folder: \"Spegel\"",
-          "properties": {
-            "allowCrossNamespaceImport": {
-              "default": true,
-              "description": "If true allows for a Grafana in any namespace to access this GrafanaDashboard.",
-              "required": [],
-              "title": "allowCrossNamespaceImport",
-              "type": "boolean"
-            },
-            "folder": {
-              "default": "",
-              "description": "Folder to create the dashboard in.",
-              "required": [],
-              "title": "folder",
-              "type": "string"
-            },
-            "matchLabels": {
-              "additionalProperties": true,
-              "description": "Selected labels for Grafana instance.",
-              "required": [],
-              "title": "matchLabels",
-              "type": "object"
-            },
-            "resyncPeriod": {
-              "default": "10m",
-              "description": "Resync period for the Grafana operator to check for updates to the dashboard.",
-              "required": [],
-              "title": "resyncPeriod",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "grafanaOperator",
-          "type": "object"
-        },
-        "labels": {
-          "additionalProperties": true,
-          "description": "Labels to add to the Sidecar configMap or GrafanaDashboard.",
-          "required": [],
-          "title": "labels",
-          "type": "object"
-        },
-        "mode": {
-          "default": "Sidecar",
-          "description": "Mode for Grafana dashboard creation. Valid values are `Sidecar` and `GrafanaOperator`.",
-          "required": [],
-          "title": "mode",
-          "type": "string"
-        }
-      },
-      "required": [],
-      "title": "grafanaDashboard",
-      "type": "object"
-    },
     "image": {
       "additionalProperties": true,
       "properties": {
         "digest": {
-          "default": "sha256:82f5dd969ed74e3a9cfd6284045099a161778a0d85f9e01a234a62f15eb9d696",
+          "default": "sha256:b48194957bf9b5bdcea2700536a302ade23315082b05e5a44c0822f5c301850a",
           "description": "Image digest.",
           "required": [],
           "title": "digest",
@@ -197,6 +142,21 @@
       "required": [],
       "title": "namespaceOverride",
       "type": "string"
+    },
+    "networkPolicy": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "If true creates a NetworkPolicy that limits libp2p router traffic to Spegel peers in the release namespace.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "networkPolicy",
+      "type": "object"
     },
     "nodeSelector": {
       "additionalProperties": true,
@@ -365,13 +325,6 @@
               "title": "annotations",
               "type": "object"
             },
-            "hostPort": {
-              "default": 30020,
-              "description": "Local host port to expose the registry.",
-              "required": [],
-              "title": "hostPort",
-              "type": "integer"
-            },
             "nodeIp": {
               "default": "",
               "description": "Override the NODE_ID environment variable. It defaults to the field status.hostIP",
@@ -380,7 +333,7 @@
               "type": "string"
             },
             "nodePort": {
-              "default": 30021,
+              "default": 30020,
               "description": "Node port to expose the registry via the service.",
               "required": [],
               "title": "nodePort",
@@ -392,20 +345,6 @@
               "required": [],
               "title": "port",
               "type": "integer"
-            },
-            "topologyAwareHintsEnabled": {
-              "default": true,
-              "description": "If true adds topology aware hints annotation to node port service.",
-              "required": [],
-              "title": "topologyAwareHintsEnabled",
-              "type": "boolean"
-            },
-            "usePreferSameNodeTrafficDistribution": {
-              "default": false,
-              "description": "Use PreferSameNode traffic distribution on the node port service\ninstead of using an additional mirror registry on a container host port.",
-              "required": [],
-              "title": "usePreferSameNodeTrafficDistribution",
-              "type": "boolean"
             }
           },
           "required": [],
@@ -591,6 +530,36 @@
           "required": [],
           "title": "mirroredRegistries",
           "type": "array"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Configuration for Spegel persistence on host used for keeping P2P identity between restarts.",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "If true Spegel will persist data on the host.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostPath": {
+              "default": "/var/lib/spegel",
+              "description": "Path on host which is mounted to container.",
+              "required": [],
+              "title": "hostPath",
+              "type": "string"
+            },
+            "path": {
+              "default": "/var/lib/spegel",
+              "description": "Path in the container where host path is mounted.",
+              "required": [],
+              "title": "path",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
         },
         "prependExisting": {
           "default": false,

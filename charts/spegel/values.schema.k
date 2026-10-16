@@ -19,11 +19,16 @@ schema Values:
         Common labels to apply to all rendered resources.
     daemonsetAnnotations : ValuesDaemonsetAnnotations, optional
         Annotations to add to the DaemonSet.
+    extraInitContainers : [any], optional
+        Add additional initContainers *before* Spegel's own configuration init container
+        to run additional node init configuration tasks
+    extraVolumes : [any], optional
+        Add additional volumes to the daemonset. This can be helpful when adding custom init containers that need
+        host path mounts to different locations than the already configured ones.
     fullnameOverride : str, optional, default is ""
         Overrides the full name of the chart.
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
-    grafanaDashboard : ValuesGrafanaDashboard, optional
     image : ValuesImage, optional
     imagePullSecrets : [any], optional
         Image Pull Secrets
@@ -32,6 +37,7 @@ schema Values:
         Overrides the name of the chart.
     namespaceOverride : str, optional, default is ""
         Overrides the namespace where spegel resources are installed.
+    networkPolicy : ValuesNetworkPolicy, optional
     nodeSelector : ValuesNodeSelector, optional
         Node selector for pod assignment.
     podAnnotations : ValuesPodAnnotations, optional
@@ -62,14 +68,16 @@ schema Values:
     clusterDomain?: str
     commonLabels?: ValuesCommonLabels
     daemonsetAnnotations?: ValuesDaemonsetAnnotations
+    extraInitContainers?: [any]
+    extraVolumes?: [any]
     fullnameOverride?: str
     global?: ValuesGlobal
-    grafanaDashboard?: ValuesGrafanaDashboard
     image?: ValuesImage
     imagePullSecrets?: [any]
     livenessProbe?: ValuesLivenessProbe
     nameOverride?: str
     namespaceOverride?: str
+    networkPolicy?: ValuesNetworkPolicy
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
     podSecurityContext?: ValuesPodSecurityContext
@@ -109,78 +117,13 @@ schema ValuesGlobal:
     """
     [...str]: any
 
-schema ValuesGrafanaDashboard:
-    r"""
-    ValuesGrafanaDashboard
-
-    Attributes
-    ----------
-    annotations : ValuesGrafanaDashboardAnnotations, optional
-        grafana_dashboard: "1"
-        Annotations to add to the Sidecar configMap or GrafanaDashboard.
-    enabled : bool, optional, default is False
-        If true creates a Grafana dashboard.
-    grafanaOperator : ValuesGrafanaDashboardGrafanaOperator, optional
-        grafana_folder: "Spegel"
-    labels : ValuesGrafanaDashboardLabels, optional
-        Labels to add to the Sidecar configMap or GrafanaDashboard.
-    mode : str, optional, default is "Sidecar"
-        Mode for Grafana dashboard creation. Valid values are `Sidecar` and `GrafanaOperator`.
-    """
-    [...str]: any
-    annotations?: ValuesGrafanaDashboardAnnotations
-    enabled?: bool
-    grafanaOperator?: ValuesGrafanaDashboardGrafanaOperator
-    labels?: ValuesGrafanaDashboardLabels
-    mode?: str
-
-schema ValuesGrafanaDashboardAnnotations:
-    r"""
-    grafana_dashboard: "1"
-    Annotations to add to the Sidecar configMap or GrafanaDashboard.
-    """
-    [...str]: any
-
-schema ValuesGrafanaDashboardGrafanaOperator:
-    r"""
-    grafana_folder: "Spegel"
-
-    Attributes
-    ----------
-    allowCrossNamespaceImport : bool, optional, default is True
-        If true allows for a Grafana in any namespace to access this GrafanaDashboard.
-    folder : str, optional, default is ""
-        Folder to create the dashboard in.
-    matchLabels : ValuesGrafanaDashboardGrafanaOperatorMatchLabels, optional
-        Selected labels for Grafana instance.
-    resyncPeriod : str, optional, default is "10m"
-        Resync period for the Grafana operator to check for updates to the dashboard.
-    """
-    [...str]: any
-    allowCrossNamespaceImport?: bool
-    folder?: str
-    matchLabels?: ValuesGrafanaDashboardGrafanaOperatorMatchLabels
-    resyncPeriod?: str
-
-schema ValuesGrafanaDashboardGrafanaOperatorMatchLabels:
-    r"""
-    Selected labels for Grafana instance.
-    """
-    [...str]: any
-
-schema ValuesGrafanaDashboardLabels:
-    r"""
-    Labels to add to the Sidecar configMap or GrafanaDashboard.
-    """
-    [...str]: any
-
 schema ValuesImage:
     r"""
     ValuesImage
 
     Attributes
     ----------
-    digest : str, optional, default is "sha256:82f5dd969ed74e3a9cfd6284045099a161778a0d85f9e01a234a62f15eb9d696"
+    digest : str, optional, default is "sha256:b48194957bf9b5bdcea2700536a302ade23315082b05e5a44c0822f5c301850a"
         Image digest.
     pullPolicy : str, optional, default is "IfNotPresent"
         Image Pull Policy.
@@ -203,6 +146,18 @@ schema ValuesLivenessProbe:
     ----------
     enabled : bool, optional, default is False
         When enabled a liveness probe will be added to the registry.
+    """
+    [...str]: any
+    enabled?: bool
+
+schema ValuesNetworkPolicy:
+    r"""
+    ValuesNetworkPolicy
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        If true creates a NetworkPolicy that limits libp2p router traffic to Spegel peers in the release namespace.
     """
     [...str]: any
     enabled?: bool
@@ -418,28 +373,18 @@ schema ValuesServiceRegistry:
     ----------
     annotations : ValuesServiceRegistryAnnotations, optional
         Annotations to add to the registry service
-    hostPort : int, optional, default is 30020
-        Local host port to expose the registry.
     nodeIp : str, optional, default is ""
         Override the NODE_ID environment variable. It defaults to the field status.hostIP
-    nodePort : int, optional, default is 30021
+    nodePort : int, optional, default is 30020
         Node port to expose the registry via the service.
     port : int, optional, default is 5000
         Port to expose the registry via the service.
-    topologyAwareHintsEnabled : bool, optional, default is True
-        If true adds topology aware hints annotation to node port service.
-    usePreferSameNodeTrafficDistribution : bool, optional, default is False
-        Use PreferSameNode traffic distribution on the node port service
-        instead of using an additional mirror registry on a container host port.
     """
     [...str]: any
     annotations?: ValuesServiceRegistryAnnotations
-    hostPort?: int
     nodeIp?: str
     nodePort?: int
     port?: int
-    topologyAwareHintsEnabled?: bool
-    usePreferSameNodeTrafficDistribution?: bool
 
 schema ValuesServiceRegistryAnnotations:
     r"""
@@ -489,6 +434,8 @@ schema ValuesSpegel:
         Max duration spent finding a mirror.
     mirroredRegistries : [any], optional
         Registries for which mirror configuration will be created. Empty means all registires will be mirrored.
+    persistence : ValuesSpegelPersistence, optional
+        Configuration for Spegel persistence on host used for keeping P2P identity between restarts.
     prependExisting : bool, optional, default is False
         - ".*:latest$"
         - "^docker\\.io/"
@@ -511,9 +458,28 @@ schema ValuesSpegel:
     mirrorResolveRetries?: int
     mirrorResolveTimeout?: str
     mirroredRegistries?: [any]
+    persistence?: ValuesSpegelPersistence
     prependExisting?: bool
     registryFilters?: [any]
     resolveTags?: bool
+
+schema ValuesSpegelPersistence:
+    r"""
+    Configuration for Spegel persistence on host used for keeping P2P identity between restarts.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        If true Spegel will persist data on the host.
+    hostPath : str, optional, default is "/var/lib/spegel"
+        Path on host which is mounted to container.
+    path : str, optional, default is "/var/lib/spegel"
+        Path in the container where host path is mounted.
+    """
+    [...str]: any
+    enabled?: bool
+    hostPath?: str
+    path?: str
 
 schema ValuesTolerationsItems0:
     r"""
