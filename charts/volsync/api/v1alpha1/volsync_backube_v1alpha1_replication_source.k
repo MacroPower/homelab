@@ -117,6 +117,8 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRclone:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -142,6 +144,7 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRclone:
     moverResources?: VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0]
     rcloneConfig?: str
     rcloneConfigSection?: str
@@ -1282,6 +1285,40 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverSecurityContextWind
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
+
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecRcloneMoverVolumesItems0:
     r"""
     volsync backube v1alpha1 replication source spec rclone mover volumes items0
@@ -1441,6 +1478,8 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRestic:
         should be created.
     customCA : VolsyncBackubeV1alpha1ReplicationSourceSpecResticCustomCA, default is Undefined, optional
         custom c a
+    exclude : VolsyncBackubeV1alpha1ReplicationSourceSpecResticExclude, default is Undefined, optional
+        exclude
     moverAffinity : VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverAffinity, default is Undefined, optional
         mover affinity
     moverPodLabels : {str:str}, default is Undefined, optional
@@ -1455,6 +1494,8 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRestic:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -1487,11 +1528,13 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRestic:
     capacity?: int | str
     copyMethod?: "Direct" | "None" | "Clone" | "Snapshot"
     customCA?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticCustomCA
+    exclude?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticExclude
     moverAffinity?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverAffinity
     moverPodLabels?: {str:str}
     moverResources?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0]
     pruneIntervalDays?: int
     repository?: str
@@ -1523,6 +1566,22 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticCustomCA:
     configMapName?: str
     key?: str
     secretName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticExclude:
+    r"""
+    exclude defines options for excluding files and directories from the backup.
+
+    Attributes
+    ----------
+    caches : bool, default is Undefined, optional
+        caches determines whether to exclude directories tagged with a standard
+        CACHEDIR.TAG file from the backup. When set to true, the restic backup
+        command will be run with the --exclude-caches flag, which skips any
+        directory containing a CACHEDIR.TAG file that starts with the signature
+        "Signature: 8a477f597d28d172789f06886806bc55".
+        See https://bford.info/cachedir/ for the Cache Directory Tagging Standard.
+    """
+    caches?: bool
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverAffinity:
     r"""
@@ -2634,6 +2693,40 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverSecurityContextWind
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
+
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticMoverVolumesItems0:
     r"""
     volsync backube v1alpha1 replication source spec restic mover volumes items0
@@ -2788,7 +2881,17 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticRetain:
     weekly : int, default is Undefined, optional
         Weekly defines the number of snapshots to be kept weekly
     within : str, default is Undefined, optional
-        Within defines the number of snapshots to be kept Within the given time period
+        Within defines the duration in which to keep all snapshosts
+    withinDaily : str, default is Undefined, optional
+        WithinDaily defines the duration in which to keep daily snapshots
+    withinHourly : str, default is Undefined, optional
+        WithinHourly defines the duration in which to keep hourly snapshots
+    withinMonthly : str, default is Undefined, optional
+        WithinMonthly defines the duration in which to keep monthly snapshots
+    withinWeekly : str, default is Undefined, optional
+        WithinWeekly defines the duration in which to keep weekly snapshots
+    withinYearly : str, default is Undefined, optional
+        WithinYearly defines the duration in which to keep yearly snapshots
     yearly : int, default is Undefined, optional
         Yearly defines the number of snapshots to be kept yearly
     """
@@ -2798,6 +2901,11 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecResticRetain:
     monthly?: int
     weekly?: int
     within?: str
+    withinDaily?: str
+    withinHourly?: str
+    withinMonthly?: str
+    withinWeekly?: str
+    withinYearly?: str
     yearly?: int
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsync:
@@ -2951,6 +3059,8 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLS:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -2973,6 +3083,7 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLS:
     moverResources?: VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0]
     port?: int
     storageClassName?: str
@@ -4094,6 +4205,40 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverSecurityContextWi
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
+
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecRsyncTLSMoverVolumesItems0:
     r"""
     volsync backube v1alpha1 replication source spec rsync TLS mover volumes items0
@@ -4257,6 +4402,8 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthing:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -4273,6 +4420,7 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthing:
     moverResources?: VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0]
     peers?: [VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingPeersItems0]
     serviceType?: str
@@ -5389,6 +5537,40 @@ schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverSecurityContextW
     gmsaCredentialSpecName?: str
     hostProcess?: bool
     runAsUserName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
 
 schema VolsyncBackubeV1alpha1ReplicationSourceSpecSyncthingMoverVolumesItems0:
     r"""
