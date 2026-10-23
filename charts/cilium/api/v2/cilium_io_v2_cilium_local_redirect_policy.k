@@ -88,6 +88,9 @@ schema CiliumIoV2CiliumLocalRedirectPolicySpecRedirectBackend:
 
     toPorts: [CiliumIoV2CiliumLocalRedirectPolicySpecRedirectBackendToPortsItems0]
 
+    check:
+        len(toPorts) >= 1
+
 schema CiliumIoV2CiliumLocalRedirectPolicySpecRedirectBackendLocalEndpointSelector:
     r"""
     LocalEndpointSelector selects node local pod(s) where traffic is redirected to.
