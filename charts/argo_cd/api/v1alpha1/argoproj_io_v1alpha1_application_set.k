@@ -334,6 +334,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -347,6 +349,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory:
@@ -909,11 +912,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -1122,6 +1128,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -1135,6 +1143,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResour
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory:
@@ -1774,6 +1783,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -1787,6 +1798,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourceDirectory:
@@ -2349,11 +2361,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -2562,6 +2577,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -2575,6 +2592,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecS
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory:
@@ -3223,6 +3241,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -3236,6 +3256,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourceDirectory:
@@ -3798,11 +3819,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -4011,6 +4035,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -4024,6 +4050,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSource
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0GitTemplateSpecSourcesItems0Directory:
@@ -4627,6 +4654,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -4640,6 +4669,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourceDirectory:
@@ -5202,11 +5232,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -5415,6 +5448,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -5428,6 +5463,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourc
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ListTemplateSpecSourcesItems0Directory:
@@ -6127,6 +6163,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -6140,6 +6178,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory:
@@ -6702,11 +6741,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -6915,6 +6957,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -6928,6 +6972,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory:
@@ -7567,6 +7612,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -7580,6 +7627,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourceDirectory:
@@ -8142,11 +8190,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -8355,6 +8406,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -8368,6 +8421,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory:
@@ -9016,6 +9070,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -9029,6 +9085,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourceDirectory:
@@ -9591,11 +9648,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -9804,6 +9864,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -9817,6 +9879,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0GitTemplateSpecSourcesItems0Directory:
@@ -10420,6 +10483,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -10433,6 +10498,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourceDirectory:
@@ -10995,11 +11061,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -11208,6 +11277,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -11221,6 +11292,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ListTemplateSpecSourcesItems0Directory:
@@ -11853,6 +11925,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -11866,6 +11940,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourceDirectory:
@@ -12428,11 +12503,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -12641,6 +12719,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -12654,6 +12734,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PluginTemplateSpecSourcesItems0Directory:
@@ -13671,6 +13752,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -13684,6 +13767,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourceDirectory:
@@ -14246,11 +14330,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -14459,6 +14546,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -14472,6 +14561,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory:
@@ -15187,6 +15277,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         all branches
     api : str, default is Undefined, required
         api
+    excludeArchivedRepos : bool, default is Undefined, optional
+        exclude archived repos
     insecure : bool, default is Undefined, optional
         insecure
     owner : str, default is Undefined, required
@@ -15197,6 +15289,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     allBranches?: bool
     api: str
 
+    excludeArchivedRepos?: bool
     insecure?: bool
     owner: str
 
@@ -15229,6 +15322,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         api
     appSecretName : str, default is Undefined, optional
         app secret name
+    excludeArchivedRepos : bool, default is Undefined, optional
+        exclude archived repos
     organization : str, default is Undefined, required
         organization
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithubTokenRef, default is Undefined, optional
@@ -15237,6 +15332,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     allBranches?: bool
     api?: str
     appSecretName?: str
+    excludeArchivedRepos?: bool
     organization: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGithubTokenRef
@@ -15270,6 +15366,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ca ref
     group : str, default is Undefined, required
         group
+    includeArchivedRepos : bool, default is Undefined, optional
+        include archived repos
     includeSharedProjects : bool, default is Undefined, optional
         include shared projects
     includeSubgroups : bool, default is Undefined, optional
@@ -15286,6 +15384,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderGitlabCaRef
     group: str
 
+    includeArchivedRepos?: bool
     includeSharedProjects?: bool
     includeSubgroups?: bool
     insecure?: bool
@@ -15483,6 +15582,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -15496,6 +15597,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourceDirectory:
@@ -16058,11 +16160,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -16271,6 +16376,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -16284,6 +16391,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory:
@@ -16903,6 +17011,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -16916,6 +17026,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourceDirectory:
@@ -17478,11 +17589,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -17691,6 +17805,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -17704,6 +17820,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSou
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MatrixTemplateSpecSourcesItems0Directory:
@@ -18407,6 +18524,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -18420,6 +18539,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourceDirectory:
@@ -18982,11 +19102,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -19195,6 +19318,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -19208,6 +19333,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClusterDecisionResourceTemplateSpecSourcesItems0Directory:
@@ -19847,6 +19973,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -19860,6 +19988,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourceDirectory:
@@ -20422,11 +20551,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -20635,6 +20767,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -20648,6 +20782,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ClustersTemplateSpecSourcesItems0Directory:
@@ -21296,6 +21431,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -21309,6 +21446,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourceDirectory:
@@ -21871,11 +22009,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -22084,6 +22225,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -22097,6 +22240,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0GitTemplateSpecSourcesItems0Directory:
@@ -22700,6 +22844,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -22713,6 +22859,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourceDirectory:
@@ -23275,11 +23422,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -23488,6 +23638,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -23501,6 +23653,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ListTemplateSpecSourcesItems0Directory:
@@ -24133,6 +24286,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -24146,6 +24301,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourceDirectory:
@@ -24708,11 +24864,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -24921,6 +25080,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -24934,6 +25095,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PluginTemplateSpecSourcesItems0Directory:
@@ -25951,6 +26113,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -25964,6 +26128,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourceDirectory:
@@ -26526,11 +26691,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -26739,6 +26907,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -26752,6 +26922,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory:
@@ -27467,6 +27638,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         all branches
     api : str, default is Undefined, required
         api
+    excludeArchivedRepos : bool, default is Undefined, optional
+        exclude archived repos
     insecure : bool, default is Undefined, optional
         insecure
     owner : str, default is Undefined, required
@@ -27477,6 +27650,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     allBranches?: bool
     api: str
 
+    excludeArchivedRepos?: bool
     insecure?: bool
     owner: str
 
@@ -27509,6 +27683,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         api
     appSecretName : str, default is Undefined, optional
         app secret name
+    excludeArchivedRepos : bool, default is Undefined, optional
+        exclude archived repos
     organization : str, default is Undefined, required
         organization
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithubTokenRef, default is Undefined, optional
@@ -27517,6 +27693,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     allBranches?: bool
     api?: str
     appSecretName?: str
+    excludeArchivedRepos?: bool
     organization: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGithubTokenRef
@@ -27550,6 +27727,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ca ref
     group : str, default is Undefined, required
         group
+    includeArchivedRepos : bool, default is Undefined, optional
+        include archived repos
     includeSharedProjects : bool, default is Undefined, optional
         include shared projects
     includeSubgroups : bool, default is Undefined, optional
@@ -27566,6 +27745,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderGitlabCaRef
     group: str
 
+    includeArchivedRepos?: bool
     includeSharedProjects?: bool
     includeSubgroups?: bool
     insecure?: bool
@@ -27763,6 +27943,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -27776,6 +27958,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourceDirectory:
@@ -28338,11 +28521,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -28551,6 +28737,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -28564,6 +28752,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory:
@@ -29183,6 +29372,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -29196,6 +29387,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourceDirectory:
@@ -29758,11 +29950,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -29971,6 +30166,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -29984,6 +30181,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSour
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0MergeTemplateSpecSourcesItems0Directory:
@@ -30616,6 +30814,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -30629,6 +30829,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourceDirectory:
@@ -31191,11 +31392,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -31404,6 +31608,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -31417,6 +31623,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSou
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PluginTemplateSpecSourcesItems0Directory:
@@ -32434,6 +32641,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -32447,6 +32656,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourceDirectory:
@@ -33009,11 +33219,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -33222,6 +33435,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -33235,6 +33450,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSp
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0PullRequestTemplateSpecSourcesItems0Directory:
@@ -33950,6 +34166,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitea:
         all branches
     api : str, default is Undefined, required
         api
+    excludeArchivedRepos : bool, default is Undefined, optional
+        exclude archived repos
     insecure : bool, default is Undefined, optional
         insecure
     owner : str, default is Undefined, required
@@ -33960,6 +34178,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitea:
     allBranches?: bool
     api: str
 
+    excludeArchivedRepos?: bool
     insecure?: bool
     owner: str
 
@@ -33992,6 +34211,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithub:
         api
     appSecretName : str, default is Undefined, optional
         app secret name
+    excludeArchivedRepos : bool, default is Undefined, optional
+        exclude archived repos
     organization : str, default is Undefined, required
         organization
     tokenRef : ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithubTokenRef, default is Undefined, optional
@@ -34000,6 +34221,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithub:
     allBranches?: bool
     api?: str
     appSecretName?: str
+    excludeArchivedRepos?: bool
     organization: str
 
     tokenRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGithubTokenRef
@@ -34033,6 +34255,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlab:
         ca ref
     group : str, default is Undefined, required
         group
+    includeArchivedRepos : bool, default is Undefined, optional
+        include archived repos
     includeSharedProjects : bool, default is Undefined, optional
         include shared projects
     includeSubgroups : bool, default is Undefined, optional
@@ -34049,6 +34273,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlab:
     caRef?: ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderGitlabCaRef
     group: str
 
+    includeArchivedRepos?: bool
     includeSharedProjects?: bool
     includeSubgroups?: bool
     insecure?: bool
@@ -34246,6 +34471,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -34259,6 +34486,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourceDirectory:
@@ -34821,11 +35049,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -35034,6 +35265,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -35047,6 +35280,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSp
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecGeneratorsItems0ScmProviderTemplateSpecSourcesItems0Directory:
@@ -35770,6 +36004,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSource:
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -35783,6 +36019,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSource:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceDirectory:
@@ -36345,11 +36582,14 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourceHydratorSyncSource:
     ----------
     path : str, default is Undefined, required
         path
+    repoURL : str, default is Undefined, optional
+        repo URL
     targetBranch : str, default is Undefined, required
         target branch
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -36558,6 +36798,8 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0:
         ref
     repoURL : str, default is Undefined, required
         repo URL
+    tagPrefix : str, default is Undefined, optional
+        tag prefix
     targetRevision : str, default is Undefined, optional
         target revision
     """
@@ -36571,6 +36813,7 @@ schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetSpecTemplateSpecSourcesItems0Directory:
@@ -37006,6 +37249,8 @@ schema ArgoprojIoV1alpha1ApplicationSetStatus:
         application status
     conditions : [ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0], default is Undefined, optional
         conditions
+    health : ArgoprojIoV1alpha1ApplicationSetStatusHealth, default is Undefined, optional
+        health
     resources : [ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0], default is Undefined, optional
         resources
     resourcesCount : int, default is Undefined, optional
@@ -37013,6 +37258,7 @@ schema ArgoprojIoV1alpha1ApplicationSetStatus:
     """
     applicationStatus?: [ArgoprojIoV1alpha1ApplicationSetStatusApplicationStatusItems0]
     conditions?: [ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0]
+    health?: ArgoprojIoV1alpha1ApplicationSetStatusHealth
     resources?: [ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0]
     resourcesCount?: int
 
@@ -37071,6 +37317,23 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0:
     status: str
 
     $type: str
+
+schema ArgoprojIoV1alpha1ApplicationSetStatusHealth:
+    r"""
+    argoproj io v1alpha1 application set status health
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, optional
+        last transition time
+    message : str, default is Undefined, optional
+        message
+    status : str, default is Undefined, optional
+        status
+    """
+    lastTransitionTime?: str
+    message?: str
+    status?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0:
     r"""
