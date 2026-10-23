@@ -12,16 +12,6 @@ schema Values:
     affinity : ValuesAffinity, optional
     env : any, optional, default is ""
     flags : ValuesFlags, optional
-        # If `metrics:` object is not provided, or commented out, the following flags
-        # will be applied the controller-manager and listener pods with empty values:
-        # `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.
-        # This will disable metrics.
-        #
-        # To enable metrics, uncomment the following lines.
-        metrics:
-          controllerManagerAddr: ":8080"
-          listenerAddr: ":8080"
-          listenerEndpoint: "/metrics"
     fullnameOverride : str, optional, default is ""
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
@@ -40,6 +30,8 @@ schema Values:
     podAnnotations : ValuesPodAnnotations, optional
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
+    pprof : ValuesPprof, optional
+        # To enable pprof, uncomment the addr field below.
     priorityClassName : str, optional, default is ""
         Leverage a PriorityClass to ensure your pods survive resource shortages
         ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
@@ -60,6 +52,9 @@ schema Values:
                key: ENV_VAR_NAME_2
                name: secret-name
                optional: true
+    terminationGracePeriodSeconds : int, optional, default is 35
+        # This must stay above the manager's graceful shutdown timeout (30s, controller-runtime's
+        # default) so in-flight reconciles have a chance to finish before the kubelet sends SIGKILL.
     tolerations : [any], optional
     topologySpreadConstraints : [any], optional
     volumeMounts : [any], optional
@@ -81,11 +76,13 @@ schema Values:
     podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
+    pprof?: ValuesPprof
     priorityClassName?: str
     replicaCount?: int
     resources?: ValuesResources
     securityContext?: ValuesSecurityContext
     serviceAccount?: ValuesServiceAccount
+    terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     volumeMounts?: [any]
@@ -99,50 +96,35 @@ schema ValuesAffinity:
 
 schema ValuesFlags:
     r"""
-    # If `metrics:` object is not provided, or commented out, the following flags
-    # will be applied the controller-manager and listener pods with empty values:
-    # `--metrics-addr`, `--listener-metrics-addr`, `--listener-metrics-endpoint`.
-    # This will disable metrics.
-    #
-    # To enable metrics, uncomment the following lines.
-    metrics:
-      controllerManagerAddr: ":8080"
-      listenerAddr: ":8080"
-      listenerEndpoint: "/metrics"
+    ValuesFlags
 
     Attributes
     ----------
+    autoscalingListenerMaxConcurrentReconciles : int, optional, default is 2
+    autoscalingRunnerSetMaxConcurrentReconciles : int, optional, default is 2
+        # The maximum number of concurrent reconciles for each controller, set directly per controller.
+        Increase these values to improve the throughput of the controller when running many runner scale sets.
+        They may also increase the load on the API server and the external service (e.g. GitHub API).
+    ephemeralRunnerMaxConcurrentReconciles : int, optional, default is 4
+        # The EphemeralRunner controller is higher because it is the only one of the four that routinely
+        # has many distinct objects to reconcile at once, one per runner. controller-runtime serialises
+        # reconciles per object, so extra workers on the other three only pay off when many runner scale
+        # sets exist.
+    ephemeralRunnerSetMaxConcurrentReconciles : int, optional, default is 2
     logFormat : str, optional, default is "text"
         # Log format can be set with one of the following values: "text", "json"
         # Defaults to "text"
     logLevel : str, optional, default is "debug"
         # Log level can be set here with one of the following values: "debug", "info", "warn", "error".
         # Defaults to "debug".
-    runnerMaxConcurrentReconciles : int, optional, default is 2
-        # The maximum number of concurrent reconciles which can be run by the EphemeralRunner controller.
-        Increase this value to improve the throughput of the controller.
-        It may also increase the load on the API server and the external service (e.g. GitHub API).
-    updateStrategy : str, optional, default is "immediate"
-        # Defines how the controller should handle upgrades while having running jobs.
-        #
-        # The strategies available are:
-        # - "immediate": (default) The controller will immediately apply the change causing the
-        #   recreation of the listener and ephemeral runner set. This can lead to an
-        #   overprovisioning of runners, if there are pending / running jobs. This should not
-        #   be a problem at a small scale, but it could lead to a significant increase of
-        #   resources if you have a lot of jobs running concurrently.
-        #
-        # - "eventual": The controller will remove the listener and ephemeral runner set
-        #   immediately, but will not recreate them (to apply changes) until all
-        #   pending / running jobs have completed.
-        #   This can lead to a longer time to apply the change but it will ensure
-        #   that you don't have any overprovisioning of runners.
     """
     [...str]: any
+    autoscalingListenerMaxConcurrentReconciles?: int
+    autoscalingRunnerSetMaxConcurrentReconciles?: int
+    ephemeralRunnerMaxConcurrentReconciles?: int
+    ephemeralRunnerSetMaxConcurrentReconciles?: int
     logFormat?: str
     logLevel?: str
-    runnerMaxConcurrentReconciles?: int
-    updateStrategy?: str
 
 schema ValuesGlobal:
     r"""
@@ -196,6 +178,12 @@ schema ValuesPodLabels:
 schema ValuesPodSecurityContext:
     r"""
     ValuesPodSecurityContext
+    """
+    [...str]: any
+
+schema ValuesPprof:
+    r"""
+    # To enable pprof, uncomment the addr field below.
     """
     [...str]: any
 
