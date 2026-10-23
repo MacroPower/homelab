@@ -37,6 +37,16 @@ schema CiliumIoV2alpha1CiliumPodIPPoolSpec:
 
     Attributes
     ----------
+    allowFirstIP : bool, default is Undefined, optional
+        AllowFirstIP allows the first IP of each allocated CIDR to be used. If
+        unset or false, this IP is reserved. This field is ignored for /{31,32}
+        and /{127,128} CIDRs since reserving the first and last IPs would make
+        the CIDRs unusable. This field is immutable.
+    allowLastIP : bool, default is Undefined, optional
+        AllowLastIP allows the last IP of each allocated CIDR to be used. If
+        unset or false, this IP is reserved. This field is ignored for /{31,32}
+        and /{127,128} CIDRs since reserving the first and last IPs would make
+        the CIDRs unusable. This field is immutable.
     ipv4 : CiliumIoV2alpha1CiliumPodIPPoolSpecIPV4, default is Undefined, optional
         ipv4
     ipv6 : CiliumIoV2alpha1CiliumPodIPPoolSpecIPV6, default is Undefined, optional
@@ -46,6 +56,8 @@ schema CiliumIoV2alpha1CiliumPodIPPoolSpec:
     podSelector : CiliumIoV2alpha1CiliumPodIPPoolSpecPodSelector, default is Undefined, optional
         pod selector
     """
+    allowFirstIP?: bool = False
+    allowLastIP?: bool = False
     ipv4?: CiliumIoV2alpha1CiliumPodIPPoolSpecIPV4
     ipv6?: CiliumIoV2alpha1CiliumPodIPPoolSpecIPV6
     namespaceSelector?: CiliumIoV2alpha1CiliumPodIPPoolSpecNamespaceSelector

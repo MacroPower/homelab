@@ -161,9 +161,13 @@ schema MulticlusterxK8sIoV1alpha1ServiceImportStatus:
         was derived.
     conditions : [MulticlusterxK8sIoV1alpha1ServiceImportStatusConditionsItems0], default is Undefined, optional
         conditions
+    endpointSliceObjects : str, default is Undefined, optional
+        EndpointSliceObjects indicates whether imported EndpointSlice objects are
+        present for this ServiceImport.
     """
     clusters?: [MulticlusterxK8sIoV1alpha1ServiceImportStatusClustersItems0]
     conditions?: [MulticlusterxK8sIoV1alpha1ServiceImportStatusConditionsItems0]
+    endpointSliceObjects?: "Present" | "Absent"
 
 schema MulticlusterxK8sIoV1alpha1ServiceImportStatusClustersItems0:
     r"""
