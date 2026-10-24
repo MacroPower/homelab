@@ -230,10 +230,27 @@ schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0:
         http01
     selector : CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Selector, default is Undefined, optional
         selector
+    waitInsteadOfSelfCheck : str, default is Undefined, optional
+        WaitInsteadOfSelfCheck, if set, skips cert-manager's self-check and
+        instead waits this long after presentation before asking the ACME server
+        to validate the challenge.
+
+        This is an advanced escape hatch for environments where cert-manager's
+        self-check cannot succeed from its own network or DNS viewpoint even
+        though the ACME server can still validate successfully, for example due
+        to split-horizon DNS or NAT hairpinning.
+
+        A value of 0 skips the self-check and asks the ACME server to validate
+        immediately after presentation, relying on the ACME server's own
+        validation retries (RFC 8555 section 8.2) to succeed once the challenge
+        has propagated. A negative duration is rejected.
+        Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration,
+        for example `30s` or `2m`.
     """
     dns01?: CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01
     http01?: CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Http01
     selector?: CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Selector
+    waitInsteadOfSelfCheck?: str
 
 schema CertManagerIoV1ClusterIssuerSpecAcmeSolversItems0Dns01:
     r"""
@@ -3422,6 +3439,8 @@ schema CertManagerIoV1ClusterIssuerSpecVaultAuth:
     ----------
     appRole : CertManagerIoV1ClusterIssuerSpecVaultAuthAppRole, default is Undefined, optional
         app role
+    aws : CertManagerIoV1ClusterIssuerSpecVaultAuthAws, default is Undefined, optional
+        aws
     clientCertificate : CertManagerIoV1ClusterIssuerSpecVaultAuthClientCertificate, default is Undefined, optional
         client certificate
     kubernetes : CertManagerIoV1ClusterIssuerSpecVaultAuthKubernetes, default is Undefined, optional
@@ -3430,6 +3449,7 @@ schema CertManagerIoV1ClusterIssuerSpecVaultAuth:
         token secret ref
     """
     appRole?: CertManagerIoV1ClusterIssuerSpecVaultAuthAppRole
+    aws?: CertManagerIoV1ClusterIssuerSpecVaultAuthAws
     clientCertificate?: CertManagerIoV1ClusterIssuerSpecVaultAuthClientCertificate
     kubernetes?: CertManagerIoV1ClusterIssuerSpecVaultAuthKubernetes
     tokenSecretRef?: CertManagerIoV1ClusterIssuerSpecVaultAuthTokenSecretRef
@@ -3474,6 +3494,62 @@ schema CertManagerIoV1ClusterIssuerSpecVaultAuthAppRoleSecretRef:
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
     key?: str
+    name: str
+
+schema CertManagerIoV1ClusterIssuerSpecVaultAuthAws:
+    r"""
+    AWS authenticates with Vault using AWS IAM authentication.
+    This allows authentication using IAM roles for service accounts (IRSA),
+    EKS Pod Identity (PIA), or ambient credentials (EC2 instance profiles, ECS task role).
+
+    Attributes
+    ----------
+    iamRoleArn : str, default is Undefined, optional
+        The ARN of the AWS IAM role to assume using the Kubernetes service account
+        token. Required when using IRSA (serviceAccountRef is set).
+        This role must have a trust policy that allows the OIDC provider to assume it.
+    mountPath : str, default is Undefined, optional
+        The Vault mountPath here is the mount path to use when authenticating with
+        Vault. For example, setting a value to `/v1/auth/foo`, will use the path
+        `/v1/auth/foo/login` to authenticate with Vault. If unspecified, the
+        default value "/v1/auth/aws" will be used.
+    region : str, default is Undefined, optional
+        The AWS region to use for authentication. If not specified, the region
+        will be determined from AWS_REGION or AWS_DEFAULT_REGION environment
+        variables, falling back to "us-east-1" if not set.
+    role : str, default is Undefined, required
+        A required field containing the Vault Role to assume when authenticating.
+    serviceAccountRef : CertManagerIoV1ClusterIssuerSpecVaultAuthAwsServiceAccountRef, default is Undefined, optional
+        service account ref
+    vaultHeaderValue : str, default is Undefined, optional
+        The Vault header value to include in the STS signing request.
+        This is used to prevent replay attacks.
+    """
+    iamRoleArn?: str
+    mountPath?: str
+    region?: str
+    role: str
+
+    serviceAccountRef?: CertManagerIoV1ClusterIssuerSpecVaultAuthAwsServiceAccountRef
+    vaultHeaderValue?: str
+
+    check:
+        len(role) >= 1
+
+schema CertManagerIoV1ClusterIssuerSpecVaultAuthAwsServiceAccountRef:
+    r"""
+    A reference to a service account that will be used to request a web identity
+    token for IRSA (IAM Roles for Service Accounts) authentication.
+
+    Attributes
+    ----------
+    audiences : [str], default is Undefined, optional
+        TokenAudiences is an optional list of extra audiences to include in the token passed to Vault.
+        The default audiences are always included in the token.
+    name : str, default is Undefined, required
+        Name of the ServiceAccount used to request a token.
+    """
+    audiences?: [str]
     name: str
 
 schema CertManagerIoV1ClusterIssuerSpecVaultAuthClientCertificate:
@@ -3649,6 +3725,8 @@ schema CertManagerIoV1ClusterIssuerSpecVenafi:
     ----------
     cloud : CertManagerIoV1ClusterIssuerSpecVenafiCloud, default is Undefined, optional
         cloud
+    ngts : CertManagerIoV1ClusterIssuerSpecVenafiNgts, default is Undefined, optional
+        ngts
     tpp : CertManagerIoV1ClusterIssuerSpecVenafiTpp, default is Undefined, optional
         tpp
     zone : str, default is Undefined, required
@@ -3658,6 +3736,7 @@ schema CertManagerIoV1ClusterIssuerSpecVenafi:
         This field is required.
     """
     cloud?: CertManagerIoV1ClusterIssuerSpecVenafiCloud
+    ngts?: CertManagerIoV1ClusterIssuerSpecVenafiNgts
     tpp?: CertManagerIoV1ClusterIssuerSpecVenafiTpp
     zone: str
 
@@ -3693,6 +3772,48 @@ schema CertManagerIoV1ClusterIssuerSpecVenafiCloudAPITokenSecretRef:
         More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
     """
     key?: str
+    name: str
+
+schema CertManagerIoV1ClusterIssuerSpecVenafiNgts:
+    r"""
+    NGTS specifies Palo Alto Networks Next Generation Trust Services (NGTS) configuration
+    using OAuth 2.0 Client Credentials. Only one of tpp, cloud, or ngts may be specified.
+
+    Attributes
+    ----------
+    credentialsRef : CertManagerIoV1ClusterIssuerSpecVenafiNgtsCredentialsRef, default is Undefined, required
+        credentials ref
+    tokenEndpoint : str, default is Undefined, optional
+        TokenEndpoint is the OAuth 2.0 token endpoint URL used to obtain access tokens,
+        for example "https://auth.apps.paloaltonetworks.com/oauth2/access_token".
+        Defaults to "https://auth.apps.paloaltonetworks.com/oauth2/access_token" if not set.
+    tsgID : str, default is Undefined, required
+        TSGID is the Tenant Service Group ID used to scope the OAuth 2.0 access token,
+        for example "1234567890". The tsg_id: prefix is added automatically.
+        This field is required.
+    url : str, default is Undefined, optional
+        URL is the base URL for the NGTS API endpoint.
+        Defaults to "https://api.strata.paloaltonetworks.com/ngts" if not set.
+    """
+    credentialsRef: CertManagerIoV1ClusterIssuerSpecVenafiNgtsCredentialsRef
+
+    tokenEndpoint?: str
+    tsgID: str
+
+    url?: str
+
+schema CertManagerIoV1ClusterIssuerSpecVenafiNgtsCredentialsRef:
+    r"""
+    CredentialsRef is a reference to a Kubernetes Secret containing the OAuth 2.0
+    Client ID and Client Secret. The secret must contain the keys 'client-id' and
+    'client-secret'.
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        Name of the resource being referred to.
+        More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+    """
     name: str
 
 schema CertManagerIoV1ClusterIssuerSpecVenafiTpp:
