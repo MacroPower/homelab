@@ -295,22 +295,23 @@ services:
           -o "StrictModes no"
 
     environment:
-      # One "path=uid:gid" per line. The entrypoint above bind-mounts each
-      # path over itself with that UID/GID translation, so root-in-container
-      # writes appear on the TrueNAS host as the declared owner. Only list
-      # writable host-path bind mounts; named volumes have no host UID
-      # ownership to align. Replace the placeholder UID/GID with the actual
-      # owner of each ZFS dataset before applying.
-      IDMAPPED_MOUNTS: |
-        /mnt/main/shared/photos/staging=1000:1000
+      # NOTE: IDMAPPED_MOUNTS is intentionally unset. OpenZFS does not honor
+      # idmapped mounts on a dataset carrying POSIX ACLs (staging has a
+      # default ACL): the bind mount succeeds but ZFS presents every inode
+      # as the overflow uid (nobody), which then makes the kernel refuse
+      # access -- including root's CAP_DAC_OVERRIDE. The idmap was the only
+      # thing blocking writes. Without it, this privileged container runs as
+      # real host root and writes to staging freely; the dataset's setgid
+      # bit + POSIX default ACL make new files inherit group nasuser(3000)
+      # with group rwx, so the photo app (a nasuser member) can use them.
+      # Files land owned root:nasuser rather than shared:nasuser, which the
+      # group-based 0770 layout is built to handle.
 
       # One absolute mountpoint per line. The entrypoint pre-creates
       # $path/.Trash-$uid/{files,info} (mode 0700) so gomi has a usable
       # external trash on each writable bind mount. Listed paths must be
       # bind-mount roots in the container's mount namespace (gomi only
-      # adopts trash dirs that sit at a real mountpoint). Tracked
-      # separately from IDMAPPED_MOUNTS so the two concerns don't get
-      # entangled, even though today they happen to overlap.
+      # adopts trash dirs that sit at a real mountpoint).
       GOMI_TRASH_MOUNTS: |
         /mnt/main/shared/photos/staging
 
