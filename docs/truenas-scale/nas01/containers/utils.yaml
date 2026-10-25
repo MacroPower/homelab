@@ -50,6 +50,7 @@ services:
       # bind-mount roots in the container's mount namespace.
       GOMI_TRASH_MOUNTS: |
         /mnt/main/shared/photos/staging
+        /mnt/main/archive/disks/staging
 
     cap_add:
       - SYS_ADMIN
@@ -82,6 +83,9 @@ services:
       # (the more-specific child mount overrides the parent at that path).
       - /mnt/main/shared/photos:/mnt/main/shared/photos:ro
       - /mnt/main/shared/photos/staging:/mnt/main/shared/photos/staging
+      # Archive dataset, read-only.
+      - /mnt/main/archive:/mnt/main/archive:ro
+      - /mnt/main/archive/disks/staging:/mnt/main/archive/disks/staging
       # Optional env file sourced by the fish login wrapper. Edit on the host;
       # new ssh sessions pick up changes (no container restart needed).
       # Pre-create the file -- a missing host path becomes an empty
