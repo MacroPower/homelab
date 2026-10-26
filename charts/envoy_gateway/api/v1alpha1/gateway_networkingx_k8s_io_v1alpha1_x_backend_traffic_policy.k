@@ -51,7 +51,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpec:
         ServiceImport, or any implementation-specific backendRef) are the only
         valid API target references.
 
-        Currently, a TargetRef can not be scoped to a specific port on a
+        Currently, a TargetRef cannot be scoped to a specific port on a
         Service.
     """
     retryConstraint?: GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecRetryConstraint
@@ -181,12 +181,6 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenc
         Support: Extended
     cookieConfig : GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenceCookieConfig, default is Undefined, optional
         cookie config
-    idleTimeout : str, default is Undefined, optional
-        IdleTimeout defines the idle timeout of the persistent session.
-        Once the session has been idle for more than the specified
-        IdleTimeout duration, the session becomes invalid.
-
-        Support: Extended
     sessionName : str, default is Undefined, optional
         SessionName defines the name of the persistent session token
         which may be reflected in the cookie or the header. Users
@@ -196,7 +190,7 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenc
         Support: Implementation-specific
     $type : str, default is "Cookie", optional
         Type defines the type of session persistence such as through
-        the use a header or cookie. Defaults to cookie based session
+        the use of a header or cookie. Defaults to cookie based session
         persistence.
 
         Support: Core for "Cookie" type
@@ -205,13 +199,11 @@ schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenc
     """
     absoluteTimeout?: str
     cookieConfig?: GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenceCookieConfig
-    idleTimeout?: str
     sessionName?: str
     $type?: "Cookie" | "Header" = "Cookie"
 
     check:
         _regex_match(str(absoluteTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if absoluteTimeout
-        _regex_match(str(idleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleTimeout
         len(sessionName) <= 128 if sessionName
 
 schema GatewayNetworkingxK8sIoV1alpha1XBackendTrafficPolicySpecSessionPersistenceCookieConfig:

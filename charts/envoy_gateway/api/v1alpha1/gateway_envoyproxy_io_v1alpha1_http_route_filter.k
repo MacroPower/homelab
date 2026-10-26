@@ -98,7 +98,6 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjectionCredenti
     "credential", and the value should be the credential to be injected.
     For example, for basic authentication, the value should be "Basic <base64 encoded username:password>".
     for bearer token, the value should be "Bearer <token>".
-    Note: The secret must be in the same namespace as the HTTPRouteFilter.
 
     Attributes
     ----------
@@ -140,7 +139,14 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjectionCredenti
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
     r"""
-    HTTPDirectResponseFilter defines the configuration to return a fixed response.
+    DirectResponse returns a fixed response for matching requests.
+
+    When this filter is referenced from a GRPCRoute, only a non-2xx status code
+    is supported. gRPC signals success with a grpc-status trailer and a response
+    message, which a direct response cannot produce, so a 2xx status code (which
+    maps to the gRPC OK status) yields an invalid response for gRPC clients. Use a
+    non-2xx status code to deny or block gRPC requests (e.g. 403 maps to
+    PERMISSION_DENIED, 404 to UNIMPLEMENTED, 429/503 to UNAVAILABLE).
 
     Attributes
     ----------
@@ -153,6 +159,8 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
     statusCode : int, default is Undefined, optional
         Status Code of the HTTP response
         If unset, defaults to 200.
+        Note: when this filter is referenced from a GRPCRoute, a 2xx status code
+        (including the default 200) is rejected; a non-2xx status code must be set.
     """
     body?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody
     contentType?: str
@@ -162,6 +170,7 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody:
     r"""
     Body of the direct response.
+    Supports Envoy command operators for dynamic content (see https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators).
 
     Attributes
     ----------
@@ -296,6 +305,12 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderAddItem
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -325,6 +340,12 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItem
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -384,11 +405,16 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite:
 
     Attributes
     ----------
+    appendXForwardedHost : bool, default is Undefined, optional
+        AppendXForwardedHost controls whether the original Host header value is
+        appended to the X-Forwarded-Host header when hostname rewriting is configured.
+        Defaults to true for backward compatibility.
     hostname : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname, default is Undefined, optional
         hostname
     path : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath, default is Undefined, optional
         path
     """
+    appendXForwardedHost?: bool
     hostname?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname
     path?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath
 
@@ -401,11 +427,50 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname:
     ----------
     header : str, default is Undefined, optional
         Header is the name of the header whose value would be used to rewrite the Host header
+    pathRegex : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostnamePathRegex, default is Undefined, optional
+        path regex
     $type : str, default is Undefined, required
         HTTPPathModifierType defines the type of Hostname rewrite.
     """
     header?: str
-    $type: "Header" | "Backend"
+    pathRegex?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostnamePathRegex
+    $type: "Header" | "Backend" | "PathRegex"
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostnamePathRegex:
+    r"""
+    PathRegex defines a regex match and substitution applied to the request path to compute
+    the rewritten Host header.
+    For example, with:
+    pathRegex:
+      pattern: "^/tenant/([a-z0-9-]+)/.*"
+      substitution: "\\1.example.internal"
+    a request to "http://foo.bar.com/tenant/tenant1/api/v1" has its upstream Host header rewritten
+    to "tenant1.example.internal" (the request path "/tenant/tenant1/api/v1" is preserved).
+
+    Attributes
+    ----------
+    pattern : str, default is Undefined, required
+        Pattern matches a regular expression against the value of the HTTP Path. The regex string must
+        adhere to the syntax documented in https://github.com/google/re2/wiki/Syntax.
+    substitution : str, default is Undefined, required
+        Substitution is an expression that replaces the matched portion. The expression may include numbered
+        capture groups that adhere to syntax documented in https://github.com/google/re2/wiki/Syntax.
+
+        The resulting value is used as the upstream Host header and should be constrained to a valid
+        DNS hostname by using explicit regex capture groups in Pattern.
+
+        The NUL, CR, and LF characters are not allowed: they are invalid in an HTTP header value and are
+        rejected by the Envoy proto (well_known_regex HTTP_HEADER_VALUE), which would otherwise cause the
+        generated configuration to be rejected by the data plane.
+    """
+    pattern: str
+
+    substitution: str
+
+    check:
+        len(pattern) >= 1
+        len(substitution) >= 1
+        _regex_match(str(substitution), r"^[^\r\n\x00]*$")
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath:
     r"""

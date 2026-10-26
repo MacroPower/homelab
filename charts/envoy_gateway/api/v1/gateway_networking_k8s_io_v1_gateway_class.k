@@ -28,6 +28,9 @@ schema GatewayClass:
 
     GatewayClass is a Cluster level resource.
 
+    A GatewayClass name SHOULD be compliant with RFC 1035, consisting of a maximum of 63 lower case alphanumeric
+    characters or hyphens ('-'), and MUST start and end with an alphanumeric character.
+
     Attributes
     ----------
     apiVersion : str, default is "gateway.networking.k8s.io/v1", required
@@ -144,7 +147,7 @@ schema GatewayNetworkingK8sIoV1GatewayClassStatus:
 
     Attributes
     ----------
-    conditions : [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0], default is [{"status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending"}], optional
+    conditions : [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0], default is [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}], optional
         Conditions is the current status from the controller for
         this GatewayClass.
 
@@ -154,7 +157,7 @@ schema GatewayNetworkingK8sIoV1GatewayClassStatus:
         SupportedFeatures is the set of features the GatewayClass support.
         It MUST be sorted in ascending alphabetical order by the Name key.
     """
-    conditions?: [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0] = [{"lastTransitionTime": "1970-01-01T00:00:00Z", "message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted"}]
+    conditions?: [GatewayNetworkingK8sIoV1GatewayClassStatusConditionsItems0] = [{"message": "Waiting for controller", "reason": "Pending", "status": "Unknown", "type": "Accepted", "lastTransitionTime": "1970-01-01T00:00:00Z"}]
     supportedFeatures?: [GatewayNetworkingK8sIoV1GatewayClassStatusSupportedFeaturesItems0]
 
     check:
