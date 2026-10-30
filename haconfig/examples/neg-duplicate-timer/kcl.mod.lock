@@ -1,0 +1,9 @@
+[dependencies]
+  [dependencies.haconfig]
+    name = "haconfig"
+    full_name = "haconfig_0.0.1"
+    version = "0.0.1"
+  [dependencies.hallway]
+    name = "hallway"
+    full_name = "hallway_0.1.0"
+    version = "0.1.0"

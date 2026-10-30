@@ -1,0 +1,1 @@
+expected exactly one frontend.HomeAssistant in the main package, found 2

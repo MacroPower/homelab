@@ -1,0 +1,1 @@
+the strings `=` and `<<` are not allowed as a key or a value, because HA's YAML loader reads them as tags: {'packages/hallway.yaml': [default: <<]}

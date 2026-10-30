@@ -1,0 +1,1 @@
+automation aliases must slugify uniquely across packages (they become entity ids): [hallway_motion_light]
