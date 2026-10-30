@@ -42,4 +42,444 @@ hass_state = hstate.State {
     }
     labels = {}
     categories = {}
+    devices = {
+        # Light Panels 52:5C:55 (Nanoleaf NL22)
+        light_panels_52_5c_55 = {
+            match = {id = "0d7b627ace1a9867298dac14c199d62c"}
+            area = "bedroom"
+        }
+        # Desk Lamp (Signify Netherlands B.V. Hue color lamp)
+        desk_lamp = {
+            match = {id = "3c317e5bc9907f5a6be8ca32005c3b99"}
+            area = "bedroom"
+        }
+        # Hue white lamp 1 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_1 = {
+            match = {id = "77225322c59741101cb9160da06ae349"}
+            area = "bathroom"
+        }
+        # Hue Play 2 (Signify Netherlands B.V. Hue Play)
+        hue_play_2 = {
+            match = {id = "504da6009ce6181f7caa439bce560705"}
+            area = "bedroom"
+        }
+        # Hue gradient lightstrip 1 (Signify Netherlands B.V. Hue gradient lightstrip)
+        hue_gradient_lightstrip_1 = {
+            match = {id = "0f47ed6c62354c730315171c3b5b42fc"}
+            area = "bedroom"
+        }
+        # Hue color lamp 4 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_4 = {
+            match = {id = "ee75e073d44419f6c6b8aa346aa9488c"}
+            area = "kitchen"
+        }
+        # Hue Bridge (Signify Netherlands B.V. Hue Bridge)
+        hue_bridge = {
+            match = {id = "6b20dd7012cafa722f929fa84c28f38e"}
+            area = "bedroom"
+        }
+        # huebridge0101 (Philips Lighting BV Hue Bridge)
+        huebridge0101 = {
+            match = {id = "0d12fa35ee738e9c68efc4c737f1f247"}
+            area = "bedroom"
+        }
+        # Hue ambiance lamp 2 (Signify Netherlands B.V. Hue ambiance lamp)
+        hue_ambiance_lamp_2 = {
+            match = {id = "214c46be719a76146bc44a571153c802"}
+            area = "table"
+        }
+        # Hue color lamp 1 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_1 = {
+            match = {id = "53451ddeac574db2b1a0654e8e29b0ac"}
+            area = "kitchen"
+        }
+        # Hue Play 1 (Signify Netherlands B.V. Hue Play)
+        hue_play_1 = {
+            match = {id = "f8f2665d70a9a9c37577398eff785e09"}
+            area = "bedroom"
+        }
+        # Hue white lamp 3 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_3 = {
+            match = {id = "28ac6f740a45a7d135661e444a18ba1f"}
+            area = "bathroom"
+        }
+        # Hue ambiance lamp 1 (Signify Netherlands B.V. Hue ambiance lamp)
+        hue_ambiance_lamp_1 = {
+            match = {id = "4fa76553098cadd57460fa188fe63e3e"}
+            area = "table"
+        }
+        # Hue color lamp 3 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_3 = {
+            match = {id = "a07c0dc60e4b498c6b4a2fb60b343fec"}
+            area = "kitchen"
+        }
+        # Hue white lamp 4 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_4 = {
+            match = {id = "2930d21fef9f437bd13b369b7a0ddfa1"}
+            area = "bedroom"
+        }
+        # Hue white lamp 2 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_2 = {
+            match = {id = "86f494ac914a9dd49ddddd775f0ba3de"}
+            area = "bathroom"
+        }
+        # Hue color lamp 1 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_1_2 = {
+            match = {id = "ae5e6765a5c84ed1be7d9c7cba64bc72"}
+            area = "kitchen"
+        }
+        # Bedroom (Signify Netherlands B.V. Room)
+        bedroom = {
+            match = {id = "b7e68a6fec6dd7076d18f8c5a6977bbb"}
+            area = "bedroom"
+        }
+        # Kitchen (Signify Netherlands B.V. Room)
+        kitchen = {
+            match = {id = "499666a6455298eb71b7bcbcf42da1cd"}
+            area = "kitchen"
+        }
+        # Bathroom (Signify Netherlands B.V. Room)
+        bathroom = {
+            match = {id = "9eb06e4b958a298a4d5c5c47e1b1d3df"}
+            area = "bathroom"
+        }
+        # Cable Internet (Ubiquiti Networks UCI)
+        cable_internet = {
+            match = {id = "06dfe26ca21310c3ae83c8ed35db4f90"}
+            area = "living_room"
+        }
+        # USW-Pro-24-PoE (Ubiquiti Networks US24PRO)
+        usw_pro_24_poe = {
+            match = {id = "914c216802f2b0c769e0ad92a58ab5af"}
+            area = "living_room"
+        }
+        # USW-Pro-24 (Ubiquiti Networks US24PRO2)
+        usw_pro_24 = {
+            match = {id = "6594cad94a1d7c750607aece7f159788"}
+            area = "living_room"
+        }
+        # Kitchen (Ubiquiti G5 Flex)
+        kitchen_2 = {
+            match = {id = "7f0e6014a1fe68206ee174d50d188c53"}
+            area = "kitchen"
+        }
+        # Kitchen (Ubiquiti G5 Flex)
+        kitchen_3 = {
+            match = {id = "f1a7641201f6f3e252cd5ec6aeeac3bb"}
+            area = "kitchen"
+        }
+        # Bed Lamp (Signify Netherlands B.V. Hue color lamp)
+        bed_lamp = {
+            match = {id = "1b71a57fdd5ab6909a07f1ca1b91c980"}
+            area = "bedroom"
+        }
+        # Hue color lamp 8 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_8 = {
+            match = {id = "db51fd0685ee53aefc6742c5e1033e0a"}
+            area = "table"
+        }
+        # Apollo AIR-1 06ed14 (ApolloAutomation AIR-1)
+        apollo_air_1_06ed14 = {
+            match = {id = "ed35b8e3fe8bc4008af4b2c5aa45461e"}
+            area = "bedroom"
+        }
+        # Apollo AIR-1 06ed14 (ApolloAutomation AIR-1)
+        apollo_air_1_06ed14_2 = {
+            match = {id = "62391b9b9267744880d84b58a8ce1383"}
+            area = "bedroom"
+        }
+        # Hue color downlight 1 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_1 = {
+            match = {id = "2ba5ea40a7f28bbf4688d63ff60a99ae"}
+            area = "bedroom"
+        }
+        # Hue color spotlight 2 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_spotlight_2 = {
+            match = {id = "d5e80e7c17db8dec1d697e8dcfb84cb8"}
+            area = "bedroom"
+        }
+        # Hue ambiance lamp 3 (Signify Netherlands B.V. Hue ambiance lamp)
+        hue_ambiance_lamp_3 = {
+            match = {id = "f8cb71d422e81e9be24b2507031bd56d"}
+            area = "bedroom"
+        }
+        # Hue color downlight 3 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_3 = {
+            match = {id = "e29de9266095c5cf62088af319e315d5"}
+            area = "bedroom"
+        }
+        # Hue color downlight 4 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_4 = {
+            match = {id = "613c74e9dde6b775b142b3a1a1e8e4ad"}
+            area = "bedroom"
+        }
+        # Hue color downlight 2 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_2 = {
+            match = {id = "8e683aa28f54dd87d0d609759dc1cdb2"}
+            area = "bedroom"
+        }
+        # Hue color spotlight 1 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_spotlight_1 = {
+            match = {id = "c2b71e9dddd12009db1052e9faec40e8"}
+            area = "bedroom"
+        }
+        # Hue color downlight 5 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_5 = {
+            match = {id = "b692dd445e7f8e53bd939fa83cfecf9f"}
+            area = "bedroom"
+        }
+        # Office (Signify Netherlands B.V. Room)
+        office = {
+            match = {id = "f138e41fa5ca527b679ae55254e5a39d"}
+            area = "office"
+        }
+        # mmWave Dimmer (Inovelli VZW32-SN)
+        mmwave_dimmer = {
+            match = {id = "f8b41b15b572e8f6e552fc32cc89a750"}
+            name = "mmWave Dimmer"
+            area = "bedroom"
+        }
+        # 2-1 Dimmer (Inovelli VZW31-SN)
+        "2_1_dimmer" = {
+            match = {id = "fa5e76c55c289008452a85929be3d32e"}
+            name = "2-1 Dimmer"
+            area = "bedroom"
+        }
+        # On/Off Switch (Inovelli VZW30-SN)
+        on_off_switch = {
+            match = {id = "e785ca9a7fa6db2ead18f44174352dfd"}
+            name = "On/Off Switch"
+            area = "bathroom"
+        }
+        # 2-1 Dimmer (Inovelli VZW31-SN)
+        "2_1_dimmer_2" = {
+            match = {id = "3330f86b1846706f898dd5a538d180d2"}
+            name = "2-1 Dimmer"
+            area = "bathroom"
+        }
+        # eufy S2 (Eufy T2081)
+        eufy_s2_1 = {
+            match = {id = "29cbb53be81f128a4644faa9d99289dd"}
+            name = "eufy S2 1"
+        }
+        # eufy S2 (Eufy T2081)
+        eufy_s2_2 = {
+            match = {id = "aac68dfb5f503abb87af18ffba8af55a"}
+            name = "eufy S2 2"
+        }
+        # 2-1 Dimmer (Inovelli VZW31-SN)
+        "2_1_dimmer_3" = {
+            match = {id = "f524aad8544896e57b95317d7e995bd5"}
+            name = "2-1 Dimmer"
+            area = "bathroom"
+        }
+        # mmWave Dimmer (Inovelli VZW32-SN)
+        mmwave_dimmer_2 = {
+            match = {id = "80368f38c857f1b3b5ca626dfc0d8cbd"}
+            name = "mmWave Dimmer"
+            area = "bedroom"
+        }
+        # mmWave Dimmer (Inovelli VZW32-SN)
+        bedroom_closet_mmwave_dimmer = {
+            match = {id = "2034b39a9854e62cd3158280a38d9a15"}
+            name = "Bedroom Closet mmWave Dimmer"
+            area = "other"
+        }
+        # mmWave Dimmer (Inovelli VZW32-SN)
+        bathroom_mirror_mmwave_dimmer = {
+            match = {id = "a32aca5f061176c7b9496ec19d0f095d"}
+            name = "Bathroom Mirror mmWave Dimmer"
+            area = "bathroom"
+        }
+    }
+    entities = {
+        "sensor.jacobs_iphone_battery_level" = {
+            deviceClass = "battery"
+        }
+        "camera.front_door_medium_resolution_channel" = {
+            disabled = True
+        }
+        "sensor.jacobs_iphone_pressure" = {
+            deviceClass = "pressure"
+        }
+    }
+    integrations = {
+        sun = {
+            domain = "sun"
+            entryId = "01JK1KN89B8MVV48CQ31JB2WKC"
+            title = "Sun"
+        }
+        hassio = {
+            domain = "hassio"
+            entryId = "01JK1KN90Y43FF1R6FX0QEE4Z6"
+            title = "Supervisor"
+        }
+        go2rtc = {
+            domain = "go2rtc"
+            entryId = "01JK1KN90ZM9Y3SRQTFJ5CVK6H"
+            title = "go2rtc"
+        }
+        homeassistant_yellow = {
+            domain = "homeassistant_yellow"
+            entryId = "01JK1KNP3WE3BAY1TW8F81K1T1"
+            title = "Home Assistant Yellow"
+        }
+        zha = {
+            domain = "zha"
+            entryId = "01JK1KP42JVWN43G6MWBRJWN6V"
+            title = "Yellow"
+        }
+        shopping_list = {
+            domain = "shopping_list"
+            entryId = "01JK1KWTFT42Y6YRPPBTJ28KKY"
+            title = "Shopping list"
+        }
+        radio_browser = {
+            domain = "radio_browser"
+            entryId = "01JK1KWTSCQQP7NQSY21D2G7A8"
+            title = "Radio Browser"
+        }
+        google_translate = {
+            domain = "google_translate"
+            entryId = "01JK1KWTSJ3ENQW67X0TD4Q1TY"
+            title = "Google Translate text-to-speech"
+        }
+        met = {
+            domain = "met"
+            entryId = "01JK1KWV9RQPXXYZZ4V659B6RS"
+            title = "Home"
+        }
+        mobile_app = {
+            domain = "mobile_app"
+            entryId = "01JK1TZFH856G7JK53ESEP02MC"
+            title = "Jacob’s iPhone"
+        }
+        nanoleaf = {
+            domain = "nanoleaf"
+            entryId = "01JK1VBQD19CTQTW06QSD1FEEN"
+            title = "Light Panels 52:5C:55"
+        }
+        hue = {
+            domain = "hue"
+            entryId = "01JK1W5V61SM0W6T0ZA8TTSECJ"
+            title = "Hue Bridge 001788773e3c"
+        }
+        unifi = {
+            domain = "unifi"
+            entryId = "01JK291G9Y2RS13NQFKY7EFK11"
+            title = "Default"
+        }
+        unifiprotect = {
+            domain = "unifiprotect"
+            entryId = "01JK293EHKSF1ME1VEXT4MCN9P"
+            title = "Home-UDM"
+        }
+        hacs = {
+            domain = "hacs"
+            entryId = "01JK498V22GG1M9F7CX5WDK5C2"
+            title = ""
+        }
+        backup = {
+            domain = "backup"
+            entryId = "01K5MFH5EXMWDDC14BJKC7G0YZ"
+            title = "Backup"
+        }
+        esphome = {
+            domain = "esphome"
+            entryId = "01KCD02RVSAAEBWJ4VSA8NDAWB"
+            title = "Apollo AIR-1 06ed14"
+        }
+        analytics = {
+            domain = "analytics"
+            entryId = "01M4MXVSKRFRSYESC7DN53V2C1"
+            title = "Analytics"
+        }
+        zwave_js = {
+            domain = "zwave_js"
+            entryId = "01M5AZTB3VYRCNE3VMNSXR91MW"
+            title = "Z-Wave JS"
+        }
+        mcp_server = {
+            domain = "mcp_server"
+            entryId = "01M5BCJ9810JTVBG3BB2TQ8Q72"
+            title = "All LLM APIs"
+        }
+        robovac_mqtt = {
+            domain = "robovac_mqtt"
+            entryId = "01M5BH3MNRN32CVTXBMV1HA70M"
+            title = "Robovac, Robovac"
+        }
+    }
+    apps = {
+        # File editor
+        # Options not imported, because they can hold secrets or free text: ssh_keys
+        core_configurator = {
+            # renovate: datasource=custom.ha-app depName=core_configurator packageName=home-assistant/apps/master/configurator
+            version = "6.3.0"
+            options = {dirsfirst = False, enforce_basepath = True, git = True, ignore_pattern = ["__pycache__", ".cloud", ".storage", "deps"], log_level = "info"}
+            boot = "auto"
+            autoUpdate = False
+            watchdog = False
+            ingressPanel = True
+            started = True
+        }
+        # Let's Encrypt
+        # Options not imported, because they can hold secrets or free text: dns, email, keyfile
+        core_letsencrypt = {
+            options = {certfile = "fullchain.pem", challenge = "dns", domains = ["hass.cin.macro.network"]}
+            boot = "auto"
+            autoUpdate = True
+            network = {"80/tcp" = 80}
+        }
+        # Get HACS
+        cb646a50_get = {
+            version = "1.3.1"
+            boot = "manual"
+            autoUpdate = False
+        }
+        # Z-Wave JS
+        # Options not imported, because they can hold secrets or free text: lr_s2_access_control_key, lr_s2_authenticated_key, network_key, s0_legacy_key, s2_access_control_key, s2_authenticated_key, s2_unauthenticated_key
+        core_zwave_js = {
+            # renovate: datasource=custom.ha-app depName=core_zwave_js packageName=home-assistant/apps/master/zwave_js
+            version = "1.10.0"
+            options = {log_level = "info", log_to_file = False, log_max_files = 7, rf_region = "Automatic", soft_reset = "Automatic", device = "/dev/serial/by-id/usb-Nabu_Casa_ZWA-2_1CDBD4AEB8B4-if00"}
+            boot = "auto"
+            autoUpdate = False
+            watchdog = True
+            network = {"3000/tcp" = None, "8091/tcp" = None}
+            ingressPanel = True
+            started = True
+        }
+        # Terminal & SSH
+        # Options not imported, because they can hold secrets or free text: authorized_keys, password
+        core_ssh = {
+            # renovate: datasource=custom.ha-app depName=core_ssh packageName=home-assistant/apps/master/ssh
+            version = "10.5.0"
+            options = {apks = [], server = {tcp_forwarding = True}}
+            boot = "auto"
+            autoUpdate = False
+            watchdog = True
+            network = {"22/tcp" = 22}
+            ingressPanel = True
+            started = True
+        }
+    }
+    appRepositories = ["https://github.com/hacs/addons"]
+    hacs = {
+        "hacs/integration" = {
+            category = "integration"
+            # renovate: datasource=github-releases depName=hacs/integration
+            version = "2.0.5"
+        }
+        "jeppesens/eufy-clean" = {
+            category = "integration"
+            # renovate: datasource=github-releases depName=jeppesens/eufy-clean
+            version = "v1.13.1"
+        }
+    }
+    http = {
+        serverPort = 443
+        sslCertificate = "/ssl/fullchain.pem"
+        sslKey = "/ssl/privkey.pem"
+    }
 }
