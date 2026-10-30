@@ -1,5 +1,6 @@
 # The instance-wide config of the hallway example. It declares a fake value for
-# every secret that the config references, and lists the packages.
+# every secret that the config references, lists the packages, and sets the
+# registry state from state.k.
 import haconfig.models.frontend
 import haconfig.tags
 
@@ -21,4 +22,5 @@ config = frontend.HomeAssistant {
         home_longitude = -74.0
     }
     packages = {_p.name: _p for _p in [hallway]}
+    state = hallway_state
 }

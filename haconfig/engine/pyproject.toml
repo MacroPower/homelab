@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hastate"
+version = "0.1.0"
+description = "Plan and apply haconfig state against a Home Assistant instance"
+requires-python = ">=3.12"
+dependencies = [
+    "truststore>=0.10",
+    "websockets>=15.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.0", "pytest-timeout>=2.0", "pyyaml>=6.0"]
+
+[project.scripts]
+hastate = "hastate.cli:main"
+
+[tool.pytest.ini_options]
+markers = ["e2e: starts a Home Assistant container in Docker"]
+addopts = "-m 'not e2e'"
+testpaths = ["tests"]
+timeout = 300
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hastate"]

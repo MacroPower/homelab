@@ -1,5 +1,6 @@
 import regex
 import models.frontend.core
+import models.frontend.state as hstate
 
 # _RESERVED_INTEGRATIONS lists the top-level keys that HomeAssistantBackend or
 # the packages write. `HomeAssistant.integrations` must not set them.
@@ -47,6 +48,11 @@ schema HomeAssistant:
     deployGitignore: bool, default is True, optional.
         DeployGitignore emits a `.gitignore` for the files that HA writes at
         runtime, so the rendered directory can be the root of a deploy branch.
+    state: hstate.State, default is Undefined, optional.
+        State is the desired state of the registries in `.storage`, such as
+        floors, areas, and labels. The render writes it to `state.json` next
+        to the config directory, never into it, and `task hass:plan` and
+        `task hass:apply` read it from there.
 
     Examples
     --------
@@ -65,6 +71,7 @@ schema HomeAssistant:
     packages?: {str:Package}
     secrets?: {str:any} = {}
     deployGitignore?: bool = True
+    state?: hstate.State
 
     _misnamed: [str] = [_k for _k, _p in packages or {} if _p and _p.name != _k]
     _reservedIntegrations: [str] = [_k for _k in integrations or {} if _k.split(" ")[0] in _RESERVED_INTEGRATIONS]

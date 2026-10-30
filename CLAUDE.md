@@ -46,7 +46,7 @@ kcl chart update -c <chart_key>
 
 ## Development Workflow
 - IMPORTANT: If you update `charts/charts.k`, make sure to run `kcl chart update -c <chart_key>` to re-generate files.
-- Home Assistant config lives in `home/hass/` and renders through `haconfig/`. It never deploys through Argo CD. Run `task hass:gate` after changing either directory. See [Home Assistant Config](./docs/hass.md).
+- Home Assistant config lives in `home/hass/` and renders through `haconfig/`. It never deploys through Argo CD. Run `task hass:gate` after changing either directory, and `task hass:e2e` after changing `haconfig/engine/` or the state models. Run `task hass:apply` against the live instance only with the user's approval. See [Home Assistant Config](./docs/hass.md).
 - Test apps locally before pushing with the Talos-in-Docker + ArgoCD harness: `task tald:all` brings up a single-node cluster (real Cilium datapath) that reconciles your working tree, `task tald:push` re-syncs after edits. An app joins the local set when it has an `apps/<tenant>/<app>/local/` overlay. See [Local Testing](./docs/local-testing.md).
 
 ## KCL Application Overview

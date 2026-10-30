@@ -12,6 +12,7 @@ The library has the following layout:
 .
 ├── kcl.mod             # haconfig package metadata file
 ├── kcl.mod.lock        # haconfig package metadata lock file
+├── engine              # hastate, the Python engine that plans and applies registry state
 ├── examples            # The hallway worked example, its golden output, and negative render cases
 ├── strings             # dedent (vendored from konfig) and jinja
 ├── tags                # !secret, !include, and !env_var references
@@ -27,6 +28,7 @@ The library has the following layout:
     │   ├── script          # The `Script` model
     │   ├── template        # Template sections and entities
     │   ├── helper          # input_*, timer, counter, and schedule helpers
+    │   ├── state           # Floors, areas, labels, and categories for the registries in .storage
     │   ├── home_assistant.k    # The `HomeAssistant` root model
     │   └── package.k           # The `Package` model
     ├── metadata        # Render context
@@ -45,7 +47,7 @@ Config modules depend on haconfig by path, and each module adds the render entry
 entries = ["*.k", "${haconfig:KCL_MOD}/models/render/render.k"]
 ```
 
-The render prints one YAML stream of `{path, content}` documents: `configuration.yaml`, one `packages/<name>.yaml` per package, `secrets.example.yaml`, and `.gitignore`. It never writes to disk and never emits `secrets.yaml`, `automations.yaml`, `scripts.yaml`, or `scenes.yaml`.
+The render prints one YAML stream of `{path, content}` documents: `configuration.yaml`, one `packages/<name>.yaml` per package, `secrets.example.yaml`, and `.gitignore`. It never writes to disk and never emits `secrets.yaml`, `automations.yaml`, `scripts.yaml`, or `scenes.yaml`. When the root sets `state`, the stream also holds a document with the path `@state`, which holds the JSON state document for the engine.
 
 The following example defines one package with a timer and an automation:
 
@@ -65,6 +67,22 @@ config = frontend.HomeAssistant {
     packages = {_p.name: _p for _p in [hallway]}
 }
 ```
+
+## State
+
+`HomeAssistant.state` takes a `State` from `models/frontend/state`. It declares the floors, areas, labels, and categories that HA keeps in `.storage`, and `StateBackend` turns it into the state document that the engine in `engine/` plans and applies over HA's WebSocket API. Each map key is the object's HA id, and the state owns every field of each object it declares:
+
+```python
+import haconfig.models.frontend.state as hstate
+
+hass_state = hstate.State {
+    floors.ground = {name = "Ground Floor", level = 0}
+    areas.living_room = {name = "Living Room", floor = "ground", icon = "mdi:sofa"}
+    prune = ["areas"]
+}
+```
+
+The [Home Assistant guide](../docs/hass.md#registry-state) covers ownership, pruning, and the plan and apply tasks.
 
 ## Rules
 
@@ -99,6 +117,8 @@ Tests sit next to the code in `*_test.k` files. Run them from this directory:
 ```bash
 kcl test ./...
 ```
+
+The engine's tests run with `uv run pytest` from `engine/`, and `task hass:e2e` runs its end-to-end tests against an HA container.
 
 `task hass:gen` generates the trigger and condition catalogs in `models/frontend/{trigger,condition}/catalog.k` from the pinned HA release.
 

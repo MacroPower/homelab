@@ -1,0 +1,47 @@
+{
+  "areas": {
+    "hallway": {
+      "aliases": [
+        "Entry"
+      ],
+      "floor_id": "ground",
+      "humidity_entity_id": null,
+      "icon": "mdi:door",
+      "labels": [
+        "motion"
+      ],
+      "name": "Hallway",
+      "picture": null,
+      "temperature_entity_id": null
+    }
+  },
+  "categories": {
+    "automation": {
+      "lighting": {
+        "icon": "mdi:lightbulb",
+        "name": "Lighting"
+      }
+    }
+  },
+  "floors": {
+    "ground": {
+      "aliases": [],
+      "icon": "mdi:home-floor-0",
+      "level": 0,
+      "name": "Ground Floor"
+    }
+  },
+  "format": 1,
+  "generator": "haconfig",
+  "labels": {
+    "motion": {
+      "color": "amber",
+      "description": null,
+      "icon": "mdi:motion-sensor",
+      "name": "Motion"
+    }
+  },
+  "prune": [
+    "areas"
+  ]
+}

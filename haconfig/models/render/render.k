@@ -1,3 +1,4 @@
+import json
 import manifests
 import regex
 import yaml
@@ -11,7 +12,9 @@ import tags
 # render.k is the render entry of a Home Assistant config module, wired with
 #   [profile] entries = ["main.k", "${haconfig:KCL_MOD}/models/render/render.k"]
 # It prints one YAML stream of {path, content} documents, and never writes to
-# disk. `task hass:render` splits the stream into a config directory.
+# disk. `task hass:render` splits the stream into a config directory. When the
+# root sets `state`, the stream also holds one document with the path `@state`,
+# whose content is the JSON state document that `task hass:plan` reads.
 
 # lambda: return the sorted values that occur more than once
 duplicated = lambda _dpData: [str] -> [str] {
@@ -113,4 +116,8 @@ _files = {_k: _header + tags.untag(_v) for _k, _v in __encoded__} | {
         ".gitignore" = _header + _DEPLOY_GITIGNORE
 }
 
-manifests.yaml_stream([{path = _k, content = _v} for _k, _v in _files])
+_stateDocs = [
+    {path = "@state", content = json.encode(backend.StateBackend(__root__.state).data, sort_keys=True, indent=2) + "\n"}
+] if __root__.state is not Undefined else []
+
+manifests.yaml_stream([{path = _k, content = _v} for _k, _v in _files] + _stateDocs)

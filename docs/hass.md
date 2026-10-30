@@ -1,6 +1,8 @@
 # Home Assistant Config
 
-The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. No task deploys the output to the Pi. [Delivery](#delivery) describes the open decision.
+The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. No task deploys the YAML output to the Pi. [Delivery](#delivery) describes the open decision.
+
+The registries that HA keeps in `.storage`, such as floors and areas, are not YAML. `home/hass/state.k` declares them, and `task hass:apply` writes them through HA's API, as [Registry State](#registry-state) describes.
 
 This page covers the user config, the rules it must follow, and the tasks. The [haconfig README](../haconfig/README.md) describes the library's models.
 
@@ -13,7 +15,8 @@ The config spans the library and one module for the Pi:
 | `haconfig/` | The library: front-end models, mixins, backends, and the render entry |
 | `haconfig/examples/hallway/` | A complete worked example and its golden output |
 | `haconfig/examples/neg-*/` | The negative render cases |
-| `home/hass/` | The Pi's config: `main.k` with the instance-wide config, and one file per package |
+| `haconfig/engine/` | `hastate`, the Python engine that plans and applies registry state |
+| `home/hass/` | The Pi's config: `main.k` with the instance-wide config, `state.k` with the registry state, and one file per package |
 
 `home/hass/` sits outside `apps/` because HA config never deploys through Argo CD, and `home/` leaves room for home automation config that is not HA. The `home/hass/kcl.mod` file depends on the library and adds the render entry to its profile:
 
@@ -223,7 +226,11 @@ The `hass` tasks live in `.taskfiles/hass/Taskfile.yaml`:
 | `hass:load` | `MODULE` | `hass:render`, then stages the output and loads it with `annotatedyaml` |
 | `hass:check` | `MODULE`, `HASS_IMAGE` | `hass:load`, then `check_config` in Docker |
 | `hass:diff` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `LIVE`, `SEMANTIC` | `hass:render`, then a diff from the live config to the render. See [Live Diff](#live-diff) |
-| `hass:test` | `UPDATE` | the haconfig unit tests, the hallway golden diff, and the negative render cases. `UPDATE=1` rewrites `golden/` |
+| `hass:plan` | `MODULE`, `HASS_URL` | `hass:render`, then a plan of the registry state against live HA. See [Registry State](#registry-state) |
+| `hass:apply` | `MODULE`, `HASS_URL`, `YES` | `hass:plan`, a confirmation, the apply, and a second plan |
+| `hass:import` | `OUT` (default `home/hass/state.k`), `VARIABLE`, `HASS_URL`, `FORCE` | writes a KCL state file from the live registries |
+| `hass:e2e` | `HASS_IMAGE` | the engine's end-to-end tests against a fresh HA container |
+| `hass:test` | `UPDATE` | the haconfig unit tests, the hallway golden diff, the negative render cases, and the engine's unit tests. `UPDATE=1` rewrites `golden/` |
 | `hass:gate` | none | `hass:test`, `check_config` on the hallway example, then `hass:check` for `home/hass/` |
 | `hass:gen` | `HASS_REF` (default the `HASS_IMAGE` tag) | regenerates the trigger and condition catalogs from `home-assistant/core` |
 | `hass:lock` | none | regenerates every `kcl.mod.lock` under `haconfig/` and `home/hass/`. `kcl:lock` also runs it |
@@ -254,6 +261,64 @@ SSH runs in batch mode, so connect once by hand (`ssh root@hass.cin.macro.networ
 `LIVE=<dir>` reads a local directory instead of SSH, such as a mount of the Pi's Samba `config` share. In that mode, the script parses each `secrets.yaml` through the mount and keeps only its keys. The values cross the network to your machine, but they never reach the output. `SEMANTIC=1` parses every YAML file on both sides and re-dumps it with sorted keys, no comments, and no anchors. The diff then shows only changes that HA sees. Use it for the first migration, when the hand-written files on the Pi differ from the render in comments and key order.
 
 The task succeeds whether or not the trees differ, and fails when it cannot read the live config.
+
+## Registry State
+
+`HomeAssistant.state` declares the floors, areas, labels, and categories that HA keeps in `.storage`. The render writes the state to `.cache/hass/<MODULE>/state.json`, next to the config directory and never in it. `task hass:plan` compares that file with the live registries, and `task hass:apply` makes HA match it:
+
+```
+Home Assistant 2026.10.3 at https://hass.cin.macro.network
+
+  + floors.upstairs  "Upstairs"
+        name: "Upstairs"
+        level: 2
+  ~ areas.office  "Office"
+        floor_id: "ground" => "upstairs"
+  ? areas.table  "Table"  (not in the state; prune areas to delete it)
+
+Plan: 1 to create, 1 to update, 0 to delete. 1 unmanaged.
+```
+
+The state tasks talk to `HASS_URL`, which defaults to `https://hass.cin.macro.network`, and read an admin long-lived access token from `HASS_TOKEN`. To create one, open your HA profile, choose the Security tab, and create a token under Long-lived access tokens. Keep it in Doppler and run the tasks through `doppler run -p <project> -c <config> -- task hass:plan`, or export it in your shell.
+
+`task hass:import` wrote `home/hass/state.k` from the live registries, so git starts from the live state. Run it again with `FORCE=1` to replace the file with the live state, for example after you changed many areas in the UI. A plan of a fresh import shows no changes.
+
+### Ownership
+
+Each map key is the object's HA id, such as `living_room` for an area. The state owns every field of each object it declares, so an unset field clears that field in HA. Removing `icon` from an area removes the area's icon. To rename an area, change its `name` and keep its key. A new key creates a new object, because HA derives an id from the name at creation and never changes it. The apply creates each object under a temporary name that HA turns into the key, such as `office ~`, checks that HA assigned the key as the id, and then sets the real name.
+
+The engine manages each collection that the state sets, and never reads or writes a collection that the state leaves unset. A live object that a managed collection lacks shows as unmanaged (`?`), and the apply deletes it only when `prune` names the collection:
+
+```python
+hass_state = hstate.State {
+    areas = {...}
+    prune = ["areas"]
+}
+```
+
+HA gives each category a random id, so the engine matches categories by name within their scope, such as `automation`. Renaming a category in git creates a new one, and the old one stays until `prune` names `categories`. A managed `categories` covers the `automation`, `script`, `scene`, and `helpers` scopes and every scope the state names, so a category made in the UI shows as unmanaged.
+
+### Plan Problems
+
+The plan fails on each problem that would make the apply fail or lose data:
+
+- An area names a floor or a label that neither HA nor the state holds. HA drops an unknown label without an error.
+- A pruned floor or label is on an area that the state does not declare. HA would clear it from that area, so declare the area or move it first.
+- Two objects in one collection would share a name, ignoring case and whitespace. HA rejects the second.
+- An area's `temperatureEntity` or `humidityEntity` has no state in HA, or lacks the matching device class.
+- A live object holds the temporary name that a create needs.
+
+HA also removes a deleted label from every device and entity, and a deleted category from every automation or script in it. The plan lists those counts under each delete, such as `also removes the label from 3 entities and 0 devices`.
+
+The apply runs the deletes first, so a create or a rename can take a name that a pruned object held. It then runs labels, floors, areas, and categories, so each object exists before another references it. When a rename needs the old name of another renamed object, the apply first moves that object to a temporary name, so swaps and chains of renames work. The apply stops at the first failed step, and every step before it stays applied, so a new plan shows what remains. After the last step, it plans again and fails when changes remain.
+
+`task hass:apply` asks you to type `yes`. It then reads HA again and stops if the plan changed while it waited. `YES=1` skips the question, and any other value of `YES` asks.
+
+### Engine
+
+`haconfig/engine/` is a uv project, and the tasks run it with `uv run`. Its unit tests run in `task hass:test`. `task hass:e2e` starts the pinned HA image in Docker, onboards a user through the onboarding API, and runs plan, apply, prune, and an import round trip through KCL against it. It reaches the container through `docker exec`, because published ports reset connections on some rootless Docker setups. Run it after you change `haconfig/engine/` or the state models.
+
+The repo is public, so every name in `state.k` is public, such as the names of your rooms.
 
 ## Delivery
 

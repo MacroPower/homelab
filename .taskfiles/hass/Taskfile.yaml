@@ -5,12 +5,15 @@ version: "3"
 # Home Assistant config rendered from KCL. haconfig/ is the library and
 # home/hass/ is the module for the Pi. A render prints one {path, content} YAML stream,
 # and scripts/split.py turns it into a config directory under the gitignored
-# .cache/hass/. Nothing here deploys to the Pi.
+# .cache/hass/. The YAML tasks never deploy to the Pi. hass:apply writes the
+# registry state, such as floors and areas, through HA's API.
 #
 # Quickstart:
 #   task hass:render   # render home/hass/ into .cache/hass/home/hass/config
 #   task hass:check    # render, load with HA's YAML loader, run check_config
 #   task hass:diff     # render and diff against the live config on the Pi
+#   task hass:plan     # render and plan the registry state against live HA
+#   task hass:apply    # plan, confirm, and apply the registry state
 #   task hass:gate     # library tests, golden diff, and check of home/hass/
 
 vars:
@@ -30,6 +33,11 @@ vars:
   # /config to it.
   HASS_SSH: '{{.HASS_SSH | default "root@hass.cin.macro.network"}}'
   HASS_CONFIG_DIR: '{{.HASS_CONFIG_DIR | default "/config"}}'
+  # The HA instance that the state tasks talk to. They read the access token
+  # from HASS_TOKEN in the environment.
+  HASS_URL: '{{.HASS_URL | default "https://hass.cin.macro.network"}}'
+  HASTATE: 'uv run -q --project "{{.ROOT_DIR}}/haconfig/engine" hastate --url "{{.HASS_URL}}"'
+
 tasks:
   render:
     desc: Render a config module into a config directory (default home/hass/ to .cache/hass/home/hass/config)
@@ -38,7 +46,9 @@ tasks:
       split swaps the finished directory into place, so a failed render keeps
       the previous output and a removed package also removes its file. It
       refuses an OUT that holds .git, and any other non-empty directory that
-      an earlier render did not write.
+      an earlier render did not write. When the module sets
+      HomeAssistant.state, the split writes the state document to state.json
+      next to OUT, and otherwise removes that file.
 
       Args:
         MODULE: The config module, relative to the repo root (default: home/hass)
@@ -48,6 +58,7 @@ tasks:
     vars:
       MODULE: '{{.MODULE | default "home/hass"}}'
       OUT: '{{.OUT | default (printf ".cache/hass/%s/config" .MODULE)}}'
+      ABS_OUT: '{{if isAbs .OUT}}{{.OUT}}{{else}}{{joinPath .ROOT_DIR .OUT}}{{end}}'
       ARGS: '{{.ARGS | default ""}}'
     # render-dir runs in DIR, and go-task creates a missing dir. Without this
     # check, a mistyped MODULE leaves an empty directory in the repo.
@@ -60,7 +71,8 @@ tasks:
         vars:
           DIR: "{{.MODULE}}"
           STREAM: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/stream.yaml"
-          OUT: '{{if isAbs .OUT}}{{.OUT}}{{else}}{{joinPath .ROOT_DIR .OUT}}{{end}}'
+          OUT: "{{.ABS_OUT}}"
+          STATE: "{{.ABS_OUT | dir}}/state.json"
           ARGS: "{{.ARGS}}"
 
   test:
@@ -76,6 +88,7 @@ tasks:
         UPDATE: Set to 1 to rewrite golden/ from the render instead of diffing
     vars:
       GOLDEN_OUT: '{{if .UPDATE}}{{.HACONFIG_DIR}}/examples/hallway/golden{{else}}{{.HASS_CACHE_DIR}}/golden{{end}}'
+      GOLDEN_STATE: '{{if .UPDATE}}{{.HACONFIG_DIR}}/examples/hallway/golden.state.json{{else}}{{.HASS_CACHE_DIR}}/golden.state.json{{end}}'
       NEG_DIRS:
         sh: find haconfig/examples -mindepth 1 -maxdepth 1 -type d -name 'neg-*' 2>/dev/null | sort
     cmds:
@@ -85,7 +98,10 @@ tasks:
           DIR: haconfig/examples/hallway
           STREAM: "{{.HASS_CACHE_DIR}}/golden.stream.yaml"
           OUT: "{{.GOLDEN_OUT}}"
+          STATE: "{{.GOLDEN_STATE}}"
       - cmd: diff -r "{{.HACONFIG_DIR}}/examples/hallway/golden" "{{.HASS_CACHE_DIR}}/golden"
+        if: '{{not .UPDATE}}'
+      - cmd: diff "{{.HACONFIG_DIR}}/examples/hallway/golden.state.json" "{{.HASS_CACHE_DIR}}/golden.state.json"
         if: '{{not .UPDATE}}'
       # Skipped when no neg-* module exists, because a for loop over an empty
       # split var still runs once with ITEM="".
@@ -93,6 +109,7 @@ tasks:
         if: '{{ne .NEG_DIRS ""}}'
         task: expect-fail
         vars: { DIR: "{{.ITEM}}" }
+      - task: engine-unit
       - cmd: echo "haconfig tests passed{{if .UPDATE}} (golden/ rewritten){{end}}"
         silent: true
 
@@ -174,6 +191,95 @@ tasks:
         uv run -q "{{.HASS_SCRIPTS}}/livediff.py" {{if .SEMANTIC}}--semantic{{end}}
         "{{.OUT}}" "{{.WORK}}" {{.SOURCE}}
 
+  plan:
+    desc: Render a config module and plan its registry state against live Home Assistant
+    summary: |
+      Renders the module, then compares the state.json that the render wrote
+      with the live registries and prints each create, update, and delete.
+      It also lists the live objects that a managed collection lacks. The
+      task only reads from HA. It fails when the plan has problems, such as
+      an area on a floor that does not exist, and when it cannot read HA.
+
+      Args:
+        MODULE: The config module, relative to the repo root (default: home/hass)
+        HASS_URL: The HA base URL (default: https://hass.cin.macro.network)
+      Env:
+        HASS_TOKEN: An admin long-lived access token
+    vars:
+      MODULE: '{{.MODULE | default "home/hass"}}'
+      OUT: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/config"
+    preconditions: &token
+      - sh: test -n "$HASS_TOKEN"
+        msg: "set HASS_TOKEN to an admin long-lived access token, for example with doppler run -p <project> -c <config> -- task ..."
+    cmds:
+      - task: render
+        vars: { MODULE: "{{.MODULE}}", OUT: "{{.OUT}}" }
+      - '{{.HASTATE}} plan --state "{{.HASS_CACHE_DIR}}/{{.MODULE}}/state.json"'
+
+  apply:
+    desc: Render a config module, plan its registry state, confirm, and apply it to live Home Assistant
+    summary: |
+      Runs the same plan as hass:plan and asks you to type yes. It then
+      applies each change in dependency order, stops at the first failure,
+      and plans again to check that no changes remain.
+
+      Args:
+        MODULE: The config module, relative to the repo root (default: home/hass)
+        HASS_URL: The HA base URL (default: https://hass.cin.macro.network)
+        YES: Set to 1 to apply without asking. Any other value asks
+      Env:
+        HASS_TOKEN: An admin long-lived access token
+    interactive: true
+    vars:
+      MODULE: '{{.MODULE | default "home/hass"}}'
+      OUT: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/config"
+      YES: '{{.YES | default ""}}'
+    preconditions: *token
+    cmds:
+      - task: render
+        vars: { MODULE: "{{.MODULE}}", OUT: "{{.OUT}}" }
+      - '{{.HASTATE}} apply --state "{{.HASS_CACHE_DIR}}/{{.MODULE}}/state.json" {{if eq .YES "1"}}--yes{{end}}'
+
+  import:
+    desc: Write a KCL state file from the live Home Assistant registries
+    summary: |
+      Reads the floors, areas, labels, and categories from HA and writes them
+      as a State to OUT, so git starts from the live state. A plan of the
+      written state against the same instance shows no changes. The task
+      refuses an existing OUT unless FORCE=1.
+
+      Args:
+        OUT: The KCL file, relative to the repo root (default: home/hass/state.k)
+        VARIABLE: The variable that holds the State (default: hass_state)
+        HASS_URL: The HA base URL (default: https://hass.cin.macro.network)
+        FORCE: Set to 1 to overwrite OUT. Any other value refuses
+      Env:
+        HASS_TOKEN: An admin long-lived access token
+    vars:
+      OUT: '{{.OUT | default "home/hass/state.k"}}'
+      VARIABLE: '{{.VARIABLE | default "hass_state"}}'
+      FORCE: '{{.FORCE | default ""}}'
+    preconditions: *token
+    cmds:
+      - >-
+        {{.HASTATE}} import --out "{{if isAbs .OUT}}{{.OUT}}{{else}}{{joinPath .ROOT_DIR .OUT}}{{end}}"
+        --variable "{{.VARIABLE}}" {{if eq .FORCE "1"}}--force{{end}}
+
+  e2e:
+    desc: Run the state engine's end-to-end tests against a fresh Home Assistant container
+    summary: |
+      Starts HASS_IMAGE in Docker, onboards a user, and runs plan, apply, and
+      import against it. The tests reach the container through docker exec,
+      so they need no published port. They take about three minutes.
+
+      Args:
+        HASS_IMAGE: The Home Assistant image (default: the pinned tag)
+    dir: "{{.ROOT_DIR}}/haconfig/engine"
+    env:
+      HASS_IMAGE: "{{.HASS_IMAGE}}"
+    cmds:
+      - uv run -q pytest -q -m e2e
+
   gate:
     desc: Run hass:test, check_config on the hallway example, then hass:check for home/hass/
     cmds:
@@ -210,6 +316,12 @@ tasks:
       - fd kcl.mod.lock haconfig home/hass --type f -x rm {}
       - fd '^kcl\.mod$' haconfig home/hass --type f -x sh -c 'cd "$(dirname {})" && kcl mod metadata >/dev/null'
 
+  engine-unit:
+    internal: true
+    dir: "{{.ROOT_DIR}}/haconfig/engine"
+    cmds:
+      - uv run -q pytest -q
+
   unit:
     internal: true
     # Library packages only. examples/ holds standalone modules whose render
@@ -221,7 +333,7 @@ tasks:
   render-dir:
     internal: true
     requires:
-      vars: [DIR, STREAM, OUT]
+      vars: [DIR, STREAM, OUT, STATE]
     vars:
       ARGS: '{{.ARGS | default ""}}'
     # DIR is relative to the repo root. Task joins an included task's dir onto
@@ -235,7 +347,7 @@ tasks:
         silent: true
       - kcl run {{.KCL_RUN_FLAGS}} {{.ARGS}} > "{{.STREAM}}"
       - test -s "{{.STREAM}}"
-      - uv run -q "{{.HASS_SCRIPTS}}/split.py" "{{.STREAM}}" "{{.OUT}}"
+      - uv run -q "{{.HASS_SCRIPTS}}/split.py" "{{.STREAM}}" "{{.OUT}}" "{{.STATE}}"
 
   check-example:
     internal: true
