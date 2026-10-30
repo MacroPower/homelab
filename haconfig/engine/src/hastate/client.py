@@ -73,12 +73,41 @@ class Client:
     async def __aexit__(self, *exc: object) -> None:
         await self._ws.close()
 
-    async def call(self, command: str, /, timeout: float | None = None, **fields: Any) -> Any:
-        """Send COMMAND with FIELDS and return its result, or raise HAError."""
+    async def wait_closed(self, timeout: float) -> bool:
+        """Wait until HA closes the connection, and return whether it did within TIMEOUT.
+
+        The connection reads frames in the background, so it sees HA's close
+        frame, or a missed keepalive when HA drops the socket, without a call.
+        """
+        try:
+            async with asyncio.timeout(timeout):
+                await self._ws.wait_closed()
+        except TimeoutError:
+            return False
+        return True
+
+    async def supervisor(self, method: str, endpoint: str, data: dict[str, Any] | None = None, timeout: float = 60.0) -> Any:
+        """Call a Supervisor endpoint through HA's proxy and return its data.
+
+        TIMEOUT bounds the Supervisor call, and the client waits a minute
+        longer for HA's reply.
+        """
+        fields: dict[str, Any] = {"endpoint": endpoint, "method": method, "timeout": timeout}
+        if data is not None:
+            fields["data"] = data
+        return await self.call("supervisor/api", wait=timeout + 60, **fields)
+
+    async def call(self, command: str, /, *, wait: float | None = None, **fields: Any) -> Any:
+        """Send COMMAND with FIELDS and return its result, or raise HAError.
+
+        WAIT is how many seconds the call waits for the result. It is a
+        separate name, because commands such as `supervisor/api` take a
+        `timeout` field of their own.
+        """
         self._id += 1
         msg_id = self._id
         await self._ws.send(json.dumps({"id": msg_id, "type": command, **fields}))
-        async with asyncio.timeout(timeout or self._timeout):
+        async with asyncio.timeout(wait or self._timeout):
             while True:
                 reply = json.loads(await self._ws.recv())
                 if reply.get("id") == msg_id and reply.get("type") == "result":

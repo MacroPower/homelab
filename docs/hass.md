@@ -2,7 +2,7 @@
 
 The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. No task deploys the YAML output to the Pi. [Delivery](#delivery) describes the open decision.
 
-The registries that HA keeps in `.storage`, such as floors and areas, are not YAML. `home/hass/state.k` declares them, and `task hass:apply` writes them through HA's API, as [Registry State](#registry-state) describes.
+The registries that HA keeps in `.storage`, such as floors, areas, and devices, are not YAML, and neither are the Supervisor apps, HACS, or the HTTP config. `home/hass/state.k` declares them, and `task hass:apply` writes them through HA's API, as [Registry State](#registry-state) describes.
 
 This page covers the user config, the rules it must follow, and the tasks. The [haconfig README](../haconfig/README.md) describes the library's models.
 
@@ -227,8 +227,8 @@ The `hass` tasks live in `.taskfiles/hass/Taskfile.yaml`:
 | `hass:check` | `MODULE`, `HASS_IMAGE` | `hass:load`, then `check_config` in Docker |
 | `hass:diff` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `LIVE`, `SEMANTIC` | `hass:render`, then a diff from the live config to the render. See [Live Diff](#live-diff) |
 | `hass:plan` | `MODULE`, `HASS_URL` | `hass:render`, then a plan of the registry state against live HA. See [Registry State](#registry-state) |
-| `hass:apply` | `MODULE`, `HASS_URL`, `YES` | `hass:plan`, a confirmation, the apply, and a second plan |
-| `hass:import` | `OUT` (default `home/hass/state.k`), `VARIABLE`, `HASS_URL`, `FORCE` | writes a KCL state file from the live registries |
+| `hass:apply` | `MODULE`, `HASS_URL`, `YES`, `RESTART` | `hass:plan`, a confirmation, the apply, and a second plan |
+| `hass:import` | `OUT` (default `home/hass/state.k`), `VARIABLE`, `HASS_URL`, `FORCE` | writes a KCL state file from the live instance |
 | `hass:e2e` | `HASS_IMAGE` | the engine's end-to-end tests against a fresh HA container |
 | `hass:test` | `UPDATE` | the haconfig unit tests, the hallway golden diff, the negative render cases, and the engine's unit tests. `UPDATE=1` rewrites `golden/` |
 | `hass:gate` | none | `hass:test`, `check_config` on the hallway example, then `hass:check` for `home/hass/` |
@@ -264,7 +264,7 @@ The task succeeds whether or not the trees differ, and fails when it cannot read
 
 ## Registry State
 
-`HomeAssistant.state` declares the floors, areas, labels, and categories that HA keeps in `.storage`. The render writes the state to `.cache/hass/<MODULE>/state.json`, next to the config directory and never in it. `task hass:plan` compares that file with the live registries, and `task hass:apply` makes HA match it:
+`HomeAssistant.state` declares the floors, areas, labels, and categories that HA keeps in `.storage`, the settings of its devices, entities, and integrations, the Supervisor apps, the HACS repositories, and the HTTP server config. The render writes the state to `.cache/hass/<MODULE>/state.json`, next to the config directory and never in it. `task hass:plan` compares that file with the live registries, and `task hass:apply` makes HA match it:
 
 ```
 Home Assistant 2026.10.3 at https://hass.cin.macro.network
@@ -281,7 +281,7 @@ Plan: 1 to create, 1 to update, 0 to delete. 1 unmanaged.
 
 The state tasks talk to `HASS_URL`, which defaults to `https://hass.cin.macro.network`, and read an admin long-lived access token from `HASS_TOKEN`. To create one, open your HA profile, choose the Security tab, and create a token under Long-lived access tokens. Keep it in Doppler and run the tasks through `doppler run -p <project> -c <config> -- task hass:plan`, or export it in your shell.
 
-`task hass:import` wrote `home/hass/state.k` from the live registries, so git starts from the live state. Run it again with `FORCE=1` to replace the file with the live state, for example after you changed many areas in the UI. A plan of a fresh import shows no changes.
+`task hass:import` writes `home/hass/state.k` from the live registries, so git starts from the live state. Run it again with `FORCE=1` to replace the file with the live state, for example after you changed many areas in the UI. A plan of a fresh import shows no changes.
 
 ### Ownership
 
@@ -298,27 +298,119 @@ hass_state = hstate.State {
 
 HA gives each category a random id, so the engine matches categories by name within their scope, such as `automation`. Renaming a category in git creates a new one, and the old one stays until `prune` names `categories`. A managed `categories` covers the `automation`, `script`, `scene`, and `helpers` scopes and every scope the state names, so a category made in the UI shows as unmanaged.
 
+### Devices, Entities, and Integrations
+
+HA creates devices, entities, and config entries itself, when you pair a device or add an integration. The state never creates or deletes one. It manages only the fields that each declared object sets, so an unset field keeps the value HA has, and `None` clears the field:
+
+```python
+hass_state = hstate.State {
+    devices.reading_lamp = {
+        match.id = "4bc3...e91"
+        name = "Reading Lamp"
+        area = "living_room"
+    }
+    entities = {
+        "light.reading_lamp" = {icon = "mdi:lamp", aliases = ["Book light"]}
+        "sensor.lamp_power" = {match = {platform = "hue", uniqueId = "00:17:88-0b-power"}, hidden = True}
+    }
+    integrations.hue = {domain = "hue", entryId = "01JK...", title = "Hue Bridge"}
+}
+```
+
+- **Devices:** a device's map key is a slug of your choice, and `match` finds the device by its registry id, one identifier, or one connection. `task hass:import` writes the registry id, which HA assigns when it adds the device and never changes.
+- **Entities:** an entity's map key is its entity id. With `match`, the plan finds the entity by its platform and unique id within the key's domain, and the apply renames it to the key. HA strips each alias. It also keeps a placeholder for the entity's own name among the aliases. Google Assistant and Alexa use the first entry as the primary name, so the apply leaves the placeholder where it was.
+- **Integrations:** the plan warns about each declared integration that HA lacks (`!`), and lists each live one that the state lacks. You add integrations in the UI. `task hass:import` leaves out each title that holds an email address, and the entry id alone matches the entry.
+
+`disabled` and `hidden` set and clear only the flags that you set. HA also records flags that an integration, a device, or a config entry sets, and the plan warns when the state asks to clear one of those. HA enables an entity only when its device is enabled, so the plan checks the device's state after the apply. That state includes the devices that HA enables or disables along with an integration, so the state can enable an integration, a device, and its entities together. HA reloads an integration 30 seconds after you enable one of its entities. `task hass:import` lists only the devices and entities that carry a setting you made, with only those settings.
+
+### Apps
+
+`apps` declares Supervisor apps by slug, such as `core_mosquitto`. The engine reaches the Supervisor through HA's WebSocket API with the same token, so it does not need SSH. The plan installs each declared app that HA lacks, and uninstalls a live one that the state lacks only when `prune` names `apps`. It manages only the fields each app sets, and `options` manages each top-level option it sets. A set option holds its whole value, so a map lists every key it needs:
+
+```python
+apps.core_mosquitto = {
+    # renovate: datasource=custom.ha-app depName=core_mosquitto packageName=home-assistant/apps/master/mosquitto
+    version = "7.1.3"
+    options = {logins = [{username = "zigbee", password = tags.secret("mqtt_password")}]}
+    started = True
+}
+```
+
+- **Secrets:** `tags.secret(name)` passes `!secret name` to the Supervisor, which reads the value from the Pi's `secrets.yaml`, so the value never enters git. Declare the name in `HomeAssistant.secrets`. Only the Supervisor resolves `!secret`, so the render accepts `tags.secret()` only as the whole value of an app option. The plan never prints the value of an option that the app marks as a password or whose name looks like a credential or personal data, such as `network_key` or `email`. It also hides options that hold free-form settings, such as `env_vars`, options that move to a secret, and URLs that hold credentials. Error messages from the Supervisor leave out option values.
+- **Import:** `task hass:import` writes only the options whose type cannot hold free text, such as booleans, numbers, and selects. It skips options without a value. It names every other option in a comment above the app, so you can add it by hand, with `tags.secret()` for a secret.
+- **Types:** the Supervisor stores each option in its schema's type, such as a select value as a string, and the plan compares the stored form. The Supervisor reloads `secrets.yaml` and checks the options before it stores them, so a bad option fails its step and changes nothing.
+- **Defaults:** the Supervisor reports a removed option with its default value, so the state rejects `None` as an option value. Set the default value instead.
+- **Versions:** the Supervisor installs and updates only to the latest version in its store. A pinned `version` therefore works as a gate. The apply updates the app when the store offers exactly the pinned version, and the plan warns when the store offers another one. `task hass:import` pins the version of each app that does not update itself, and of no other app.
+- **Checks:** the plan checks each installed app's options, ports, and boot rules. The store does not list them for an app that is not installed, so the apply checks a new app after it installs the app, and before it writes any option.
+- **Restarts:** the apply restarts a running app after its options or ports change, because the app reads them only when it starts. An app step that restarts the proxy or tunnel that `HASS_URL` goes through drops the engine's connection, so the apply stops there, and you run it again. Leave `started` unset for an app that runs once at startup, such as Let's Encrypt, because it stops on its own.
+- **Repositories:** `appRepositories` lists the URLs of third-party store repositories, such as `https://github.com/hacs/addons`. The built-in repositories are always present. One apply can add a repository and install an app from it. `task hass:import` leaves out each repository whose URL holds credentials, because the Supervisor keys a repository by its whole URL.
+
+### HACS
+
+`hacs` declares HACS repositories by GitHub name, each with its category and its release tag, or a full commit sha for a repository without releases. The plan adds a custom repository that HACS does not know, and removes a live one that the state lacks only when `prune` names `hacs`. It never removes HACS itself, and the apply updates HACS before the other repositories. HACS 2.0.5 can install the latest release of a plugin that it has not installed before, even when the state pins an older tag. It still records the pinned tag, so pin a plugin's newest release on its first install.
+
+HA loads integration code only when it starts, so the plan ends with a note after it changes an integration. `task hass:apply RESTART=1` restarts HA and waits until HA, the Supervisor, and HACS run again. A new HACS version also runs only after a restart, so with `RESTART=1` the apply restarts HA between the HACS update and the other downloads. Without it, the other downloads run on the old HACS. `task hass:import` writes the commit that HACS reports for a repository without releases, which is often the 7-character short form, and a comment asks you to replace it with the full commit hash.
+
+### HTTP
+
+`http` declares HA's HTTP server config, which HA keeps in `.storage/http` and ignores in YAML after its first boot on 2026.8 or later. The render therefore rejects `http` in `HomeAssistant.integrations`. HA replaces the whole config on each change, so the state owns every field, and an unset field takes HA's default. Under the Supervisor, the default port is 80:
+
+```python
+http = {
+    serverPort = 443
+    sslCertificate = "/ssl/fullchain.pem"
+    sslKey = "/ssl/privkey.pem"
+}
+```
+
+An HTTP change runs after every other step:
+
+1. The apply stages the new config, and HA restarts.
+2. The apply reconnects. When `HASS_URL` reaches HA directly and the port or TLS changed, it reconnects at the new URL.
+3. It checks that HA booted on the new config, then confirms the config.
+4. It waits until HA, the Supervisor, and HACS run again, then plans again.
+
+Behind a proxy, `HASS_URL` stays the same, and the plan warns that a port or TLS change needs a matching change to the proxy. The plan also warns when HA drops TLS, because the apply then sends the token in plain text. HA reverts to the previous config 5 minutes after the restart unless the apply confirms it, so a config that locks the engine out undoes itself. HA checks certificate files and bind addresses only when it boots, and the plan warns when a change touches them. Without `sslKey`, HA reads the key from the certificate file.
+
+### Version Bumps
+
+Renovate bumps each `version` that has a `# renovate:` comment on the line above it, through the regex manager in `.github/renovate.json5`. `task hass:import` writes the comments:
+
+- **HACS repositories:** `datasource=github-releases depName=<owner>/<repo>`.
+- **Apps from the official and community stores:** `datasource=custom.ha-app`, which reads the app's `config.yaml` in its store repository. That file holds the version the Supervisor offers, so a Renovate pull request proposes only a version the apply can install.
+
 ### Plan Problems
 
 The plan fails on each problem that would make the apply fail or lose data:
 
 - An area names a floor or a label that neither HA nor the state holds. HA drops an unknown label without an error.
 - A pruned floor or label is on an area that the state does not declare. HA would clear it from that area, so declare the area or move it first.
-- Two objects in one collection would share a name, ignoring case and whitespace. HA rejects the second.
+- Two objects in one collection would share a name, ignoring case and, for floors, areas, and labels, spaces. HA rejects the second.
 - An area's `temperatureEntity` or `humidityEntity` has no state in HA, or lacks the matching device class.
 - A live object holds the temporary name that a create needs.
+- A device match finds no device or more than one, or two devices match one device.
+- An entity's key or `match` finds no entity, or a rename needs an entity id that another entity holds.
+- An entity on a device sets an area of its own but has no name apart from the device's name. HA rejects that area, so set the entity's name, or the area on its device.
+- An entity names a category that neither HA nor the state holds, or enables an entity whose device stays disabled.
+- An integration sets `title`, `disableNewEntities`, or `disablePolling` to `None`, which HA rejects.
+- An app is missing from the store and from every repository that the plan adds, or pins a version the store does not offer.
+- An app sets an option or a port that it lacks, or a field that the Supervisor ignores for it.
+- HACS is not installed or not running, or a repository's category differs from the one HACS lists.
+- HA holds a pending HTTP config that nobody confirmed, or the new config requires a client certificate.
 
 HA also removes a deleted label from every device and entity, and a deleted category from every automation or script in it. The plan lists those counts under each delete, such as `also removes the label from 3 entities and 0 devices`.
 
-The apply runs the deletes first, so a create or a rename can take a name that a pruned object held. It then runs labels, floors, areas, and categories, so each object exists before another references it. When a rename needs the old name of another renamed object, the apply first moves that object to a temporary name, so swaps and chains of renames work. The apply stops at the first failed step, and every step before it stays applied, so a new plan shows what remains. After the last step, it plans again and fails when changes remain.
+The apply runs the deletes first, so a create or a rename can take a name that a pruned object held. It then runs labels, floors, areas, categories, integrations, devices, entities, apps, and HACS, so each object exists before another references it. The app steps add repositories first, then uninstall apps, then remove repositories, and then install and configure the declared apps. The apps stop, restart, and then start last, in that order, so a host port that one app releases is free before another takes it. The HTTP change runs last.
 
-`task hass:apply` asks you to type `yes`. It then reads HA again and stops if the plan changed while it waited. `YES=1` skips the question, and any other value of `YES` asks.
+When a rename needs the old name of another renamed object, the apply first moves that object to a temporary name, so swaps and chains of renames work. The apply stops at the first failed step, and every step before it stays applied, so a new plan shows what remains. After the last step, it plans again and fails when changes remain.
+
+`task hass:apply` asks you to type `yes`. It then reads HA again and stops when the plan changed or gained a problem while it waited. `YES=1` skips the question, and any other value of `YES` asks.
 
 ### Engine
 
-`haconfig/engine/` is a uv project, and the tasks run it with `uv run`. Its unit tests run in `task hass:test`. `task hass:e2e` starts the pinned HA image in Docker, onboards a user through the onboarding API, and runs plan, apply, prune, and an import round trip through KCL against it. It reaches the container through `docker exec`, because published ports reset connections on some rootless Docker setups. Run it after you change `haconfig/engine/` or the state models.
+`haconfig/engine/` is a uv project, and the tasks run it with `uv run`. Its unit tests run in `task hass:test`, against a fake HA that follows the registry, Supervisor, and HACS rules. `task hass:e2e` starts the pinned HA image in Docker with the `demo` integration and onboards a user through the onboarding API. It then runs plan, apply, prune, an HTTP change with its restart, and an import round trip through KCL against it. The container has no Supervisor and no HACS, so apps and HACS run only against the fake and in a read-only plan of the Pi. It reaches the container through `docker exec`, because published ports reset connections on some rootless Docker setups. Run it after you change `haconfig/engine/` or the state models.
 
-The repo is public, so every name in `state.k` is public, such as the names of your rooms.
+The repo is public, so everything in `state.k` is public, such as the names of your rooms and devices, integration titles, device paths, and the app options that `task hass:import` writes. The import leaves out secrets and email addresses.
 
 ## Delivery
 

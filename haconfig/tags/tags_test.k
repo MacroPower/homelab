@@ -1,3 +1,4 @@
+import json
 import yaml
 import runtime
 
@@ -71,4 +72,11 @@ schema _SecretNamesCaller:
 test_secret_names_from_schema_with_text_attribute = lambda {
     _names = _SecretNamesCaller {}.names
     assert _names == ["real_name"], "got: ${_names}"
+}
+
+test_json_untag_keeps_a_secret_string = lambda {
+    _j = json.encode({password = secret("mqtt_password"), plain = "!secret not_a_tag"})
+    assert json_tags(_j) == ["!secret mqtt_password"], "got: ${json_tags(_j)}"
+    assert json_untag(_j) == '{"password": "!secret mqtt_password", "plain": "!secret not_a_tag"}', "got: ${json_untag(_j)}"
+    assert json_tags(json.encode({p = include("x.yaml")})) == ["!include x.yaml"]
 }

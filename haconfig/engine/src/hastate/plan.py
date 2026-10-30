@@ -7,173 +7,38 @@ hastate.apply executes the plan.
 
 from __future__ import annotations
 
-import json
-import re
-from dataclasses import dataclass, field
 from typing import Any
 
-STATE_FORMAT = 1
-"""The state document version that this engine reads."""
-
-
-@dataclass(frozen=True)
-class Registry:
-    """Registry describes one id-keyed HA registry and the fields the state owns."""
-
-    collection: str
-    prefix: str
-    id_field: str
-    fields: tuple[str, ...]
-    set_fields: frozenset[str] = frozenset()
-
-    @property
-    def noun(self) -> str:
-        return self.collection.removesuffix("s")
-
-
-LABELS = Registry("labels", "config/label_registry", "label_id", ("name", "color", "icon", "description"))
-FLOORS = Registry("floors", "config/floor_registry", "floor_id", ("name", "level", "icon", "aliases"), frozenset({"aliases"}))
-AREAS = Registry(
-    "areas",
-    "config/area_registry",
-    "area_id",
-    ("name", "floor_id", "icon", "aliases", "labels", "picture", "temperature_entity_id", "humidity_entity_id"),
-    frozenset({"aliases", "labels"}),
+from hastate import apps, hacs, http, settings
+from hastate.model import (  # noqa: F401  re-exported for callers of hastate.plan
+    STATE_FORMAT,
+    Registry,
+    LABELS,
+    FLOORS,
+    AREAS,
+    REGISTRIES,
+    CATEGORIES,
+    CATEGORY_PREFIX,
+    CATEGORY_FIELDS,
+    CATEGORY_SCOPES,
+    AREA_SENSORS,
+    CREATE_SUFFIX,
+    RENAME_SUFFIX,
+    create_name,
+    rename_name,
+    StateError,
+    Live,
+    Change,
+    Plan,
+    name_key,
+    normalize,
+    category_key,
+    is_empty,
+    check_format,
 )
 
-REGISTRIES = (LABELS, FLOORS, AREAS)
-"""The id-keyed registries in apply order. Each one references only the registries before it."""
 
-CATEGORIES = "categories"
-CATEGORY_PREFIX = "config/category_registry"
-CATEGORY_FIELDS = ("name", "icon")
-CATEGORY_SCOPES = ("automation", "script", "scene", "helpers")
-"""The category scopes that HA's frontend uses. A managed categories collection always covers them."""
-
-AREA_SENSORS = {"temperature_entity_id": "temperature", "humidity_entity_id": "humidity"}
-"""The area fields that name a sensor, mapped to the device class HA requires."""
-
-CREATE_SUFFIX = " ~"
-"""The suffix of a create's temporary name. HA's slugify drops it, so the object gets its key as its id."""
-
-RENAME_SUFFIX = " ~haconfig~"
-"""The suffix of the temporary name that frees an object's old name during an apply."""
-
-
-def create_name(key: str) -> str:
-    """Return the temporary name that a create of KEY uses, which HA slugifies to KEY."""
-    return key + CREATE_SUFFIX
-
-
-def rename_name(key: str) -> str:
-    """Return the temporary name that moves object KEY out of the way of another object's new name."""
-    return key + RENAME_SUFFIX
-
-
-class StateError(Exception):
-    """StateError means that the planner cannot read the state document."""
-
-
-@dataclass
-class Live:
-    """Live is a snapshot of the registries that a plan reads.
-
-    `registries` maps a collection name to HA's list result, and `categories`
-    maps a scope to its list. `states` maps an entity id to its state object,
-    and is None when no area names a sensor. `entities` and `devices` hold
-    the entity and device registries, and are None when the state prunes
-    neither labels nor categories.
-    """
-
-    ha_version: str
-    registries: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
-    categories: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
-    states: dict[str, dict[str, Any]] | None = None
-    entities: list[dict[str, Any]] | None = None
-    devices: list[dict[str, Any]] | None = None
-
-
-@dataclass
-class Change:
-    """Change is one planned operation on one registry object.
-
-    `action` is create, update, delete, or unmanaged. `diff` maps each field
-    to its live and desired value, with None as the live value of a create.
-    `target` is the live id of an update or a delete, and the desired fields of
-    a create. `notes` lists the side effects of a delete outside the state,
-    such as the entities that lose a label.
-    """
-
-    action: str
-    collection: str
-    key: str
-    name: str
-    diff: dict[str, tuple[Any, Any]] = field(default_factory=dict)
-    target: Any = None
-    scope: str | None = None
-    notes: list[str] = field(default_factory=list)
-
-    @property
-    def address(self) -> str:
-        if self.scope is not None:
-            return f"{self.collection}.{self.scope}.{self.key}"
-        return f"{self.collection}.{self.key}"
-
-
-@dataclass
-class Plan:
-    """Plan lists the changes and the problems that block an apply."""
-
-    ha_version: str
-    changes: list[Change] = field(default_factory=list)
-    problems: list[str] = field(default_factory=list)
-
-    @property
-    def actions(self) -> list[Change]:
-        return [c for c in self.changes if c.action != "unmanaged"]
-
-    def count(self, action: str) -> int:
-        return sum(1 for c in self.changes if c.action == action)
-
-    def fingerprint(self) -> str:
-        """Return a string that two plans share exactly when they hold the same actions."""
-        return json.dumps([[c.action, c.address, c.diff, c.target] for c in self.actions], sort_keys=True, default=str)
-
-
-def name_key(name: str) -> str:
-    """Return the key that HA's registries compare names by: casefolded, without whitespace."""
-    return re.sub(r"\s+", "", name.casefold())
-
-
-def normalize(value: Any, as_set: bool) -> Any:
-    """Return VALUE in the form HA stores it, so two equal values compare equal.
-
-    A set field becomes a sorted list without duplicates or blank strings. HA
-    stores area and floor aliases and labels as sets, so their order carries
-    no meaning.
-    """
-    if as_set:
-        return sorted({v.strip() for v in value or [] if isinstance(v, str) and v.strip()})
-    if value == "":
-        return None
-    return value
-
-
-def category_key(name: str) -> str:
-    """Return the key that HA's category registry compares names by: casefolded only."""
-    return name.casefold()
-
-
-def is_empty(value: Any) -> bool:
-    return value is None or value == [] or value == ""
-
-
-def check_format(desired: dict[str, Any]) -> None:
-    if desired.get("format") != STATE_FORMAT:
-        raise StateError(f"state format {desired.get('format')!r} is not {STATE_FORMAT}; render the state with this haconfig version")
-
-
-def plan(desired: dict[str, Any], live: Live) -> Plan:
+def plan(desired: dict[str, Any], live: Live, url: str = "") -> Plan:
     """Return the changes that turn LIVE into DESIRED, and every problem that blocks them."""
     check_format(desired)
     prune = set(desired.get("prune", []))
@@ -198,7 +63,58 @@ def plan(desired: dict[str, Any], live: Live) -> Plan:
 
     result.problems += _check_areas(desired.get("areas", {}), final_ids, live.states)
     result.problems += _check_cascades(result.changes, desired, live)
+
+    final_categories = _final_categories(desired, live, result.changes)
+    planners = {
+        settings.INTEGRATIONS: lambda want: settings.plan_integrations(want, live),
+        settings.DEVICES: lambda want: settings.plan_devices(want, live, final_ids["areas"], final_ids["labels"]),
+        settings.ENTITIES: lambda want: settings.plan_entities(
+            want, live, final_ids["areas"], final_ids["labels"], final_categories, result.changes
+        ),
+    }
+    for coll in settings.SETTINGS:
+        if coll in desired:
+            changes, problems, warnings = planners[coll](desired[coll])
+            result.changes += changes
+            result.problems += problems
+            result.warnings += warnings
+
+    # The apps plan first, because the repositories plan needs the apps the
+    # apply installs and uninstalls, and the apps plan needs the
+    # repositories the apply adds.
+    new_repositories = apps.new_repository_slugs(desired.get(apps.REPOSITORIES) or [], live)
+    app_changes: list[Change] = []
+    if apps.APPS in desired:
+        app_changes, problems, warnings = apps.plan_apps(desired[apps.APPS], live, apps.APPS in prune, new_repositories)
+        result.problems += problems
+        result.warnings += warnings
+    if apps.REPOSITORIES in desired:
+        changes, problems = apps.plan_repositories(desired[apps.REPOSITORIES], live, apps.REPOSITORIES in prune, app_changes)
+        result.changes += changes
+        result.problems += problems
+    result.changes += app_changes
+    if hacs.HACS in desired:
+        changes, problems, warnings = hacs.plan_hacs(desired[hacs.HACS], live, hacs.HACS in prune)
+        result.changes += changes
+        result.problems += problems
+        result.warnings += warnings
+    if http.HTTP in desired:
+        changes, problems, warnings = http.plan_http(desired[http.HTTP], live, url)
+        result.changes += changes
+        result.problems += problems
+        result.warnings += warnings
     return result
+
+
+def _final_categories(desired: dict[str, Any], live: Live, changes: list[Change]) -> dict[str, set[str]]:
+    """Return the category name keys per scope that exist after the apply."""
+    deleted = {(c.scope, c.target) for c in changes if c.collection == CATEGORIES and c.action == "delete"}
+    final = {
+        scope: {category_key(c["name"]) for c in cats if (scope, c["category_id"]) not in deleted} for scope, cats in live.categories.items()
+    }
+    for scope, entries in desired.get(CATEGORIES, {}).items():
+        final.setdefault(scope, set()).update(category_key(e["name"]) for e in entries.values())
+    return final
 
 
 def _plan_registry(
@@ -241,7 +157,7 @@ def _plan_registry(
         owners.setdefault(name_key(by_id[obj_id].get("name") or ""), []).append(obj_id)
     for keys in owners.values():
         if len(keys) > 1:
-            problems.append(f"{reg.collection}: {', '.join(sorted(keys))} would share one name, ignoring case and whitespace")
+            problems.append(f"{reg.collection}: {', '.join(sorted(keys))} would share one name, ignoring case and spaces")
 
     # The apply creates an object under a temporary name that HA slugifies to
     # KEY, so HA assigns KEY as its id, then renames it. That name must be free.

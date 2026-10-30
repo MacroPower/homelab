@@ -81,7 +81,27 @@ _BARE_TAG_SCALAR = r"(?m)^ *(?:- )*(?:(?:=|<<):(?: |$)|(?:[^\n]*?: )?(?:=|<<)$)"
 __bareTagScalars__ = {_k: [_m.strip() for _m in regex.findall(_v, _BARE_TAG_SCALAR)] for _k, _v in __encoded__ if regex.search(_v, _BARE_TAG_SCALAR)}
 assert not __bareTagScalars__, "the strings `=` and `<<` are not allowed as a key or a value, because HA's YAML loader reads them as tags: ${__bareTagScalars__}"
 
-__secretNames__ = sorted({_n = None for _, _v in __encoded__ for _n in tags.secret_names(_v)})
+# The state is JSON for the engine. Its only tag is `!secret` in app options,
+# which the Supervisor resolves from secrets.yaml, so the render rejects every
+# other tag, and a tag anywhere else, and declares each secret name like a
+# YAML reference.
+_stateData = backend.StateBackend(__root__.state).data if __root__.state is not Undefined else {}
+_stateJson = json.encode(_stateData, sort_keys=True, indent=2) if __root__.state is not Undefined else ""
+__stateTags__ = tags.json_tags(_stateJson)
+__badStateTags__ = [_t for _t in __stateTags__ if not _t.startswith("!secret ")]
+assert not __badStateTags__, "the state accepts only tags.secret(), got ${__badStateTags__}"
+
+_stateApps = {_s: {_f: _x for _f, _x in _a if _f != "options"} for _s, _a in _stateData.apps} if "apps" in _stateData else {}
+_stateBare = {_k: _v for _k, _v in _stateData if _k != "apps"} | {apps = _stateApps}
+__misplacedStateTags__ = tags.json_tags(json.encode(_stateBare))
+assert not __misplacedStateTags__, "tags.secret() works only in apps.<slug>.options, because only the Supervisor resolves !secret; got ${__misplacedStateTags__}"
+
+# A secret inside a longer string stays a sentinel after json_untag, and the
+# Supervisor would read the NUL byte as part of the value.
+_stateText = tags.json_untag(_stateJson)
+assert "\\u0000" not in _stateText, "tags.secret() must be an app option's whole value, not part of a longer string"
+
+__secretNames__ = sorted({_n = None for _n in [_n for _, _v in __encoded__ for _n in tags.secret_names(_v)] + [_t.removeprefix("!secret ") for _t in __stateTags__]})
 
 __undeclaredSecrets__ = [_n for _n in __secretNames__ if _n not in __root__.secrets]
 assert not __undeclaredSecrets__, "undeclared secrets referenced: ${__undeclaredSecrets__}; declare each in HomeAssistant.secrets with a fake value"
@@ -116,8 +136,6 @@ _files = {_k: _header + tags.untag(_v) for _k, _v in __encoded__} | {
         ".gitignore" = _header + _DEPLOY_GITIGNORE
 }
 
-_stateDocs = [
-    {path = "@state", content = json.encode(backend.StateBackend(__root__.state).data, sort_keys=True, indent=2) + "\n"}
-] if __root__.state is not Undefined else []
+_stateDocs = [{path = "@state", content = _stateText + "\n"}] if __root__.state is not Undefined else []
 
 manifests.yaml_stream([{path = _k, content = _v} for _k, _v in _files] + _stateDocs)

@@ -4,7 +4,7 @@ import models.frontend.state as hstate
 
 # _RESERVED_INTEGRATIONS lists the top-level keys that HomeAssistantBackend or
 # the packages write. `HomeAssistant.integrations` must not set them.
-_RESERVED_INTEGRATIONS = ["default_config", "scene"] + _MODELLED_DOMAINS
+_RESERVED_INTEGRATIONS = ["default_config", "scene", "http"] + _MODELLED_DOMAINS
 
 schema HomeAssistant:
     """HomeAssistant is the root model of one Home Assistant configuration
@@ -31,9 +31,10 @@ schema HomeAssistant:
         that `!include_dir_named` loads them from.
     integrations: {str:any}, default is {}, optional.
         Integrations are extra top-level `configuration.yaml` keys, such as
-        `http`, `recorder`, or `logger`, emitted verbatim. A key must not be
-        `homeassistant`, `default_config`, a UI include key, or a domain that
-        packages model, even with a label.
+        `recorder` or `logger`, emitted verbatim. A key must not be
+        `homeassistant`, `default_config`, `http`, a UI include key, or a
+        domain that packages model, even with a label. HA ignores YAML `http`
+        after its first boot on 2026.8 or later, so set `state.http` instead.
     packages: {str:Package}, default is Undefined, optional.
         Packages are keyed by package name, and each key must equal its
         Package's `name`. Build the map with
@@ -79,5 +80,5 @@ schema HomeAssistant:
 
     check:
         not _misnamed, "each `packages` key must equal its Package name, got ${_misnamed}"
-        not _reservedIntegrations, "integrations must not set ${_reservedIntegrations}; use the dedicated fields for `homeassistant`, `default_config` and the UI includes, and a package for a domain packages model"
+        not _reservedIntegrations, "integrations must not set ${_reservedIntegrations}; use the dedicated fields for `homeassistant`, `default_config` and the UI includes, `state.http` for `http`, and a package for a domain packages model"
         not _badSecretNames, "secret names must match [a-z0-9_]+, got ${_badSecretNames}"

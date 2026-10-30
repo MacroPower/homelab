@@ -221,12 +221,15 @@ tasks:
     summary: |
       Runs the same plan as hass:plan and asks you to type yes. It then
       applies each change in dependency order, stops at the first failure,
-      and plans again to check that no changes remain.
+      and plans again to check that no changes remain. An HTTP change runs
+      last: HA restarts on the new config, and the apply reconnects and
+      confirms it.
 
       Args:
         MODULE: The config module, relative to the repo root (default: home/hass)
         HASS_URL: The HA base URL (default: https://hass.cin.macro.network)
         YES: Set to 1 to apply without asking. Any other value asks
+        RESTART: Set to 1 to restart HA after HACS changes integration code
       Env:
         HASS_TOKEN: An admin long-lived access token
     interactive: true
@@ -234,17 +237,20 @@ tasks:
       MODULE: '{{.MODULE | default "home/hass"}}'
       OUT: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/config"
       YES: '{{.YES | default ""}}'
+      RESTART: '{{.RESTART | default ""}}'
     preconditions: *token
     cmds:
       - task: render
         vars: { MODULE: "{{.MODULE}}", OUT: "{{.OUT}}" }
-      - '{{.HASTATE}} apply --state "{{.HASS_CACHE_DIR}}/{{.MODULE}}/state.json" {{if eq .YES "1"}}--yes{{end}}'
+      - '{{.HASTATE}} apply --state "{{.HASS_CACHE_DIR}}/{{.MODULE}}/state.json" {{if eq .YES "1"}}--yes{{end}} {{if eq .RESTART "1"}}--restart{{end}}'
 
   import:
-    desc: Write a KCL state file from the live Home Assistant registries
+    desc: Write a KCL state file from the live Home Assistant instance
     summary: |
-      Reads the floors, areas, labels, and categories from HA and writes them
-      as a State to OUT, so git starts from the live state. A plan of the
+      Reads the registries, the devices and entities that carry your
+      settings, the integrations, the apps, HACS, and the HTTP config from HA,
+      and writes them as a State to OUT, so git starts from the live state.
+      It leaves out every app option that holds a secret. A plan of the
       written state against the same instance shows no changes. The task
       refuses an existing OUT unless FORCE=1.
 

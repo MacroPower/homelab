@@ -3,7 +3,8 @@
 The module starts HASS_IMAGE in Docker, onboards an admin user through the
 onboarding API, and runs the engine against it. The tests share one instance
 and run in file order, each one building on the state the last one left.
-Onboarding creates the areas living_room, kitchen, and bedroom.
+Onboarding creates the areas living_room, kitchen, and bedroom, and the
+demo integration provides real devices, entities, and a config entry.
 """
 
 from __future__ import annotations
@@ -40,6 +41,7 @@ homeassistant:
   name: haconfig e2e
 api:
 config:
+demo:
 onboarding:
 websocket_api:
 """
@@ -241,3 +243,63 @@ def test_renames_swaps_and_name_reuse_converge(ha):
     assert after.actions == [] and after.problems == []
     names = {a["area_id"]: a["name"] for a in run(snapshot(ha)).registries["areas"]}
     assert names == {"living_room": "Home Office", "office": "Lounge", "yard": "Garden", "den": "Study", "study": "Den"}
+
+
+def test_settings_collections_converge_and_round_trip(ha, tmp_path):
+    live = run(snapshot(ha))
+    demo = next(e for e in live.config_entries if e["domain"] == "demo")
+    devices = [d for d in live.devices if d.get("config_entry_id") == demo["entry_id"] or demo["entry_id"] in (d.get("config_entries") or [])]
+    device = devices[0]
+    named = next(e for e in live.entities if e["platform"] == "demo" and e.get("device_id") and e.get("original_name") and not e.get("disabled_by"))
+    domain = named["entity_id"].split(".")[0]
+    desired = {
+        "format": 1,
+        "prune": [],
+        "devices": {"first": {"match": {"id": device["id"]}, "name_by_user": "First Demo Device", "area_id": "den", "labels": ["lights"]}},
+        "entities": {
+            f"{domain}.haconfig_renamed": {
+                "match": {"platform": "demo", "unique_id": named["unique_id"]},
+                "icon": "mdi:test-tube",
+                "area_id": "study",
+                "aliases": ["Test tube"],
+                "hidden": True,
+            },
+        },
+        "integrations": {"demo": {"domain": "demo", "entry_id": demo["entry_id"], "title": "Demo Renamed"}},
+    }
+    before, after = run(plan_and_apply(ha, desired))
+    assert {c.address for c in before.actions} == {"devices.first", f"entities.{domain}.haconfig_renamed", "integrations.demo"}
+    assert after.actions == [] and after.problems == []
+
+    live = run(snapshot(ha))
+    entity = next(e for e in live.entities if e["unique_id"] == named["unique_id"] and e["platform"] == "demo")
+    assert entity["entity_id"] == f"{domain}.haconfig_renamed" and entity["hidden_by"] == "user"
+    # A new entity starts with HA's null placeholder for its own name, and the apply keeps it.
+    assert live.entity_details[entity["entity_id"]]["aliases"] == [None, "Test tube"]
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from test_kclgen import render_state
+
+    imported = render_state(tmp_path, generate(live, ha[0]))
+    assert imported["devices"]["first_demo_device"]["area_id"] == "den"
+    result = run(plan_against(ha, imported))
+    assert result.problems == [] and result.actions == [], [c.address for c in result.actions]
+
+
+def test_http_config_restarts_and_promotes(ha, tmp_path):
+    """The apply stages the HTTP config, survives HA's restart, and promotes the config before HA reverts it."""
+    state = tmp_path / "state.json"
+    desired = {"format": 1, "prune": [], "http": {"ip_ban_enabled": False, "login_attempts_threshold": 5, "cors_allowed_origins": ["https://example.test"]}}
+    state.write_text(json.dumps(desired))
+    env = os.environ | {"HASS_URL": ha[0], "HASS_TOKEN": ha[1], "NO_COLOR": "1"}
+    cmd = [sys.executable, "-m", "hastate.cli"]
+    applied = subprocess.run([*cmd, "apply", "--state", str(state), "--yes"], env=env, capture_output=True, text=True, timeout=600)
+    assert applied.returncode == 0, applied.stdout + applied.stderr
+    assert "http: promoted" in applied.stdout and "a new plan shows no changes" in applied.stdout
+
+    async def http_config():
+        async with Client(*ha) as client:
+            return await client.call("http/config")
+
+    info = run(http_config())
+    assert info["active_config_type"] == "stable" and info["pending"] is None
+    assert info["stable"]["ip_ban_enabled"] is False and info["stable"]["login_attempts_threshold"] == 5

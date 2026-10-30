@@ -28,7 +28,7 @@ The library has the following layout:
     │   ├── script          # The `Script` model
     │   ├── template        # Template sections and entities
     │   ├── helper          # input_*, timer, counter, and schedule helpers
-    │   ├── state           # Floors, areas, labels, and categories for the registries in .storage
+    │   ├── state           # The state that HA keeps outside YAML: registries, apps, HACS, and HTTP
     │   ├── home_assistant.k    # The `HomeAssistant` root model
     │   └── package.k           # The `Package` model
     ├── metadata        # Render context
@@ -70,7 +70,17 @@ config = frontend.HomeAssistant {
 
 ## State
 
-`HomeAssistant.state` takes a `State` from `models/frontend/state`. It declares the floors, areas, labels, and categories that HA keeps in `.storage`, and `StateBackend` turns it into the state document that the engine in `engine/` plans and applies over HA's WebSocket API. Each map key is the object's HA id, and the state owns every field of each object it declares:
+`HomeAssistant.state` takes a `State` from `models/frontend/state`. It declares what HA keeps outside YAML, and `StateBackend` turns it into the state document that the engine in `engine/` plans and applies over HA's WebSocket API:
+
+| Collections | Ownership |
+| --- | --- |
+| `floors`, `areas`, `labels`, `categories` | the state owns every field of each object it declares |
+| `devices`, `entities`, `integrations` | the state owns only the fields each object sets, and never creates or deletes one |
+| `apps`, `appRepositories` | the state owns the fields and the top-level options each app sets, and installs missing apps |
+| `hacs` | the state owns each repository's category and version |
+| `http` | the state owns the whole HTTP server config, and an unset field takes HA's default |
+
+For floors, areas, and labels, each map key is the object's HA id:
 
 ```python
 import haconfig.models.frontend.state as hstate

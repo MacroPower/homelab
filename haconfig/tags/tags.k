@@ -99,3 +99,20 @@ secret_names = lambda _snText: str -> [str] {
     _snFound = [_snM.removeprefix(_snPrefix).removesuffix('"') for _snM in regex.findall(_snText, r'"\\0!secret [^"]*"')]
     sorted({_snN = None for _snN in _snFound})
 }
+
+json_untag = lambda text: str -> str {
+    """
+    `json_untag` rewrites every `!secret` sentinel in the JSON text `text`
+    into the plain string `!secret <name>`, which the Supervisor resolves in
+    app options. Call it on `json.encode` output only.
+    """
+    regex.replace(text, r'"\\u0000(!secret [^"]*)"', '"$1"')
+}
+
+json_tags = lambda _jtText: str -> [str] {
+    """
+    `json_tags` returns each sentinel in the JSON text `_jtText`, such as
+    `!include x.yaml`, so a caller can reject the kinds it cannot carry.
+    """
+    [_jtM.removeprefix("\\u0000") for _jtM in regex.findall(_jtText, r'\\u0000![a-z_]+ [^"]*')]
+}

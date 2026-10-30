@@ -15,12 +15,6 @@ import haconfig.tags
 
 config = frontend.HomeAssistant {
     integrations = {
-        # The Pi serves HA over HTTPS on 443 with the certificates in /ssl.
-        http = {
-            server_port = 443
-            ssl_certificate = "/ssl/fullchain.pem"
-            ssl_key = "/ssl/privkey.pem"
-        }
         frontend.themes = tags.include_dir_merge_named("themes")
     }
     packages = {_p.name: _p for _p in []}

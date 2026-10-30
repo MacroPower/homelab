@@ -9,8 +9,8 @@ from typing import Any, TextIO
 
 from hastate.plan import Plan
 
-SYMBOLS = {"create": "+", "update": "~", "delete": "-", "unmanaged": "?"}
-COLORS = {"create": "32", "update": "33", "delete": "31", "unmanaged": "2", "problem": "31"}
+SYMBOLS = {"create": "+", "update": "~", "delete": "-", "unmanaged": "?", "missing": "!"}
+COLORS = {"create": "32", "update": "33", "delete": "31", "unmanaged": "2", "missing": "35", "problem": "31", "warning": "35"}
 
 
 def use_color(stream: TextIO) -> bool:
@@ -19,6 +19,13 @@ def use_color(stream: TextIO) -> bool:
 
 def value(v: Any) -> str:
     return json.dumps(v, ensure_ascii=False)
+
+
+def shown(v: Any) -> Any:
+    """Return V in the form the report prints for a sensitive field: a `!secret` reference or null as itself, anything else hidden."""
+    if v is None or (isinstance(v, str) and v.startswith("!secret ")):
+        return v
+    return "(sensitive)"
 
 
 def render(plan: Plan, url: str, color: bool = False) -> str:
@@ -33,11 +40,21 @@ def render(plan: Plan, url: str, color: bool = False) -> str:
     for change in plan.changes:
         head = f"  {SYMBOLS[change.action]} {change.address}  {value(change.name)}"
         if change.action == "unmanaged":
-            head += f"  (not in the state; prune {change.collection} to delete it)"
+            if change.collection in ("integrations",):
+                head += "  (not in the state)"
+            else:
+                head += f"  (not in the state; prune {change.collection} to delete it)"
+        elif change.action == "missing":
+            head += "  (declared, but HA does not have it)"
         lines.append(paint(change.action, head))
         for f, (old, new) in change.diff.items():
+            if f in change.sensitive:
+                old, new = shown(old), shown(new)
             lines.append(f"        {f}: {value(new)}" if change.action == "create" else f"        {f}: {value(old)} => {value(new)}")
         lines += [paint(change.action, f"        {note}") for note in change.notes]
+    if plan.warnings:
+        lines += ["", paint("warning", "Warnings:")]
+        lines += [paint("warning", f"  ! {w}") for w in plan.warnings]
     if plan.problems:
         lines += ["", paint("problem", "Problems that block an apply:")]
         lines += [paint("problem", f"  ! {p}") for p in plan.problems]
