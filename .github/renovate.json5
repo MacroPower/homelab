@@ -39,7 +39,30 @@
       ],
       versioningTemplate: "pep440",
     },
+    {
+      // A `# renovate:` comment directly above a `version = "..."` line in
+      // home/hass/*.k pins a HACS repository or a Supervisor app. hass:import
+      // writes the comments. packageName is optional, and versioning
+      // defaults to semver-coerced.
+      customType: "regex",
+      fileMatch: ["(^|/)home/hass/[^/]+\\.k$"],
+      matchStrings: [
+        '#[ \\t]*renovate:[ \\t]*datasource=(?<datasource>\\S+)[ \\t]+depName=(?<depName>\\S+)(?:[ \\t]+packageName=(?<packageName>\\S+))?(?:[ \\t]+versioning=(?<versioning>\\S+))?[ \\t]*\\r?\\n[ \\t]*version[ \\t]*=[ \\t]*"(?<currentValue>[^"\\r\\n]+)"',
+      ],
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}semver-coerced{{/if}}",
+    },
   ],
+  customDatasources: {
+    // The version that a Supervisor app store offers, read from the app's
+    // config.yaml in its store repository. The Supervisor installs only that
+    // version, so Renovate proposes exactly what the apply can install.
+    // packageName is <owner>/<repo>/<branch>/<app folder>.
+    "ha-app": {
+      defaultRegistryUrlTemplate: "https://raw.githubusercontent.com/{{{packageName}}}/config.yaml",
+      format: "yaml",
+      transformTemplates: ['{"releases": [{"version": $string(version)}], "sourceUrl": url}'],
+    },
+  },
   packageRules: [
     {
       matchManagers: ["custom.regex"],
