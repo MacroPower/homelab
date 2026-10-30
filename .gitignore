@@ -80,3 +80,6 @@ Brewfile.lock.json
 # Nix
 .nix/
 .direnv/
+
+# Python bytecode caches
+__pycache__/

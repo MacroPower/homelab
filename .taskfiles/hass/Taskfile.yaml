@@ -1,0 +1,297 @@
+---
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: "3"
+
+# Home Assistant config rendered from KCL. haconfig/ is the library and
+# home/hass/ is the module for the Pi. A render prints one {path, content} YAML stream,
+# and scripts/split.py turns it into a config directory under the gitignored
+# .cache/hass/. Nothing here deploys to the Pi.
+#
+# Quickstart:
+#   task hass:render   # render home/hass/ into .cache/hass/home/hass/config
+#   task hass:check    # render, load with HA's YAML loader, run check_config
+#   task hass:diff     # render and diff against the live config on the Pi
+#   task hass:gate     # library tests, golden diff, and check of home/hass/
+
+vars:
+  # go-task merges every included taskfile's top-level vars into one global
+  # scope, so each name here carries a HASS_ or HACONFIG_ prefix.
+  HACONFIG_DIR: "{{.ROOT_DIR}}/haconfig"
+  HASS_CACHE_DIR: "{{.ROOT_DIR}}/.cache/hass"
+  HASS_SCRIPTS: "{{.TASKFILE_DIR}}/scripts"
+  # The Home Assistant release that hass:check validates against and that
+  # hass:gen reads the catalogs from. Pinned by exact tag. Renovate bumps it
+  # through the regex manager in .github/renovate.json5, which matches the
+  # comment on the next line.
+  # renovate: datasource=docker depName=ghcr.io/home-assistant/home-assistant
+  HASS_IMAGE: '{{.HASS_IMAGE | default "ghcr.io/home-assistant/home-assistant:2026.10.4"}}'
+  # The SSH destination and config directory that hass:diff reads the live
+  # config from. The HAOS SSH apps mount the config at /homeassistant and link
+  # /config to it.
+  HASS_SSH: '{{.HASS_SSH | default "root@hass.cin.macro.network"}}'
+  HASS_CONFIG_DIR: '{{.HASS_CONFIG_DIR | default "/config"}}'
+tasks:
+  render:
+    desc: Render a config module into a config directory (default home/hass/ to .cache/hass/home/hass/config)
+    summary: |
+      Renders the module with kcl run, then splits the stream into OUT. The
+      split swaps the finished directory into place, so a failed render keeps
+      the previous output and a removed package also removes its file. It
+      refuses an OUT that holds .git, and any other non-empty directory that
+      an earlier render did not write.
+
+      Args:
+        MODULE: The config module, relative to the repo root (default: home/hass)
+        OUT: The config directory, absolute or relative to the repo root
+             (default: .cache/hass/<MODULE>/config)
+        ARGS: Extra kcl run flags, such as -D revision=<sha>
+    vars:
+      MODULE: '{{.MODULE | default "home/hass"}}'
+      OUT: '{{.OUT | default (printf ".cache/hass/%s/config" .MODULE)}}'
+      ARGS: '{{.ARGS | default ""}}'
+    # render-dir runs in DIR, and go-task creates a missing dir. Without this
+    # check, a mistyped MODULE leaves an empty directory in the repo.
+    # hass:load and hass:check reach this check through hass:render.
+    preconditions:
+      - sh: test -f "{{.ROOT_DIR}}/{{.MODULE}}/kcl.mod"
+        msg: "no module at {{.MODULE}}"
+    cmds:
+      - task: render-dir
+        vars:
+          DIR: "{{.MODULE}}"
+          STREAM: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/stream.yaml"
+          OUT: '{{if isAbs .OUT}}{{.OUT}}{{else}}{{joinPath .ROOT_DIR .OUT}}{{end}}'
+          ARGS: "{{.ARGS}}"
+
+  test:
+    desc: Run the haconfig unit tests and diff the hallway example against its golden output
+    summary: |
+      Runs kcl test over the library packages, renders
+      haconfig/examples/hallway and diffs it against
+      haconfig/examples/hallway/golden, then renders every
+      haconfig/examples/neg-* module and expects it to fail with the text in
+      its expected-error.txt.
+
+      Args:
+        UPDATE: Set to 1 to rewrite golden/ from the render instead of diffing
+    vars:
+      GOLDEN_OUT: '{{if .UPDATE}}{{.HACONFIG_DIR}}/examples/hallway/golden{{else}}{{.HASS_CACHE_DIR}}/golden{{end}}'
+      NEG_DIRS:
+        sh: find haconfig/examples -mindepth 1 -maxdepth 1 -type d -name 'neg-*' 2>/dev/null | sort
+    cmds:
+      - task: unit
+      - task: render-dir
+        vars:
+          DIR: haconfig/examples/hallway
+          STREAM: "{{.HASS_CACHE_DIR}}/golden.stream.yaml"
+          OUT: "{{.GOLDEN_OUT}}"
+      - cmd: diff -r "{{.HACONFIG_DIR}}/examples/hallway/golden" "{{.HASS_CACHE_DIR}}/golden"
+        if: '{{not .UPDATE}}'
+      # Skipped when no neg-* module exists, because a for loop over an empty
+      # split var still runs once with ITEM="".
+      - for: { var: NEG_DIRS, split: "\n" }
+        if: '{{ne .NEG_DIRS ""}}'
+        task: expect-fail
+        vars: { DIR: "{{.ITEM}}" }
+      - cmd: echo "haconfig tests passed{{if .UPDATE}} (golden/ rewritten){{end}}"
+        silent: true
+
+  load:
+    desc: Render a config module and load it with Home Assistant's YAML loader
+    summary: |
+      Renders the module, stages a copy with UI stubs and fake secrets in
+      .cache/hass/<MODULE>/stage, and loads it with annotatedyaml. This check
+      runs without Docker in about a second.
+
+      Args:
+        MODULE: The config module, relative to the repo root (default: home/hass)
+    vars:
+      MODULE: '{{.MODULE | default "home/hass"}}'
+      OUT: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/config"
+      STAGE: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/stage"
+    cmds:
+      - task: render
+        vars: { MODULE: "{{.MODULE}}", OUT: "{{.OUT}}" }
+      - python3 "{{.HASS_SCRIPTS}}/stage.py" "{{.OUT}}" "{{.STAGE}}"
+      - uv run -q "{{.HASS_SCRIPTS}}/haload.py" "{{.STAGE}}"
+
+  check:
+    desc: Render, load, and validate a config module with check_config in Docker
+    summary: |
+      Runs hass:load, then Home Assistant's check_config from HASS_IMAGE
+      against the stage. The check fails on a non-zero exit, on any error or
+      warning in the JSON report, and on any ERROR: or CRITICAL: log line,
+      because check_config reports invalid automations only in its log.
+
+      Args:
+        MODULE: The config module, relative to the repo root (default: home/hass)
+        HASS_IMAGE: The Home Assistant image (default: the pinned tag)
+    vars:
+      MODULE: '{{.MODULE | default "home/hass"}}'
+      STAGE: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/stage"
+    cmds:
+      - task: load
+        vars: { MODULE: "{{.MODULE}}" }
+      - >-
+        python3 "{{.HASS_SCRIPTS}}/checkconfig.py"
+        --catalog "{{.HACONFIG_DIR}}/models/frontend/trigger/catalog.k"
+        "{{.HASS_IMAGE}}" "{{.STAGE}}"
+
+  diff:
+    desc: Render a config module and diff it against the live config on the Pi
+    summary: |
+      Renders the module, reads the live copy of every file and directory the
+      render writes, including the package directory, and prints a git diff
+      from live/ to rendered/. A file that only the live config holds under
+      packages/ shows as deleted, because HA loads every file there until the
+      delivery removes it. The task then warns about each referenced secret
+      that no live secrets.yaml defines. It never copies a secrets.yaml or a
+      symlink, and it never writes to the Pi.
+
+      Over SSH, the Pi checks the secret names itself and returns only the
+      missing ones. The Pi needs an SSH app with your key and a network port,
+      as docs/hass.md describes.
+
+      Args:
+        MODULE: The config module, relative to the repo root (default: home/hass)
+        HASS_SSH: The SSH destination (default: root@hass.cin.macro.network)
+        HASS_CONFIG_DIR: The config directory on the Pi (default: /config)
+        LIVE: Read the live config from this local directory instead of SSH,
+              such as a mount of the Pi's Samba config share
+        SEMANTIC: Set to 1 to diff parsed YAML with sorted keys and no
+                  comments, so formatting and comment changes drop out
+    vars:
+      MODULE: '{{.MODULE | default "home/hass"}}'
+      OUT: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/config"
+      WORK: "{{.HASS_CACHE_DIR}}/{{.MODULE}}/diff"
+      LIVE: '{{.LIVE | default ""}}'
+      SOURCE: >-
+        {{if .LIVE}}--live-dir "{{if isAbs .LIVE}}{{.LIVE}}{{else}}{{joinPath .USER_WORKING_DIR .LIVE}}{{end}}"{{else}}--ssh "{{.HASS_SSH}}" --remote-dir "{{.HASS_CONFIG_DIR}}"{{end}}
+    cmds:
+      - task: render
+        vars: { MODULE: "{{.MODULE}}", OUT: "{{.OUT}}" }
+      - >-
+        uv run -q "{{.HASS_SCRIPTS}}/livediff.py" {{if .SEMANTIC}}--semantic{{end}}
+        "{{.OUT}}" "{{.WORK}}" {{.SOURCE}}
+
+  gate:
+    desc: Run hass:test, check_config on the hallway example, then hass:check for home/hass/
+    cmds:
+      - task: test
+      - task: check-example
+      - task: check
+        vars: { MODULE: home/hass }
+      - cmd: echo "hass gate passed"
+        silent: true
+
+  gen:
+    desc: Regenerate the purpose trigger and condition catalogs from home-assistant/core
+    summary: |
+      Sparse-clones home-assistant/core at HASS_REF into .cache/hass/ and runs
+      gencatalog.py, which rewrites trigger/catalog.k and condition/catalog.k
+      under haconfig/models/frontend. Run it after a Renovate bump of
+      HASS_IMAGE, because Renovate cannot run the generator itself.
+
+      Args:
+        HASS_REF: The home-assistant/core tag (default: the HASS_IMAGE tag)
+    vars:
+      HASS_REF: '{{.HASS_REF | default (splitList ":" .HASS_IMAGE | last)}}'
+      CORE_DIR: "{{.HASS_CACHE_DIR}}/core-{{.HASS_REF}}"
+    cmds:
+      - task: clone-core
+        vars: { HASS_REF: "{{.HASS_REF}}", CORE_DIR: "{{.CORE_DIR}}" }
+      - uv run -q "{{.HASS_SCRIPTS}}/gencatalog.py" "{{.CORE_DIR}}" "{{.HASS_REF}}" "{{.HACONFIG_DIR}}/models/frontend"
+
+  lock:
+    desc: Regenerate the kcl.mod.lock files under haconfig/ and home/hass/
+    # haconfig/, every module under haconfig/examples/, and home/hass/. fd skips
+    # gitignored paths, so .cache/ never matches.
+    cmds:
+      - fd kcl.mod.lock haconfig home/hass --type f -x rm {}
+      - fd '^kcl\.mod$' haconfig home/hass --type f -x sh -c 'cd "$(dirname {})" && kcl mod metadata >/dev/null'
+
+  unit:
+    internal: true
+    # Library packages only. examples/ holds standalone modules whose render
+    # hass:test covers, so it stays out of kcl test.
+    dir: "{{.ROOT_DIR}}/haconfig"
+    cmds:
+      - kcl test ./strings/... ./tags/... ./models/...
+
+  render-dir:
+    internal: true
+    requires:
+      vars: [DIR, STREAM, OUT]
+    vars:
+      ARGS: '{{.ARGS | default ""}}'
+    # DIR is relative to the repo root. Task joins an included task's dir onto
+    # the root unless the template starts with ROOT_DIR, so an absolute DIR
+    # doubles. cd into the package so kcl resolves its kcl.mod and [profile]
+    # entries, and capture stdout only. kcl writes diagnostics to stderr, so the stream stays
+    # clean. KCL_RUN_FLAGS matches the in-cluster CMP render.
+    dir: "{{.ROOT_DIR}}/{{.DIR}}"
+    cmds:
+      - cmd: mkdir -p "{{.STREAM | dir}}"
+        silent: true
+      - kcl run {{.KCL_RUN_FLAGS}} {{.ARGS}} > "{{.STREAM}}"
+      - test -s "{{.STREAM}}"
+      - uv run -q "{{.HASS_SCRIPTS}}/split.py" "{{.STREAM}}" "{{.OUT}}"
+
+  check-example:
+    internal: true
+    # Loads and validates the hallway example that hass:test rendered into
+    # .cache/hass/golden. home/hass/ might hold no packages, so
+    # the example gives the gate check_config coverage of every kind of entry
+    # the library emits.
+    vars:
+      OUT: "{{.HASS_CACHE_DIR}}/golden"
+      STAGE: "{{.HASS_CACHE_DIR}}/golden-stage"
+    cmds:
+      - python3 "{{.HASS_SCRIPTS}}/stage.py" "{{.OUT}}" "{{.STAGE}}"
+      - uv run -q "{{.HASS_SCRIPTS}}/haload.py" "{{.STAGE}}"
+      - >-
+        python3 "{{.HASS_SCRIPTS}}/checkconfig.py"
+        --catalog "{{.HACONFIG_DIR}}/models/frontend/trigger/catalog.k"
+        "{{.HASS_IMAGE}}" "{{.STAGE}}"
+
+  expect-fail:
+    internal: true
+    requires:
+      vars: [DIR]
+    silent: true
+    # A negative example renders with an error that holds the text of its
+    # expected-error.txt, minus trailing newlines. A render that succeeds, or
+    # that fails with other text, fails the test. DIR is relative to the repo
+    # root, as in render-dir.
+    dir: "{{.ROOT_DIR}}/{{.DIR}}"
+    cmds:
+      - |
+        want=$(cat expected-error.txt)
+        [ -n "$want" ] || { echo "{{.DIR}}: expected-error.txt is empty" >&2; exit 1; }
+        if got=$(kcl run {{.KCL_RUN_FLAGS}} 2>&1); then
+          echo "{{.DIR}}: render succeeded, expected an error with: $want" >&2; exit 1
+        fi
+        case "$got" in
+          *"$want"*) echo "  {{base .DIR}}: failed as expected" ;;
+          *) printf '%s: render failed with other text\nwant: %s\ngot:\n%s\n' "{{.DIR}}" "$want" "$got" >&2; exit 1 ;;
+        esac
+
+  clone-core:
+    internal: true
+    requires:
+      vars: [HASS_REF, CORE_DIR]
+    # A shallow, blobless, sparse clone that holds only the files gencatalog.py
+    # reads. The status check skips the clone when CORE_DIR already exists, so
+    # each tag clones once.
+    status:
+      - test -d "{{.CORE_DIR}}/.git"
+    cmds:
+      - rm -rf "{{.CORE_DIR}}.tmp"
+      - >-
+        git clone --quiet --depth 1 --branch "{{.HASS_REF}}" --filter=blob:none --no-checkout
+        https://github.com/home-assistant/core.git "{{.CORE_DIR}}.tmp"
+      - >-
+        git -C "{{.CORE_DIR}}.tmp" sparse-checkout set --no-cone
+        '/homeassistant/components/*/triggers.yaml' '/homeassistant/components/*/conditions.yaml'
+      - git -C "{{.CORE_DIR}}.tmp" checkout --quiet
+      - mv "{{.CORE_DIR}}.tmp" "{{.CORE_DIR}}"

@@ -63,6 +63,8 @@ includes:
     aliases: [tpi]
   kcl:
     taskfile: ./.taskfiles/kcl/Taskfile.yaml
+  hass:
+    taskfile: ./.taskfiles/hass/Taskfile.yaml
   nix:
     taskfile: ./.taskfiles/nix/Taskfile.yaml
 

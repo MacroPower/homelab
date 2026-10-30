@@ -21,6 +21,8 @@ KCL is a CNCF Sandbox project that provides:
 ├── appsets/     # ArgoCD ApplicationSets
 ├── bootstrap/   # KCL cluster bootstrapping files
 ├── konfig/      # KCL library for Kubernetes abstractions
+├── haconfig/    # KCL library for Home Assistant configuration
+├── home/        # Home automation config (home/hass: Home Assistant, rendered by haconfig)
 ├── charts/      # Helm chart KCL wrappers (auto-generated)
 ├── clusters/    # Talos cluster configurations
 └── terraform/   # Terraform for infrastructure
@@ -44,6 +46,7 @@ kcl chart update -c <chart_key>
 
 ## Development Workflow
 - IMPORTANT: If you update `charts/charts.k`, make sure to run `kcl chart update -c <chart_key>` to re-generate files.
+- Home Assistant config lives in `home/hass/` and renders through `haconfig/`. It never deploys through Argo CD. Run `task hass:gate` after changing either directory. See [Home Assistant Config](./docs/hass.md).
 - Test apps locally before pushing with the Talos-in-Docker + ArgoCD harness: `task tald:all` brings up a single-node cluster (real Cilium datapath) that reconciles your working tree, `task tald:push` re-syncs after edits. An app joins the local set when it has an `apps/<tenant>/<app>/local/` overlay. See [Local Testing](./docs/local-testing.md).
 
 ## KCL Application Overview

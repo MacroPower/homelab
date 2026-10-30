@@ -39,6 +39,9 @@ tasks:
     cmds:
       - fd kcl.mod.lock apps/ --type f -x rm {}
       - fd '^kcl\.mod$' apps/ --type f --exact-depth 4 -x sh -c 'cd "$(dirname {})" && kcl mod metadata >/dev/null'
+      # haconfig/ and home/hass/ sit outside apps/. The leading colon calls the root
+      # namespace, so the call also resolves where tald includes this file.
+      - task: :hass:lock
 
   chart:update:
     desc: Update KCL charts

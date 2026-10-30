@@ -1,0 +1,265 @@
+# Home Assistant Config
+
+The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. No task deploys the output to the Pi. [Delivery](#delivery) describes the open decision.
+
+This page covers the user config, the rules it must follow, and the tasks. The [haconfig README](../haconfig/README.md) describes the library's models.
+
+## Layout
+
+The config spans the library and one module for the Pi:
+
+| Path | Holds |
+| --- | --- |
+| `haconfig/` | The library: front-end models, mixins, backends, and the render entry |
+| `haconfig/examples/hallway/` | A complete worked example and its golden output |
+| `haconfig/examples/neg-*/` | The negative render cases |
+| `home/hass/` | The Pi's config: `main.k` with the instance-wide config, and one file per package |
+
+`home/hass/` sits outside `apps/` because HA config never deploys through Argo CD, and `home/` leaves room for home automation config that is not HA. The `home/hass/kcl.mod` file depends on the library and adds the render entry to its profile:
+
+```toml
+[package]
+name = "home_hass"
+version = "0.1.0"
+
+[dependencies]
+haconfig = { path = "../../haconfig" }
+
+[profile]
+entries = ["*.k", "${haconfig:KCL_MOD}/models/render/render.k"]
+```
+
+The `*.k` entry compiles every file in `home/hass/` as one KCL package, so adding a package file does not change `kcl.mod`. A second HA instance is one more module under `home/`, such as `home/hass-dev/`, with the same `kcl.mod` fields and its own package name. Pass its path to the tasks as `MODULE`.
+
+`home/hass/` holds no packages yet. The hallway example under `haconfig/examples/hallway` shows every part of a working config: a template sensor, an `input_boolean`, a timer, a script, an automation, and secrets.
+
+The render prints one YAML stream, and `task hass:render` splits it into this directory:
+
+```
+.cache/hass/home/hass/config/
+├── configuration.yaml        # homeassistant:, default_config:, the UI !include lines, integrations
+├── packages/
+│   └── <name>.yaml           # one file per package
+├── secrets.example.yaml      # every referenced !secret name with its fake value
+└── .gitignore                # the files HA writes at runtime
+```
+
+The render never writes `secrets.yaml`, `automations.yaml`, `scripts.yaml`, or `scenes.yaml`. `configuration.yaml` includes the three UI files, so automations, scripts, and scenes made in the HA UI keep working next to the generated packages.
+
+## Adding a Package
+
+A package is one `packages/<name>.yaml` file that groups the automations, scripts, templates, and helpers of one area or feature. To add one to the Pi's config:
+
+1. Create `home/hass/<name>.k` with one top-level `Package`. Name the variable after the package, and set `name` to the same slug:
+
+   ```python
+   import haconfig.models.frontend
+
+   hallway = frontend.Package {
+       name = "hallway"
+       timers.hallway_light = {name = "Hallway light", duration = "00:05:00"}
+       automations.hallway_motion_light = {
+           triggers = [{trigger = "motion.detected", target.entity_id = "binary_sensor.hallway_motion"}]
+           actions = [{action = "timer.start", target.entity_id = "timer.hallway_light"}]
+       }
+   }
+   ```
+
+2. Add the variable to the list in `home/hass/main.k`. The files in `home/hass/` share one KCL package, so `main.k` reads `hallway` without an import:
+
+   ```python
+   packages = {_p.name: _p for _p in [hallway]}
+   ```
+
+3. Run `task hass:render`, and read `.cache/hass/home/hass/config/packages/hallway.yaml`.
+4. Run `task hass:check` to load the output with HA's loader and run `check_config`.
+
+If the package references a secret, declare it as [Secrets](#secrets) describes.
+
+Each `Package` collection is a map keyed by object id, and each one emits one HA domain:
+
+| Field | Emits |
+| --- | --- |
+| `automations` | the `automation:` list |
+| `scripts` | the `script:` map |
+| `templates` | the `template:` list. Each key names one section, and the render does not emit it |
+| `inputBooleans`, `inputButtons`, `inputNumbers`, `inputSelects`, `inputTexts`, `inputDatetimes` | the matching `input_*` map |
+| `timers`, `counters`, `schedules` | the `timer:`, `counter:`, and `schedule:` maps |
+| `customize` | `homeassistant: customize:` |
+| `extraConfig` | any other key, verbatim |
+
+Leaf fields take HA's own names, such as `unit_of_measurement`. HA keys that are KCL keywords take a `$` prefix (`$for`, `$if`, `$else`, `$while`), and the render writes them without it. Trigger, condition, and action lists accept dict literals, and the render builds each entry into the schema that its HA discriminator names.
+
+Pass every multi-line Jinja template through `strings.jinja` from `haconfig.strings`. It strips trailing spaces, so the template renders as a `|-` block.
+
+Write every trigger, condition, action, and `sequence` field as a list, even when it holds one entry. HA also accepts a single mapping or template string in those fields, but haconfig rejects that form, so `conditions = "{{ ... }}"` becomes `conditions = ["{{ ... }}"]`.
+
+HA's package merge skips an empty mapping below a domain key without a message. The render therefore emits a helper written as `{}`, such as `timers.hallway_light = {}`, as `hallway_light: null`. It also emits a parameterless script selector such as `selector.boolean = {}` as `boolean: null`. The render does not rewrite `extraConfig`, so HA still drops an empty mapping that sits below one of its top-level keys.
+
+## Union Rules
+
+KCL's union operator (`|`) changes a config, for example in a negative render case or in a second instance that reuses a package. The following rules keep the result predictable.
+
+The render requires exactly one `HomeAssistant` instance in the module, because one config directory has one `configuration.yaml`. Each variable that holds one, even a `_`-prefixed variable, adds an instance, so rebind a changed root in one expression:
+
+```python
+config = hallway.config | {
+    packages.hallway.timers.hallway_light.duration = "00:03:00"
+}
+```
+
+A second variable fails the render with `expected exactly one frontend.HomeAssistant in the main package, found 2`.
+
+Every union must write `=` to replace a list field and `+=` to append to one. With `:`, KCL merges two lists by index, so the entry `conditions: [{condition = "template", ...}]` merges into the first existing condition. If the two entries differ in type, the render fails with `automations.motion_light.conditions[0]: No attribute named 'entity_id' in the schema 'TemplateCondition'`. If they share a type, the merge produces a wrong entry and the render succeeds.
+
+To change a mapping, write `:` (`core: {internal_url = "..."}`), or set one leaf by its key path. To remove an entry, set it to `Undefined` (`packages.hallway.timers.hallway_light = Undefined`). On a collection entry, `None` also removes the entry. On a leaf field such as a trigger's `to`, `None` emits a YAML `null`.
+
+## Identity
+
+Map keys are the single source of every HA identity. For key `motion_light` in package `hallway`, the render derives these ids:
+
+| HA identity | Source | Example |
+| --- | --- | --- |
+| Package name and file stem | `Package.name`, equal to its key | `packages/hallway.yaml` |
+| Automation `id` | `<package>.<key>`, unless you set `id` | `hallway.motion_light` |
+| Automation alias, and so its entity id | `alias`, or the key in sentence case | `Motion light`, so `automation.motion_light` |
+| Template `unique_id` | `<package>.<key>`, unless you set `unique_id` | `hallway.motion_light` |
+| Template `default_entity_id` | `<domain>.<key>`, unless you set it | `sensor.motion_light` |
+| Script and helper object ids | the key | `script.motion_light`, `timer.motion_light` |
+
+Every map key must be an HA slug: lowercase letters, digits, and single underscores, with no leading or trailing underscore. The `Package` checks reject other keys and list each one, such as `got [hallLight]`. The render does not convert keys, so the key you write is the id that traces and the entity registry show.
+
+Keys are part of the config's interface. Renaming a key changes the automation id and the template `unique_id`, so HA orphans the old registry entry and loses its traces. To keep the old id across a rename, set `id` or `unique_id` to the old value. The same field lets an automation adopt the id of one that the UI created.
+
+Derived ids with a package prefix never collide, because a slug cannot contain `.`. Explicit ids can still collide, and object ids and aliases have no prefix, so the render fails on each of these duplicates across packages:
+
+- two automations with the same `id`
+- two automation aliases that slugify to the same entity id
+- two template entities of one domain with the same `unique_id`
+- two template entities with the same `default_entity_id`
+- two scripts or helpers of one domain with the same key
+
+Start each script and helper key with the package's area, such as `hallway_light`, so that keys from different packages rarely clash.
+
+The render cannot see the objects that the HA UI stores in `.storage/`. It misses every UI script or helper that shares a key with a YAML one, and HA keeps whichever one it loads first.
+
+## Secrets
+
+`tags.secret("name")` from `haconfig.tags` emits `!secret name`. Every name that the config references must also appear in `HomeAssistant.secrets`, mapped to a fake value:
+
+```python
+config = frontend.HomeAssistant {
+    secrets = {
+        home_latitude = 40.7
+        home_longitude = -74.0
+    }
+}
+```
+
+The render fails on a referenced name that `secrets` does not declare, such as `undeclared secrets referenced: [home_longtiude]`. Each fake must have the type that HA validates, because the checks load the config with the fakes in place. A non-numeric latitude, such as `fake`, fails `cv.latitude`, and URL secrets need a URL. The repo is public, so every value in `secrets` must be fake.
+
+The render emits `secrets.example.yaml`, which maps each referenced name to its fake. The real `secrets.yaml` lives only on the Pi, and you maintain it by hand. One `secrets.yaml` at the config root serves every file under `packages/`, because HA's loader searches parent directories up to the config directory.
+
+## Tags
+
+The `haconfig.tags` builders return a placeholder string, and the render turns each placeholder into a YAML tag after it encodes the file:
+
+| Builder | Emits |
+| --- | --- |
+| `tags.secret(name)` | `!secret name` |
+| `tags.include(path)` | `!include path` |
+| `tags.include_dir_named(path)` | `!include_dir_named path` |
+| `tags.include_dir_merge_named(path)` | `!include_dir_merge_named path` |
+| `tags.include_dir_list(path)` | `!include_dir_list path` |
+| `tags.include_dir_merge_list(path)` | `!include_dir_merge_list path` |
+| `tags.env_var(name, default)` | `!env_var name default`, or `!env_var name` without a default. `name` must be one word |
+
+Each builder rejects an empty argument and an argument that contains `"`, `\`, or a NUL byte. A plain string that starts with `!secret` stays a quoted string, so only a builder call produces a tag. haconfig does not support `!input`, because blueprints are out of scope.
+
+## Escape Hatches
+
+Each escape hatch covers an HA feature that haconfig does not model. You must name each one explicitly, so a typo in a modelled entry fails instead of landing in one:
+
+| Need | Escape hatch |
+| --- | --- |
+| A trigger, condition, or action that haconfig does not model, such as `tag`, `device`, or `calendar` | `trigger.RawTrigger {...}`, `condition.RawCondition {...}`, `action.RawAction {...}` |
+| A purpose trigger or condition from a custom integration | `trigger.RawTrigger {...}`, `condition.RawCondition {...}` |
+| A template domain without a typed map, such as `light` or `weather` | `TemplateSection.entities.<domain>.<key>` |
+| An integration inside a package | `Package.extraConfig` |
+| A hand-written automation or script inside a package | a labelled key, such as `extraConfig = {"automation raw" = [...]}` |
+| A top-level integration, such as `http` or `recorder` | `HomeAssistant.integrations` |
+
+`extraConfig` rejects a plain key for a domain that the package models, such as `automation`, because HA merges it into the generated list by index. Write a labelled key instead. `integrations` rejects `homeassistant`, `default_config`, the UI include keys, and every domain that packages model.
+
+## Validation
+
+Each check runs at a different stage, and later checks catch what earlier ones cannot see:
+
+| Stage | Check | Catches |
+| --- | --- | --- |
+| Render | Schema checks and the dispatchers | unknown keys, missing required keys, bad values, unknown trigger and condition names, non-slug keys |
+| Render | Identity and secret checks in `render.k` | duplicate ids, `=` and `<<` strings, undeclared secrets, more than one root |
+| `hass:load` | `annotatedyaml`, HA's own YAML loader | broken `!include` and `!secret` references, malformed packages |
+| `hass:check` | `check_config` from the pinned HA image | everything HA validates, such as integration options and purpose-trigger option values |
+
+Render errors name the package and the key path of each invalid entry, and each render reports every invalid entry at once:
+
+```
+Check failed on the condition: package `hallway` has invalid entries:
+  automations.motion_light.triggers[0]: No attribute named 'too' in the schema 'StateTrigger'
+```
+
+The render checks purpose triggers and conditions, such as `motion.detected`, against a catalog generated from the pinned HA release. Misspelled names fail with ``unknown trigger `motion.detectedd` (not in the Home Assistant 2026.10.4 catalog)``. Without that check, `check_config` reports the misspelling only as a log line and exits 0.
+
+`hass:check` runs `check_config` in Docker with no network, against a staged copy of the output. The stage adds empty UI files and copies `secrets.example.yaml` to `secrets.yaml`. HA requires every `http` certificate path to name an existing file. The check therefore mounts a read-only `/ssl` that holds an empty file for each `/ssl/<file>` path the config references. The check fails on a non-zero exit, on any error or warning in the JSON report, and on any `ERROR:` or `CRITICAL:` log line. It prints `WARNING:` log lines without failing.
+
+## Tasks
+
+The `hass` tasks live in `.taskfiles/hass/Taskfile.yaml`:
+
+| Task | Variables | Runs |
+| --- | --- | --- |
+| `hass:render` | `MODULE` (default `home/hass`), `OUT`, `ARGS` | renders the module into `OUT`, by default `.cache/hass/<MODULE>/config` |
+| `hass:load` | `MODULE` | `hass:render`, then stages the output and loads it with `annotatedyaml` |
+| `hass:check` | `MODULE`, `HASS_IMAGE` | `hass:load`, then `check_config` in Docker |
+| `hass:diff` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `LIVE`, `SEMANTIC` | `hass:render`, then a diff from the live config to the render. See [Live Diff](#live-diff) |
+| `hass:test` | `UPDATE` | the haconfig unit tests, the hallway golden diff, and the negative render cases. `UPDATE=1` rewrites `golden/` |
+| `hass:gate` | none | `hass:test`, `check_config` on the hallway example, then `hass:check` for `home/hass/` |
+| `hass:gen` | `HASS_REF` (default the `HASS_IMAGE` tag) | regenerates the trigger and condition catalogs from `home-assistant/core` |
+| `hass:lock` | none | regenerates every `kcl.mod.lock` under `haconfig/` and `home/hass/`. `kcl:lock` also runs it |
+
+Run `task hass:gate` before you push a change to `haconfig/` or `home/hass/`. The repo has no CI for KCL, so the gate is the only check. To set the revision header in the rendered files, pass `ARGS="-D revision=<sha>"` to `hass:render`.
+
+`HASS_IMAGE` pins the HA image by exact tag, and Renovate opens a pull request for each HA release. Renovate cannot regenerate the catalogs, so `hass:check` prints a note when the catalog version differs from the image tag. Run `task hass:gen` on that pull request before you merge it.
+
+The negative render cases sit under `haconfig/examples/neg-*/`. Each one is a module that imports the hallway example, changes it with a union, and holds an `expected-error.txt`. `hass:test` fails when the module renders or fails with other text. To add a case, copy one of the directories, change its package name and `main.k`, and write the expected message.
+
+## Live Diff
+
+`task hass:diff` shows what a deploy changes on the Pi. It renders the module, reads the live copy of every file and directory that the render writes, and prints a `git diff` from `live/` to `rendered/`:
+
+- A rendered file that the Pi lacks shows as a new file.
+- A file that only the Pi holds under `packages/` shows as deleted, even when the render holds no packages. HA loads every file in that directory, so the delivery must remove the file.
+- A referenced secret that no `secrets.yaml` on the Pi defines prints a warning after the diff, because HA fails to load the config.
+
+The task never writes to the Pi, and it never copies a `secrets.yaml` file or a symlink. Over SSH, the Pi checks each declared secret name itself and returns only the missing names, so no secret value leaves the Pi.
+
+The task reads the Pi over one SSH connection, with `tar`. It needs one of the HAOS SSH apps, set up as follows:
+
+- **Terminal & SSH:** add your public key to the app's `authorized_keys` option. The app does not listen on the network by default, so set a host port, such as 22, in its Network settings, and restart it.
+- **Advanced SSH & Web Terminal:** add your key, and set `ssh.username` to `root`. The app's default user is `hassio`, an unprivileged user, so `HASS_SSH=root@...` fails until you change it.
+
+SSH runs in batch mode, so connect once by hand (`ssh root@hass.cin.macro.network`) to accept the host key. `HASS_SSH` sets the destination. For a port other than 22, write `HASS_SSH=ssh://root@hass.cin.macro.network:2222`, or add a host entry to `~/.ssh/config`. `HASS_CONFIG_DIR` sets the config directory, which defaults to `/config`. Both apps mount the config at `/homeassistant` and link `/config` to it.
+
+`LIVE=<dir>` reads a local directory instead of SSH, such as a mount of the Pi's Samba `config` share. In that mode, the script parses each `secrets.yaml` through the mount and keeps only its keys. The values cross the network to your machine, but they never reach the output. `SEMANTIC=1` parses every YAML file on both sides and re-dumps it with sorted keys, no comments, and no anchors. The diff then shows only changes that HA sees. Use it for the first migration, when the hand-written files on the Pi differ from the render in comments and key order.
+
+The task succeeds whether or not the trees differ, and fails when it cannot read the live config.
+
+## Delivery
+
+How the rendered config reaches the Pi is an open decision. The Git pull app on the Pi needs a branch whose root is the config directory. Both options therefore publish the rendered directory as the root of a separate branch:
+
+- **CI renders to a deploy branch.** CI runs `task hass:gate` and `task hass:render`, then commits the output to the root of a `hass-deploy` branch. The Pi's Git pull app tracks that branch.
+- **Commit the rendered output.** You render into the default `OUT`, and a `hass:publish` task copies the output into a worktree of the deploy branch with `rsync --delete --exclude .git`. The render replaces the whole output directory. It refuses an `OUT` that holds `.git`, and any other non-empty directory that an earlier render did not write.
+
+The emitted `.gitignore` lists the files that HA writes at runtime, and `secrets.yaml` and the UI files, so a deploy branch never tracks them. The render never ships `secrets.yaml`, so no deploy can overwrite the Pi's real secrets. Before each pull, the deploy step can compare the names in `secrets.example.yaml` with the Pi's `secrets.yaml`.

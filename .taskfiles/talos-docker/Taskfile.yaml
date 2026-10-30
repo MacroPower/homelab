@@ -382,11 +382,13 @@ tasks:
             find bootstrap/core/local bootstrap/hack appsets -name kcl.mod
           } | while read -r m; do grep -q '^\[profile\]' "$m" && dirname "$m"; done | sort -u
       # Packages rendered with prod-hub context DEFAULTS (no -D). Default: the prod
-      # hub day-0 bundle + the shared appsets source. --all: every renderable package.
+      # hub day-0 bundle + the shared appsets source. --all: every renderable package,
+      # including the home automation modules under home/ (the local cluster never
+      # deploys them, so the default sweep leaves them out).
       DEFAULT_DIRS:
         sh: |
           if [ -n "{{.ALL}}" ]; then
-            find apps bootstrap appsets -name kcl.mod
+            find apps bootstrap appsets home -name kcl.mod
           else
             find bootstrap/core/mgmt appsets -name kcl.mod
           fi | while read -r m; do grep -q '^\[profile\]' "$m" && dirname "$m"; done | sort -u

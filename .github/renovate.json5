@@ -28,6 +28,17 @@
       matchStringsStrategy: "recursive",
       datasourceTemplate: "docker",
     },
+    {
+      // HASS_IMAGE in the hass Taskfile pins the Home Assistant release that
+      // hass:check validates against. Home Assistant tags follow PEP 440, so
+      // pep440 versioning skips beta and dev tags.
+      customType: "regex",
+      fileMatch: ["(^|/)\\.taskfiles/hass/Taskfile\\.yaml$"],
+      matchStrings: [
+        '# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\n\\s*HASS_IMAGE: .*"\\S+?:(?<currentValue>[^"]+)"',
+      ],
+      versioningTemplate: "pep440",
+    },
   ],
   packageRules: [
     {
