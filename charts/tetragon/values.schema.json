@@ -8,6 +8,149 @@
       "title": "affinity",
       "type": "object"
     },
+    "certgen": {
+      "additionalProperties": true,
+      "description": "cilium-certgen settings used by tetragon.grpc.tls.auto.method=cronJob.\nMirrors the same block in cilium/cilium so operators familiar with the\nhubble TLS workflow find consistent knobs.",
+      "properties": {
+        "affinity": {
+          "additionalProperties": true,
+          "description": "Affinity for certgen pods.",
+          "required": [],
+          "title": "affinity",
+          "type": "object"
+        },
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations applied to certgen Job/CronJob objects.",
+          "properties": {
+            "cronJob": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "cronJob",
+              "type": "object"
+            },
+            "job": {
+              "additionalProperties": true,
+              "required": [],
+              "title": "job",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "cronJob": {
+          "additionalProperties": true,
+          "properties": {
+            "failedJobsHistoryLimit": {
+              "default": 1,
+              "description": "Number of failed CronJob runs to retain.",
+              "required": [],
+              "title": "failedJobsHistoryLimit",
+              "type": "integer"
+            },
+            "successfulJobsHistoryLimit": {
+              "default": 1,
+              "description": "Number of successful CronJob runs to retain.",
+              "required": [],
+              "title": "successfulJobsHistoryLimit",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "cronJob",
+          "type": "object"
+        },
+        "generateCA": {
+          "default": true,
+          "description": "Whether the certgen invocation should generate a CA when one isn't\nfound in the configured CA Secret.",
+          "required": [],
+          "title": "generateCA",
+          "type": "boolean"
+        },
+        "hostUsers": {
+          "default": true,
+          "description": "Run the certgen pods in the host user namespace. certgen needs no host\naccess, set to false to run it in a user namespace. Requires Kubernetes\n1.33 or later.",
+          "required": [],
+          "title": "hostUsers",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "properties": {
+            "override": {
+              "default": "~",
+              "required": [],
+              "title": "override",
+              "type": "null"
+            },
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "quay.io/cilium/certgen",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "v0.4.13",
+              "description": "renovate: datasource=docker depName=quay.io/cilium/certgen",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "nodeSelector": {
+          "additionalProperties": true,
+          "description": "Node selector for certgen pods.",
+          "required": [],
+          "title": "nodeSelector",
+          "type": "object"
+        },
+        "podLabels": {
+          "additionalProperties": true,
+          "description": "Pod labels added to certgen pods.",
+          "required": [],
+          "title": "podLabels",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource requests/limits for the certgen container.",
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "tolerations": {
+          "description": "Tolerations for certgen pods.",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tolerations",
+          "type": "array"
+        },
+        "ttlSecondsAfterFinished": {
+          "default": 1800,
+          "description": "TTL applied to the bootstrap Job once it completes.",
+          "required": [],
+          "title": "ttlSecondsAfterFinished",
+          "type": "integer"
+        }
+      },
+      "required": [],
+      "title": "certgen",
+      "type": "object"
+    },
     "crds": {
       "additionalProperties": true,
       "properties": {
@@ -170,7 +313,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.1.0",
+                  "default": "v1.1.1",
                   "required": [],
                   "title": "tag",
                   "type": "string"
@@ -191,7 +334,7 @@
       "type": "object"
     },
     "exportDirectory": {
-      "default": "/var/run/cilium/tetragon",
+      "default": "/var/log/tetragon",
       "description": "Directory to put Tetragon JSON export files.",
       "required": [],
       "title": "exportDirectory",
@@ -292,7 +435,7 @@
       "properties": {
         "annotations": {
           "additionalProperties": true,
-          "description": "Annotations for the Tetragon rthooks daemonset",
+          "description": "Affinity for the Tetragon rthooks pod. If this key is omitted, the chart\nfalls back to the top-level `affinity` value. Set it explicitly (including\nto `{}`) to override the top-level affinity for the rthooks DaemonSet only.\naffinity: {}\nAnnotations for the Tetragon rthooks daemonset",
           "required": [],
           "title": "annotations",
           "type": "object"
@@ -303,6 +446,29 @@
           "required": [],
           "title": "enabled",
           "type": "boolean"
+        },
+        "exportLogs": {
+          "additionalProperties": true,
+          "description": "exportLogs sidecar: tail the hook log file and stream it to stdout.\nUses the same image as the rthooks container.",
+          "properties": {
+            "enabled": {
+              "default": true,
+              "description": "Enable the exportLogs sidecar container.",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "resources": {
+              "additionalProperties": true,
+              "description": "resources for the exportLogs sidecar.",
+              "required": [],
+              "title": "resources",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "exportLogs",
+          "type": "object"
         },
         "extraHookArgs": {
           "additionalProperties": true,
@@ -334,6 +500,15 @@
           "title": "failAllowNamespaces",
           "type": "string"
         },
+        "failAllowNamespacesRegex": {
+          "description": "List of RE2 regex patterns for namespaces to allow Pod creation for, in case tetragon-oci-hook fails\nto reach Tetragon agent. Patterns perform substring matching by default; use ^ and $ anchors for\nfull-string matching (e.g. '^kube-.*$' matches only namespaces starting with 'kube-').\nCan be combined with failAllowNamespaces. Ignored if extraHookArgs sets fail-cel-expr.\nExample: [\"^acme-.*$\", \"^dev-.*$\"]",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "failAllowNamespacesRegex",
+          "type": "array"
+        },
         "image": {
           "additionalProperties": true,
           "description": "image for the Tetragon rthooks pod",
@@ -351,7 +526,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v0.8",
+              "default": "v0.9",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -494,6 +669,18 @@
       "title": "serviceAccount",
       "type": "object"
     },
+    "serviceAnnotations": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "serviceAnnotations",
+      "type": "object"
+    },
+    "serviceLabels": {
+      "additionalProperties": true,
+      "required": [],
+      "title": "serviceLabels",
+      "type": "object"
+    },
     "serviceLabelsOverride": {
       "additionalProperties": true,
       "required": [],
@@ -578,6 +765,13 @@
           "required": [],
           "title": "debug",
           "type": "boolean"
+        },
+        "deletedPodCacheSize": {
+          "default": 1024,
+          "description": "Tetragon keeps recently deleted pod/container mappings in an LRU cache to\nresolve pod metadata for late-arriving events.",
+          "required": [],
+          "title": "deletedPodCacheSize",
+          "type": "integer"
         },
         "enableK8sAPI": {
           "default": true,
@@ -706,7 +900,7 @@
         },
         "exportRateLimit": {
           "default": -1,
-          "description": "Rate-limit event export (events per minute), Set to -1 to export all events.",
+          "description": "Rate-limit event export (events per minute). Must be a plain integer: -1 disables rate\nlimiting and exports all events (default), 0 disables JSON export entirely, and a positive\ninteger limits export to that many events per minute. Invalid (non-integer) values fall back\nto -1 and log a warning.",
           "required": [],
           "title": "exportRateLimit",
           "type": "integer"
@@ -751,7 +945,7 @@
               "type": "string"
             },
             "enabled": {
-              "default": true,
+              "default": false,
               "description": "Whether to enable exposing gops server.",
               "required": [],
               "title": "enabled",
@@ -773,8 +967,8 @@
           "additionalProperties": true,
           "properties": {
             "address": {
-              "default": "localhost:54321",
-              "description": "The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/cilum/tetragon/tetragon.sock",
+              "default": "unix:///var/run/tetragon/tetragon.sock",
+              "description": "The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/tetragon/tetragon.sock\nWARNING: Exposing gRPC on a TCP socket without TLS client verification\nexposes Tetragon to unprivileged users on the host or with network access.",
               "required": [],
               "title": "address",
               "type": "string"
@@ -785,6 +979,137 @@
               "required": [],
               "title": "enabled",
               "type": "boolean"
+            },
+            "tls": {
+              "additionalProperties": true,
+              "description": "gRPC TLS / mTLS configuration for the optional TCP listener\n(tetragon.grpc.address); the always-on unix-domain listener at\n/var/run/tetragon/tetragon.sock is unaffected.\n\nThe auto-provisioned server cert uses a wildcard SAN over a synthetic\nDNS domain (*.tetragon-grpc.cilium.io) so a single Secret covers every\nDaemonSet pod. Clients must override SNI to \u003cany\u003e.tetragon-grpc.cilium.io\nto validate. See _helpers.tpl `tetragon.grpcTls.domain` for details;\nadd Service-style or per-node identities via server.extraDnsNames /\nserver.extraIpAddresses below.",
+              "properties": {
+                "auto": {
+                  "additionalProperties": true,
+                  "description": "Configure automatic TLS certificate generation.",
+                  "properties": {
+                    "certManagerIssuerRef": {
+                      "additionalProperties": true,
+                      "description": "cert-manager IssuerRef used when method=certmanager.\n[Example]\ncertManagerIssuerRef:\n  group: cert-manager.io\n  kind: ClusterIssuer\n  name: ca-issuer",
+                      "required": [],
+                      "title": "certManagerIssuerRef",
+                      "type": "object"
+                    },
+                    "certValidityDuration": {
+                      "default": 365,
+                      "description": "Generated certificate validity duration in days.\nDefaults to 365 (1 year).",
+                      "required": [],
+                      "title": "certValidityDuration",
+                      "type": "integer"
+                    },
+                    "enabled": {
+                      "default": true,
+                      "description": "Auto-generate certificates. When false, you must provide a\nSecret yourself (see server.existingSecret).",
+                      "required": [],
+                      "title": "enabled",
+                      "type": "boolean"
+                    },
+                    "method": {
+                      "default": "helm",
+                      "description": "Method used to auto-generate certificates. Supported values:\n- helm:        Helm renders the cert/key Secret directly.\n- cronJob:     A Kubernetes CronJob runs cilium-certgen to (re)issue\n               the cert; a one-shot Job seeds it on install.\n- certmanager: cert-manager issues and rotates the cert.",
+                      "required": [],
+                      "title": "method",
+                      "type": "string"
+                    },
+                    "schedule": {
+                      "default": "0 0 1 */4 *",
+                      "description": "Schedule for certificate regeneration; only honored when\nmethod=cronJob. Empty disables the recurring CronJob, leaving only\nthe one-shot bootstrap Job.",
+                      "required": [],
+                      "title": "schedule",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "auto",
+                  "type": "object"
+                },
+                "ca": {
+                  "additionalProperties": true,
+                  "description": "In-cluster CA used by the helm and cronJob methods.",
+                  "properties": {
+                    "cert": {
+                      "default": "",
+                      "description": "base64-encoded PEM CA certificate. When both cert and key are\nset, helm/cronJob reuse this CA instead of generating a fresh one.",
+                      "required": [],
+                      "title": "cert",
+                      "type": "string"
+                    },
+                    "certValidityDuration": {
+                      "default": 1095,
+                      "description": "Validity duration in days for an auto-generated CA. Only used\nwhen ca.cert/key are unset.",
+                      "required": [],
+                      "title": "certValidityDuration",
+                      "type": "integer"
+                    },
+                    "key": {
+                      "default": "",
+                      "description": "base64-encoded PEM CA private key. Required when ca.cert is set.",
+                      "required": [],
+                      "title": "key",
+                      "type": "string"
+                    }
+                  },
+                  "required": [],
+                  "title": "ca",
+                  "type": "object"
+                },
+                "enabled": {
+                  "default": false,
+                  "description": "Enable TLS on the TCP gRPC listener. When false, the listener (if\nany) is plaintext.",
+                  "required": [],
+                  "title": "enabled",
+                  "type": "boolean"
+                },
+                "requireClientCert": {
+                  "default": false,
+                  "description": "Require and verify client certificates (mTLS). When true, the\nagent rejects TCP gRPC connections that don't present a valid client\ncert signed by one of the bundled CAs.",
+                  "required": [],
+                  "title": "requireClientCert",
+                  "type": "boolean"
+                },
+                "server": {
+                  "additionalProperties": true,
+                  "description": "Server cert configuration.",
+                  "properties": {
+                    "existingSecret": {
+                      "default": "",
+                      "description": "Use an existing Secret (must contain tls.crt + tls.key, plus\nca.crt when requireClientCert is true) instead of provisioning\none. Disables all auto-* methods when set.",
+                      "required": [],
+                      "title": "existingSecret",
+                      "type": "string"
+                    },
+                    "extraDnsNames": {
+                      "description": "Extra DNS SANs added to auto-generated certificates.",
+                      "items": {
+                        "required": []
+                      },
+                      "required": [],
+                      "title": "extraDnsNames",
+                      "type": "array"
+                    },
+                    "extraIpAddresses": {
+                      "description": "Extra IP SANs added to auto-generated certificates.",
+                      "items": {
+                        "required": []
+                      },
+                      "required": [],
+                      "title": "extraIpAddresses",
+                      "type": "array"
+                    }
+                  },
+                  "required": [],
+                  "title": "server",
+                  "type": "object"
+                }
+              },
+              "required": [],
+              "title": "tls",
+              "type": "object"
             }
           },
           "required": [],
@@ -843,7 +1168,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.6.1",
+              "default": "v1.8.0",
               "required": [],
               "title": "tag",
               "type": "string"
@@ -915,7 +1240,7 @@
           "properties": {
             "enabled": {
               "default": "",
-              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, uprobe, lsm, usdt. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
+              "description": "Comma-separated list of process event types to enable ancestors for.\nSupported event types are: base, kprobe, tracepoint, loader, uprobe, lsm, usdt. Unknown event types will be ignored.\nType \"base\" is required by all other supported event types for correct reference counting.\nSet it to \"\" to disable ancestors completely.",
               "required": [],
               "title": "enabled",
               "type": "string"
@@ -1013,7 +1338,7 @@
         },
         "redactionFilters": {
           "default": "",
-          "description": "Filters to redact secrets from the args fields in Tetragon events. To perform\nredactions, redaction filters define RE2 regular expressions in the `redact`\nfield. Any capture groups in these RE2 regular expressions are redacted and\nreplaced with \"*****\".\n\nFor more control, you can select which binary or binaries should have their\narguments redacted with the `binary_regex` field.\n\nNOTE: This feature uses RE2 as its regular expression library. Make sure that you follow\nRE2 regular expression guidelines as you may observe unexpected results otherwise.\nMore information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).\n\nNOTE: When writing regular expressions in JSON, it is important to escape\nbackslash characters. For instance `\\Wpasswd\\W?` would be written as\n`{\"redact\": \"\\\\Wpasswd\\\\W?\"}`.\n\nAs a concrete example, the following will redact all passwords passed to\nprocesses with the \"--password\" argument:\n\n  {\"redact\": [\"--password(?:\\\\s+|=)(\\\\S*)\"]}\n\nNow, an event which contains the string \"--password=foo\" would have that\nstring replaced with \"--password=*****\".\n\nSuppose we also see some passwords passed via the -p shorthand for a specific binary, foo.\nWe can also redact these as follows:\n\n  {\"binary_regex\": [\"(?:^|/)foo$\"], \"redact\": [\"-p(?:\\\\s+|=)(\\\\S*)\"]}\n\nWith both of the above redaction filters in place, we are now redacting all\npassword arguments.",
+          "description": "Filters to redact secrets from the args fields in Tetragon events. To perform\nredactions, redaction filters define RE2 regular expressions in the `redact`\nfield. Any capture groups in these RE2 regular expressions are redacted and\nreplaced with \"*****\".\n\nFor more control, you can select which binary or binaries should have their\narguments redacted with the `binary_regex` field.\n\nNOTE: This feature uses RE2 as its regular expression library. Make sure that you follow\nRE2 regular expression guidelines as you may observe unexpected results otherwise.\nMore information on RE2 syntax can be found [here](https://github.com/google/re2/wiki/Syntax).\n\nNOTE: When writing regular expressions in JSON, it is important to escape\nbackslash characters. For instance `\\Wpasswd\\W?` would be written as\n`{\"redact\": \"\\\\Wpasswd\\\\W?\"}`.\n\nAs a concrete example, the following will redact all passwords passed to\nprocesses with the \"--password\" argument:\n\n  {\"redact\": [\"--password(?:\\\\s+|=)(\\\\S*)\"]}\n\nNow, an event which contains the string \"--password=foo\" would have that\nstring replaced with \"--password=*****\".\n\nSuppose we also see some passwords passed via the -p shorthand for a specific binary, foo.\nWe can also redact these as follows:\n\n  {\"binary_regex\": [\"(?:^|/)foo$\"], \"redact\": [\"-p(?:\\\\s+|=)(\\\\S*)\"]}\n\nWith both of the above redaction filters in place, we are now redacting all\npassword arguments.\n\nOptionally, you can specify a custom replacement string using the `redact_str`\nfield. If not specified, it defaults to \"*****\".\nThis is useful for distinguishing different redaction rules:\n\n  {\"redact\": [\"--password(?:\\\\\\\\s+|=)(\\\\\\\\S*)\"], \"redact_str\": \"\u003credacted:password\u003e\"}\n",
           "required": [],
           "title": "redactionFilters",
           "type": "string"
@@ -1027,8 +1352,56 @@
         "securityContext": {
           "additionalProperties": true,
           "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "description": "Dropped by the chart when privileged is true, as the API server rejects\nthat combination.",
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "appArmorProfile": {
+              "additionalProperties": true,
+              "description": "The runtime default profile denies mount and cross-profile ptrace.",
+              "properties": {
+                "type": {
+                  "default": "Unconfined",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "appArmorProfile",
+              "type": "object"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "add": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "add",
+                  "type": "array"
+                },
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
             "privileged": {
-              "default": true,
+              "default": false,
               "required": [],
               "title": "privileged",
               "type": "boolean"
@@ -1036,6 +1409,13 @@
           },
           "required": [],
           "title": "securityContext",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": " grpc:\n   port: 54321\nOverrides the default startupProbe for the tetragon container.",
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "usePerfRingBuffer": {
@@ -1268,6 +1648,13 @@
           "title": "forceUpdateCRDs",
           "type": "boolean"
         },
+        "hostUsers": {
+          "default": true,
+          "description": "Run the Tetragon Operator Deployment Pods in the host user namespace.\nThe operator needs no host access, set to false to run it in a user\nnamespace. Requires Kubernetes 1.33 or later.",
+          "required": [],
+          "title": "hostUsers",
+          "type": "boolean"
+        },
         "image": {
           "additionalProperties": true,
           "description": "tetragon-operator image.",
@@ -1291,7 +1678,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "v1.6.1",
+              "default": "v1.8.0",
               "required": [],
               "title": "tag",
               "type": "string"
