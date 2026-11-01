@@ -14,6 +14,7 @@ version: "3"
 #   task hass:check    # render, load with HA's YAML loader, run check_config
 #   task hass:diff     # render and diff against the live config on the Pi
 #   task hass:deploy   # check, diff, confirm, upload to the Pi, and reload HA
+#   task hass:upgrade  # back up, then install the pinned HA Core release on the Pi
 #   task hass:plan     # render and plan the registry state against live HA
 #   task hass:apply    # plan, confirm, and apply the registry state
 #   task hass:gate     # library tests, golden diff, and check of home/hass/
@@ -31,8 +32,9 @@ vars:
   # renovate: datasource=docker depName=ghcr.io/home-assistant/home-assistant
   HASS_IMAGE: '{{.HASS_IMAGE | default "ghcr.io/home-assistant/home-assistant:2026.10.4"}}'
   # The SSH destination and config directory that hass:diff reads the live
-  # config from and that hass:deploy writes to. The HAOS SSH apps mount the
-  # config at /homeassistant and link /config to it.
+  # config from and that hass:deploy writes to. hass:upgrade reads the deploy
+  # lock there. The HAOS SSH apps mount the config at /homeassistant and link
+  # /config to it.
   HASS_SSH: '{{.HASS_SSH | default "root@hass.cin.macro.network"}}'
   HASS_CONFIG_DIR: '{{.HASS_CONFIG_DIR | default "/config"}}'
   # The HA instance that the state tasks talk to. They read the access token
@@ -238,6 +240,58 @@ tasks:
         uv run -q "{{.HASS_SCRIPTS}}/deploy.py" "{{.OUT}}" "{{.WORK}}"
         --ssh "{{.HASS_SSH}}" --remote-dir "{{.HASS_CONFIG_DIR}}" --url "{{.HASS_URL}}"
         {{if eq .YES "1"}}--yes{{end}} {{if eq .RESTART "1"}}--restart{{end}} {{if .DRY_RUN}}--dry-run{{end}}
+
+  upgrade:
+    desc: Install a Home Assistant Core or OS release on the Pi, with a backup first
+    summary: |
+      Calls update.install on HA's update entity, which saves a backup and
+      hands the install to the Supervisor, then waits until the Pi runs the
+      release. Core installs the HASS_IMAGE tag that hass:check validates
+      against, and refuses a tag older than the running release. The OS
+      installs the latest release that the Supervisor offers. The task asks
+      you to type yes first.
+
+      A Core install restarts HA. When the release fails to start, the
+      Supervisor rolls back to the old one, and the task fails. An OS install
+      writes the release to the spare boot slot, then the task reboots the
+      Pi and checks that it booted the release. Before the install, the task
+      checks that HA's config check passes on the Pi and that no deploy holds
+      the lock. After a Core install, it runs hass:plan and hass:diff to show
+      what the release changed.
+
+      Args:
+        COMPONENT: core or os (default: core)
+        VERSION: The release to install instead, such as an older one to roll back to
+        BACKUP: Set to 0 to skip the backup. Any other value backs up
+        REBOOT: Set to 0 to leave an OS release pending until you reboot. Any other value reboots
+        YES: Set to 1 to upgrade without asking. Any other value asks
+        DRY_RUN: Set to any value to stop after the plan
+        TIMEOUT: The seconds that the install, the restart, and the reboot get (default: 7200)
+        HASS_URL: The HA base URL (default: https://hass.cin.macro.network)
+        HASS_SSH: The SSH destination for the lock check (default: root@hass.cin.macro.network)
+      Env:
+        HASS_TOKEN: An admin long-lived access token
+    interactive: true
+    vars:
+      COMPONENT: '{{.COMPONENT | default "core"}}'
+      VERSION: '{{.VERSION | default ""}}'
+      BACKUP: '{{.BACKUP | default ""}}'
+      REBOOT: '{{.REBOOT | default ""}}'
+      YES: '{{.YES | default ""}}'
+      DRY_RUN: '{{.DRY_RUN | default ""}}'
+      TIMEOUT: '{{.TIMEOUT | default "7200"}}'
+    preconditions: *token
+    cmds:
+      - >-
+        uv run -q "{{.HASS_SCRIPTS}}/upgrade.py" "{{.COMPONENT}}"
+        --url "{{.HASS_URL}}" --ssh "{{.HASS_SSH}}" --remote-dir "{{.HASS_CONFIG_DIR}}"
+        --pin "{{splitList ":" .HASS_IMAGE | last}}" {{if .VERSION}}--version "{{.VERSION}}"{{end}}
+        --timeout "{{.TIMEOUT}}" {{if eq .BACKUP "0"}}--no-backup{{end}} {{if eq .REBOOT "0"}}--no-reboot{{end}}
+        {{if eq .YES "1"}}--yes{{end}} {{if .DRY_RUN}}--dry-run{{end}}
+      - task: plan
+        if: '{{and (eq .COMPONENT "core") (not .DRY_RUN)}}'
+      - task: diff
+        if: '{{and (eq .COMPONENT "core") (not .DRY_RUN)}}'
 
   plan:
     desc: Render a config module and plan its registry state against live Home Assistant

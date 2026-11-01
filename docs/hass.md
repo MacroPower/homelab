@@ -1,6 +1,6 @@
 # Home Assistant Config
 
-The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. `task hass:deploy` uploads the directory to the Pi over SSH, as [Delivery](#delivery) describes.
+The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. `task hass:deploy` uploads the directory to the Pi over SSH, as [Delivery](#delivery) describes. `task hass:upgrade` installs the pinned HA release on the Pi, as [Upgrades](#upgrades) describes.
 
 The registries that HA keeps in `.storage`, such as floors, areas, and devices, are not YAML, and neither are the Supervisor apps, HACS, or the HTTP config. `home/hass/state.k` declares them, and `task hass:apply` writes them through HA's API, as [Registry State](#registry-state) describes.
 
@@ -229,6 +229,7 @@ The `hass` tasks live in `.taskfiles/hass/Taskfile.yaml`:
 | `hass:check` | `MODULE`, `HASS_IMAGE` | `hass:load`, then `check_config` in Docker |
 | `hass:diff` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `LIVE`, `SEMANTIC` | `hass:render`, then a diff from the live config to the render. See [Live Diff](#live-diff) |
 | `hass:deploy` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `HASS_URL`, `YES`, `RESTART`, `DRY_RUN` | `hass:check`, the diff, a confirmation, the upload, HA's config check, and a reload. See [Delivery](#delivery) |
+| `hass:upgrade` | `COMPONENT` (default `core`), `VERSION`, `BACKUP`, `REBOOT`, `YES`, `DRY_RUN`, `TIMEOUT`, `HASS_URL`, `HASS_SSH` | a backup, then the Core or OS install on the Pi, a reboot after an OS install, and `hass:plan` and `hass:diff` after a Core install. See [Upgrades](#upgrades) |
 | `hass:plan` | `MODULE`, `HASS_URL` | `hass:render`, then a plan of the registry state against live HA. See [Registry State](#registry-state) |
 | `hass:apply` | `MODULE`, `HASS_URL`, `YES`, `RESTART` | `hass:plan`, a confirmation, the apply, and a second plan |
 | `hass:import` | `OUT` (default `home/hass/state.k`), `VARIABLE`, `HASS_URL`, `FORCE` | writes a KCL state file from the live instance |
@@ -240,7 +241,7 @@ The `hass` tasks live in `.taskfiles/hass/Taskfile.yaml`:
 
 Run `task hass:gate` before you push a change to `haconfig/` or `home/hass/`. The repo has no CI for KCL, so the gate is the only check. To set the revision header in the rendered files, pass `ARGS="-D revision=<sha>"` to `hass:render`.
 
-`HASS_IMAGE` pins the HA image by exact tag, and Renovate opens a pull request for each HA release. Renovate cannot regenerate the catalogs, so `hass:check` prints a note when the catalog version differs from the image tag. Run `task hass:gen` on that pull request before you merge it.
+`HASS_IMAGE` pins the HA image by exact tag, and Renovate opens a pull request for each HA release. Renovate cannot regenerate the catalogs, so `hass:check` prints a note when the catalog version differs from the image tag. Run `task hass:gen` on that pull request before you merge it, then run `task hass:upgrade` to install the release on the Pi.
 
 The negative render cases sit under `haconfig/examples/neg-*/`. Each one is a module that imports the hallway example, changes it with a union, and holds an `expected-error.txt`. `hass:test` fails when the module renders or fails with other text. To add a case, copy one of the directories, change its package name and `main.k`, and write the expected message.
 
@@ -444,3 +445,29 @@ To undo a deploy:
 1. Run the restore command that the deploy printed. It removes the owned paths and extracts that deploy's backup.
 2. Run `ha core check` on the Pi.
 3. Reload the YAML in **Developer tools** > **YAML**, or restart HA.
+
+## Upgrades
+
+`task hass:upgrade` installs a Home Assistant Core or OS release on the Pi. The Supervisor installs both, so the task calls `update.install` on HA's update entity for the component, then waits until the Pi runs the release. The Supervisor updates itself, and `task hass:apply` updates each app to the `version` that `state.k` pins, as [Apps](#apps) describes.
+
+The task picks the release from `COMPONENT`:
+
+| `COMPONENT` | Release | The install |
+| --- | --- | --- |
+| `core`, the default | the `HASS_IMAGE` tag that `task hass:check` validates against | restarts HA |
+| `os` | the latest release that the Supervisor offers | writes the release to the spare boot slot, then the task reboots the Pi |
+
+`VERSION` overrides the release, for example to roll back Core. Without it, the task refuses a `HASS_IMAGE` tag older than the running Core release. It needs the SSH app that [Live Diff](#live-diff) describes and an admin token in `HASS_TOKEN`. It runs these steps, and stops at the first failure:
+
+1. It checks that HA runs outside recovery and safe mode, that no install runs, and that no deploy holds the lock on the Pi. It also runs HA's config check, because the upgrade restarts HA on the Pi's config.
+2. It prints the plan and asks you to type `yes`. `YES=1` skips the question, and `DRY_RUN=1` stops before it.
+3. It calls `update.install`. Unless `BACKUP=0`, HA first saves a backup with the settings of its automatic backups, which takes minutes.
+4. It waits for the install to end. A Core install ends when HA runs the release and the Supervisor's start check passes. An OS install ends when the Supervisor reports the release as pending.
+5. For the OS, it reboots the Pi through `hassio.host_reboot` and waits until the Pi runs the release. `REBOOT=0` leaves the release pending until you reboot, from **Settings** > **System**.
+6. It lists each automation and script that became unavailable. After a Core install, it runs `task hass:plan` and `task hass:diff`, because a release can move config from YAML into `.storage`.
+
+The task gives steps 3 to 5 two hours, which `TIMEOUT` sets in seconds. A database migration on a large recorder database can take longer. When the task stops waiting, through the timeout or Ctrl-C, the Supervisor carries on.
+
+The Supervisor reverts a release that fails, and the task then fails. When a Core release fails the Supervisor's start check, the Supervisor rolls back to the old release. When an OS release fails to boot, the Pi falls back to the old boot slot. The Supervisor log in **Settings** > **System** > **Logs** names the cause.
+
+To undo a Core upgrade, run `task hass:upgrade VERSION=<old release>`. When the old release fails to start, restore the backup in **Settings** > **System** > **Backups**.
