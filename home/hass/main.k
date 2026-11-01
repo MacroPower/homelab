@@ -14,6 +14,29 @@ import haconfig.models.frontend
 import haconfig.tags
 
 config = frontend.HomeAssistant {
+    # The repo is public, so the home location comes from the Pi's
+    # secrets.yaml, and `secrets` below holds fakes for the checks. Once this
+    # block reaches the Pi, HA locks the General settings, the URLs, and the
+    # home zone in the UI, so the block sets every one of them.
+    core = {
+        name = "Home"
+        latitude = tags.secret("home_latitude")
+        longitude = tags.secret("home_longitude")
+        elevation = tags.secret("home_elevation")
+        radius = 100
+        unit_system = "us_customary"
+        time_zone = "America/New_York"
+        country = "US"
+        currency = "USD"
+        language = "en"
+        internal_url = "https://hass.cin.macro.network"
+        external_url = "https://hass.cin.macro.network"
+    }
+    secrets = {
+        home_latitude = 40.7
+        home_longitude = -74.0
+        home_elevation = 10
+    }
     integrations = {
         frontend.themes = tags.include_dir_merge_named("themes")
     }
