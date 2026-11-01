@@ -272,19 +272,19 @@ hass_state = hstate.State {
         # mmWave Dimmer (Inovelli VZW32-SN)
         mmwave_dimmer = {
             match = {id = "f8b41b15b572e8f6e552fc32cc89a750"}
-            name = "mmWave Dimmer"
+            name = "Primary Bedroom mmWave Dimmer"
             area = "primary_bedroom"
         }
         # mmWave Dimmer (Inovelli VZW32-SN)
         mmwave_dimmer_2 = {
             match = {id = "80368f38c857f1b3b5ca626dfc0d8cbd"}
-            name = "mmWave Dimmer"
+            name = "Primary Bedroom mmWave Dimmer 2"
             area = "primary_bedroom"
         }
         # 2-1 Dimmer (Inovelli VZW31-SN)
         "2_1_dimmer" = {
             match = {id = "fa5e76c55c289008452a85929be3d32e"}
-            name = "2-1 Dimmer"
+            name = "Primary Bedroom 2-1 Dimmer"
             area = "primary_bedroom"
         }
         # Bedroom (Signify Netherlands B.V. Room)
@@ -341,32 +341,32 @@ hass_state = hstate.State {
         # mmWave Dimmer (Inovelli VZW32-SN)
         bedroom_closet_mmwave_dimmer = {
             match = {id = "2034b39a9854e62cd3158280a38d9a15"}
-            name = "Bedroom Closet mmWave Dimmer"
+            name = "Primary Closet mmWave Dimmer"
             area = "primary_closet"
         }
         # Area: Primary Bathroom
         # On/Off Switch (Inovelli VZW30-SN)
         on_off_switch = {
             match = {id = "e785ca9a7fa6db2ead18f44174352dfd"}
-            name = "On/Off Switch"
+            name = "Primary Bathroom On/Off Switch"
             area = "primary_bathroom"
         }
         # 2-1 Dimmer (Inovelli VZW31-SN)
         "2_1_dimmer_2" = {
             match = {id = "3330f86b1846706f898dd5a538d180d2"}
-            name = "2-1 Dimmer"
+            name = "Primary Bathroom 2-1 Dimmer"
             area = "primary_bathroom"
         }
         # 2-1 Dimmer (Inovelli VZW31-SN)
         "2_1_dimmer_3" = {
             match = {id = "f524aad8544896e57b95317d7e995bd5"}
-            name = "2-1 Dimmer"
+            name = "Primary Bathroom 2-1 Dimmer 2"
             area = "primary_bathroom"
         }
         # mmWave Dimmer (Inovelli VZW32-SN)
         bathroom_mirror_mmwave_dimmer = {
             match = {id = "a32aca5f061176c7b9496ec19d0f095d"}
-            name = "Bathroom Mirror mmWave Dimmer"
+            name = "Primary Bathroom Mirror mmWave Dimmer"
             area = "primary_bathroom"
         }
         # Bathroom (Signify Netherlands B.V. Room)
