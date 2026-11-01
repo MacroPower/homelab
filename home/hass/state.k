@@ -3,293 +3,519 @@
 import haconfig.models.frontend.state as hstate
 
 hass_state = hstate.State {
+    # The house has a lower level with the basement and the built-in garage,
+    # two stories above it, and the outside spaces. Levels number the
+    # stories, with the first floor at 1. Outside is not a story, so it has
+    # no level.
     floors = {
-        ground = {
-            name = "Ground"
+        lower_level = {
+            name = "Lower Level"
+            level = 0
+            icon = "mdi:home-floor-b"
+            aliases = ["basement level"]
+        }
+        first_floor = {
+            name = "First Floor"
             level = 1
+            icon = "mdi:home-floor-1"
+            aliases = ["main floor", "downstairs"]
+        }
+        second_floor = {
+            name = "Second Floor"
+            level = 2
+            icon = "mdi:home-floor-2"
+            aliases = ["upstairs"]
+        }
+        outside = {
+            name = "Outside"
+            icon = "mdi:home-export-outline"
+            aliases = ["outdoors", "exterior"]
         }
     }
     areas = {
-        bathroom = {
-            name = "Bathroom"
-            floor = "ground"
-            icon = "mdi:bathtub"
+        # Lower Level
+        basement = {
+            name = "Basement"
+            floor = "lower_level"
+            icon = "mdi:stairs-down"
+            aliases = ["cellar", "utility room"]
         }
-        bedroom = {
-            name = "Bedroom"
-            floor = "ground"
-            icon = "mdi:bed"
+        garage = {
+            name = "Garage"
+            floor = "lower_level"
+            icon = "mdi:garage"
         }
-        kitchen = {
-            name = "Kitchen"
-            floor = "ground"
-            icon = "mdi:silverware-fork-knife"
+        # First Floor
+        entry = {
+            name = "Entry"
+            floor = "first_floor"
+            icon = "mdi:door"
+            aliases = ["foyer", "entryway"]
         }
         living_room = {
             name = "Living Room"
-            floor = "ground"
+            floor = "first_floor"
             icon = "mdi:sofa"
         }
-        other = {
-            name = "Other"
+        dining_room = {
+            name = "Dining Room"
+            floor = "first_floor"
+            icon = "mdi:table-chair"
         }
-        table = {
-            name = "Table"
+        kitchen = {
+            name = "Kitchen"
+            floor = "first_floor"
+            icon = "mdi:silverware-fork-knife"
+        }
+        family_room = {
+            name = "Family Room"
+            floor = "first_floor"
+            icon = "mdi:sofa-outline"
+            aliases = ["den", "tv room"]
+        }
+        half_bath = {
+            name = "Half Bath"
+            floor = "first_floor"
+            icon = "mdi:toilet"
+            aliases = ["powder room", "half bathroom"]
+        }
+        # Second Floor
+        upstairs_hall = {
+            name = "Upstairs Hall"
+            floor = "second_floor"
+            icon = "mdi:stairs"
+            aliases = ["landing", "hallway", "stairs"]
+        }
+        primary_bedroom = {
+            name = "Primary Bedroom"
+            floor = "second_floor"
+            icon = "mdi:bed-king"
+            aliases = ["bedroom", "master bedroom"]
+        }
+        primary_bathroom = {
+            name = "Primary Bathroom"
+            floor = "second_floor"
+            icon = "mdi:bathtub"
+            aliases = ["bathroom", "primary bath", "master bathroom"]
+        }
+        primary_closet = {
+            name = "Primary Closet"
+            floor = "second_floor"
+            icon = "mdi:hanger"
+            aliases = ["walk-in closet", "closet"]
+        }
+        laundry = {
+            name = "Laundry"
+            floor = "second_floor"
+            icon = "mdi:washing-machine"
+            aliases = ["laundry room"]
         }
         office = {
             name = "Office"
+            floor = "second_floor"
+            icon = "mdi:desk"
+            aliases = ["spare room"]
+        }
+        office_bathroom = {
+            name = "Office Bathroom"
+            floor = "second_floor"
+            icon = "mdi:shower"
+            aliases = ["guest bathroom"]
+        }
+        # Outside
+        front_porch = {
+            name = "Front Porch"
+            floor = "outside"
+            icon = "mdi:doorbell-video"
+            aliases = ["porch", "front steps"]
+        }
+        deck = {
+            name = "Deck"
+            floor = "outside"
+            icon = "mdi:outdoor-lamp"
+            aliases = ["covered deck"]
+        }
+        balcony = {
+            name = "Balcony"
+            floor = "outside"
+            icon = "mdi:balcony"
+            aliases = ["upper balcony"]
+        }
+        lower_patio = {
+            name = "Lower Patio"
+            floor = "outside"
+            icon = "mdi:fire-circle"
+            aliases = ["patio"]
+        }
+        grotto = {
+            name = "Grotto"
+            floor = "outside"
+            icon = "mdi:flower"
+            aliases = ["courtyard"]
+        }
+        yard = {
+            name = "Yard"
+            floor = "outside"
+            icon = "mdi:grass"
+            aliases = ["lawn", "side yard"]
         }
     }
     labels = {}
     categories = {}
     devices = {
-        # Light Panels 52:5C:55 (Nanoleaf NL22)
-        light_panels_52_5c_55 = {
-            match = {id = "0d7b627ace1a9867298dac14c199d62c"}
-            area = "bedroom"
+        # Area: Basement, with the network rack, the radios, and the HA host.
+        # Home-UDM (Ubiquiti Networks UDMPROSE)
+        home_udm = {
+            match = {id = "c9f308a909c61771859403ba7300fb4b"}
+            area = "basement"
         }
-        # Desk Lamp (Signify Netherlands B.V. Hue color lamp)
-        desk_lamp = {
-            match = {id = "3c317e5bc9907f5a6be8ca32005c3b99"}
-            area = "bedroom"
+        # Home-UDM (Ubiquiti Networks UDMPROSE)
+        home_udm_2 = {
+            match = {id = "b28a4039dfbc18927b8b766ed6ecb49c"}
+            area = "basement"
         }
-        # Hue white lamp 1 (Signify Netherlands B.V. Hue white lamp)
-        hue_white_lamp_1 = {
-            match = {id = "77225322c59741101cb9160da06ae349"}
-            area = "bathroom"
+        # Cable Internet (Ubiquiti Networks UCI)
+        cable_internet = {
+            match = {id = "06dfe26ca21310c3ae83c8ed35db4f90"}
+            area = "basement"
         }
-        # Hue Play 2 (Signify Netherlands B.V. Hue Play)
-        hue_play_2 = {
-            match = {id = "504da6009ce6181f7caa439bce560705"}
-            area = "bedroom"
+        # USW-Pro-24-PoE (Ubiquiti Networks US24PRO)
+        usw_pro_24_poe = {
+            match = {id = "914c216802f2b0c769e0ad92a58ab5af"}
+            area = "basement"
         }
-        # Hue gradient lightstrip 1 (Signify Netherlands B.V. Hue gradient lightstrip)
-        hue_gradient_lightstrip_1 = {
-            match = {id = "0f47ed6c62354c730315171c3b5b42fc"}
-            area = "bedroom"
+        # USW-Pro-24 (Ubiquiti Networks US24PRO2)
+        usw_pro_24 = {
+            match = {id = "6594cad94a1d7c750607aece7f159788"}
+            area = "basement"
         }
-        # Hue color lamp 4 (Signify Netherlands B.V. Hue color lamp)
-        hue_color_lamp_4 = {
-            match = {id = "ee75e073d44419f6c6b8aa346aa9488c"}
-            area = "kitchen"
+        # USW-Pro-Aggregation (Ubiquiti Networks USAGGPRO)
+        usw_pro_aggregation = {
+            match = {id = "d6286ae8ca54307c8f1553b62a8fd96b"}
+            area = "basement"
+        }
+        # USW Flex 2.5G 8 PoE (Ubiquiti Networks USWED37)
+        usw_flex_2_5g_8_poe = {
+            match = {id = "3291ab161183e8ef2cdb89d764388a66"}
+            area = "basement"
         }
         # Hue Bridge (Signify Netherlands B.V. Hue Bridge)
         hue_bridge = {
             match = {id = "6b20dd7012cafa722f929fa84c28f38e"}
-            area = "bedroom"
+            area = "basement"
         }
         # huebridge0101 (Philips Lighting BV Hue Bridge)
         huebridge0101 = {
             match = {id = "0d12fa35ee738e9c68efc4c737f1f247"}
-            area = "bedroom"
+            area = "basement"
         }
-        # Hue ambiance lamp 2 (Signify Netherlands B.V. Hue ambiance lamp)
-        hue_ambiance_lamp_2 = {
-            match = {id = "214c46be719a76146bc44a571153c802"}
-            area = "table"
+        # Home Assistant Yellow (Nabu Casa Home Assistant Yellow)
+        home_assistant_yellow = {
+            match = {id = "1859a326d9e8384a67f177f63acf0484"}
+            area = "basement"
         }
-        # Hue color lamp 1 (Signify Netherlands B.V. Hue color lamp)
-        hue_color_lamp_1 = {
-            match = {id = "53451ddeac574db2b1a0654e8e29b0ac"}
-            area = "kitchen"
+        # Home Assistant Yellow (Nabu Casa Home Assistant Yellow)
+        home_assistant_yellow_2 = {
+            match = {id = "b2e8e1e4b0533d04d742ed622d3ef165"}
+            area = "basement"
         }
-        # Hue Play 1 (Signify Netherlands B.V. Hue Play)
-        hue_play_1 = {
-            match = {id = "f8f2665d70a9a9c37577398eff785e09"}
-            area = "bedroom"
+        # hass (Raspberry Pi Trading Ltd)
+        hass = {
+            match = {id = "9370f0472b6f0455f5a7c48be3c74de6"}
+            area = "basement"
         }
-        # Hue white lamp 3 (Signify Netherlands B.V. Hue white lamp)
-        hue_white_lamp_3 = {
-            match = {id = "28ac6f740a45a7d135661e444a18ba1f"}
-            area = "bathroom"
+        # Home Assistant Connect ZWA-2 (Nabu Casa NC-ZWA-9734)
+        home_assistant_connect_zwa_2 = {
+            match = {id = "f576a1b94f436b001f344ae50f6e9b42"}
+            area = "basement"
         }
-        # Hue ambiance lamp 1 (Signify Netherlands B.V. Hue ambiance lamp)
-        hue_ambiance_lamp_1 = {
-            match = {id = "4fa76553098cadd57460fa188fe63e3e"}
-            area = "table"
+        # wattbox0201 (SnapAV)
+        wattbox0201 = {
+            match = {id = "bdb57e49a6834ff8d6aa51d8c79b2bc8"}
+            area = "basement"
         }
-        # Hue color lamp 3 (Signify Netherlands B.V. Hue color lamp)
-        hue_color_lamp_3 = {
-            match = {id = "a07c0dc60e4b498c6b4a2fb60b343fec"}
-            area = "kitchen"
+        # wattbox0202 (SnapAV)
+        wattbox0202 = {
+            match = {id = "679ae891f19763a71d5994ec44bdbb2c"}
+            area = "basement"
         }
-        # Hue white lamp 4 (Signify Netherlands B.V. Hue white lamp)
-        hue_white_lamp_4 = {
-            match = {id = "2930d21fef9f437bd13b369b7a0ddfa1"}
-            area = "bedroom"
-        }
-        # Hue white lamp 2 (Signify Netherlands B.V. Hue white lamp)
-        hue_white_lamp_2 = {
-            match = {id = "86f494ac914a9dd49ddddd775f0ba3de"}
-            area = "bathroom"
-        }
-        # Hue color lamp 1 (Signify Netherlands B.V. Hue color lamp)
-        hue_color_lamp_1_2 = {
-            match = {id = "ae5e6765a5c84ed1be7d9c7cba64bc72"}
-            area = "kitchen"
-        }
-        # Bedroom (Signify Netherlands B.V. Room)
-        bedroom = {
-            match = {id = "b7e68a6fec6dd7076d18f8c5a6977bbb"}
-            area = "bedroom"
-        }
+        # Area: Kitchen
         # Kitchen (Signify Netherlands B.V. Room)
         kitchen = {
             match = {id = "499666a6455298eb71b7bcbcf42da1cd"}
             area = "kitchen"
         }
-        # Bathroom (Signify Netherlands B.V. Room)
-        bathroom = {
-            match = {id = "9eb06e4b958a298a4d5c5c47e1b1d3df"}
-            area = "bathroom"
-        }
-        # Cable Internet (Ubiquiti Networks UCI)
-        cable_internet = {
-            match = {id = "06dfe26ca21310c3ae83c8ed35db4f90"}
-            area = "living_room"
-        }
-        # USW-Pro-24-PoE (Ubiquiti Networks US24PRO)
-        usw_pro_24_poe = {
-            match = {id = "914c216802f2b0c769e0ad92a58ab5af"}
-            area = "living_room"
-        }
-        # USW-Pro-24 (Ubiquiti Networks US24PRO2)
-        usw_pro_24 = {
-            match = {id = "6594cad94a1d7c750607aece7f159788"}
-            area = "living_room"
-        }
-        # Kitchen (Ubiquiti G5 Flex)
-        kitchen_2 = {
-            match = {id = "7f0e6014a1fe68206ee174d50d188c53"}
+        # eufy S2 (Eufy T2081)
+        eufy_s2_2 = {
+            match = {id = "aac68dfb5f503abb87af18ffba8af55a"}
+            name = "Downstairs Vacuum"
             area = "kitchen"
         }
-        # Kitchen (Ubiquiti G5 Flex)
-        kitchen_3 = {
-            match = {id = "f1a7641201f6f3e252cd5ec6aeeac3bb"}
+        # eufyS2
+        downstairs_vacuum_client = {
+            match = {id = "5a456727d33c7d24a5bab138766b6eb3"}
             area = "kitchen"
         }
-        # Bed Lamp (Signify Netherlands B.V. Hue color lamp)
-        bed_lamp = {
-            match = {id = "1b71a57fdd5ab6909a07f1ca1b91c980"}
-            area = "bedroom"
+        # Area: Upstairs Hall
+        # eufy S2 (Eufy T2081)
+        eufy_s2_1 = {
+            match = {id = "29cbb53be81f128a4644faa9d99289dd"}
+            name = "Upstairs Vacuum"
+            area = "upstairs_hall"
         }
-        # Hue color lamp 8 (Signify Netherlands B.V. Hue color lamp)
-        hue_color_lamp_8 = {
-            match = {id = "db51fd0685ee53aefc6742c5e1033e0a"}
-            area = "table"
+        # eufyS2
+        upstairs_vacuum_client = {
+            match = {id = "f0d76ee4f66105d5678cd9fc0b5b2e5f"}
+            area = "upstairs_hall"
         }
-        # Apollo AIR-1 06ed14 (ApolloAutomation AIR-1)
-        apollo_air_1_06ed14 = {
-            match = {id = "ed35b8e3fe8bc4008af4b2c5aa45461e"}
-            area = "bedroom"
-        }
-        # Apollo AIR-1 06ed14 (ApolloAutomation AIR-1)
-        apollo_air_1_06ed14_2 = {
-            match = {id = "62391b9b9267744880d84b58a8ce1383"}
-            area = "bedroom"
-        }
-        # Hue color downlight 1 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_downlight_1 = {
-            match = {id = "2ba5ea40a7f28bbf4688d63ff60a99ae"}
-            area = "bedroom"
-        }
-        # Hue color spotlight 2 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_spotlight_2 = {
-            match = {id = "d5e80e7c17db8dec1d697e8dcfb84cb8"}
-            area = "bedroom"
-        }
-        # Hue ambiance lamp 3 (Signify Netherlands B.V. Hue ambiance lamp)
-        hue_ambiance_lamp_3 = {
-            match = {id = "f8cb71d422e81e9be24b2507031bd56d"}
-            area = "bedroom"
-        }
-        # Hue color downlight 3 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_downlight_3 = {
-            match = {id = "e29de9266095c5cf62088af319e315d5"}
-            area = "bedroom"
-        }
-        # Hue color downlight 4 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_downlight_4 = {
-            match = {id = "613c74e9dde6b775b142b3a1a1e8e4ad"}
-            area = "bedroom"
-        }
-        # Hue color downlight 2 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_downlight_2 = {
-            match = {id = "8e683aa28f54dd87d0d609759dc1cdb2"}
-            area = "bedroom"
-        }
-        # Hue color spotlight 1 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_spotlight_1 = {
-            match = {id = "c2b71e9dddd12009db1052e9faec40e8"}
-            area = "bedroom"
-        }
-        # Hue color downlight 5 (Signify Netherlands B.V. Hue color downlight)
-        hue_color_downlight_5 = {
-            match = {id = "b692dd445e7f8e53bd939fa83cfecf9f"}
-            area = "bedroom"
-        }
-        # Office (Signify Netherlands B.V. Room)
-        office = {
-            match = {id = "f138e41fa5ca527b679ae55254e5a39d"}
-            area = "office"
-        }
+        # Area: Primary Bedroom
         # mmWave Dimmer (Inovelli VZW32-SN)
         mmwave_dimmer = {
             match = {id = "f8b41b15b572e8f6e552fc32cc89a750"}
             name = "mmWave Dimmer"
-            area = "bedroom"
-        }
-        # 2-1 Dimmer (Inovelli VZW31-SN)
-        "2_1_dimmer" = {
-            match = {id = "fa5e76c55c289008452a85929be3d32e"}
-            name = "2-1 Dimmer"
-            area = "bedroom"
-        }
-        # On/Off Switch (Inovelli VZW30-SN)
-        on_off_switch = {
-            match = {id = "e785ca9a7fa6db2ead18f44174352dfd"}
-            name = "On/Off Switch"
-            area = "bathroom"
-        }
-        # 2-1 Dimmer (Inovelli VZW31-SN)
-        "2_1_dimmer_2" = {
-            match = {id = "3330f86b1846706f898dd5a538d180d2"}
-            name = "2-1 Dimmer"
-            area = "bathroom"
-        }
-        # eufy S2 (Eufy T2081)
-        eufy_s2_1 = {
-            match = {id = "29cbb53be81f128a4644faa9d99289dd"}
-            name = "eufy S2 1"
-        }
-        # eufy S2 (Eufy T2081)
-        eufy_s2_2 = {
-            match = {id = "aac68dfb5f503abb87af18ffba8af55a"}
-            name = "eufy S2 2"
-        }
-        # 2-1 Dimmer (Inovelli VZW31-SN)
-        "2_1_dimmer_3" = {
-            match = {id = "f524aad8544896e57b95317d7e995bd5"}
-            name = "2-1 Dimmer"
-            area = "bathroom"
+            area = "primary_bedroom"
         }
         # mmWave Dimmer (Inovelli VZW32-SN)
         mmwave_dimmer_2 = {
             match = {id = "80368f38c857f1b3b5ca626dfc0d8cbd"}
             name = "mmWave Dimmer"
-            area = "bedroom"
+            area = "primary_bedroom"
         }
+        # 2-1 Dimmer (Inovelli VZW31-SN)
+        "2_1_dimmer" = {
+            match = {id = "fa5e76c55c289008452a85929be3d32e"}
+            name = "2-1 Dimmer"
+            area = "primary_bedroom"
+        }
+        # Bedroom (Signify Netherlands B.V. Room)
+        bedroom = {
+            match = {id = "b7e68a6fec6dd7076d18f8c5a6977bbb"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 1 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_1 = {
+            match = {id = "2ba5ea40a7f28bbf4688d63ff60a99ae"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 2 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_2 = {
+            match = {id = "8e683aa28f54dd87d0d609759dc1cdb2"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 3 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_3 = {
+            match = {id = "e29de9266095c5cf62088af319e315d5"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 4 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_4 = {
+            match = {id = "613c74e9dde6b775b142b3a1a1e8e4ad"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 5 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_5 = {
+            match = {id = "b692dd445e7f8e53bd939fa83cfecf9f"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 6 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_6 = {
+            match = {id = "02ef5ea13a0d1108aea30495481e222c"}
+            area = "primary_bedroom"
+        }
+        # Hue color downlight 7 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_7 = {
+            match = {id = "cf3108bd1f726bd9fcc49183826226f2"}
+            area = "primary_bedroom"
+        }
+        # Hue color spotlight 1 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_spotlight_1 = {
+            match = {id = "c2b71e9dddd12009db1052e9faec40e8"}
+            area = "primary_bedroom"
+        }
+        # Hue color spotlight 2 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_spotlight_2 = {
+            match = {id = "d5e80e7c17db8dec1d697e8dcfb84cb8"}
+            area = "primary_bedroom"
+        }
+        # Area: Primary Closet
         # mmWave Dimmer (Inovelli VZW32-SN)
         bedroom_closet_mmwave_dimmer = {
             match = {id = "2034b39a9854e62cd3158280a38d9a15"}
             name = "Bedroom Closet mmWave Dimmer"
-            area = "other"
+            area = "primary_closet"
+        }
+        # Area: Primary Bathroom
+        # On/Off Switch (Inovelli VZW30-SN)
+        on_off_switch = {
+            match = {id = "e785ca9a7fa6db2ead18f44174352dfd"}
+            name = "On/Off Switch"
+            area = "primary_bathroom"
+        }
+        # 2-1 Dimmer (Inovelli VZW31-SN)
+        "2_1_dimmer_2" = {
+            match = {id = "3330f86b1846706f898dd5a538d180d2"}
+            name = "2-1 Dimmer"
+            area = "primary_bathroom"
+        }
+        # 2-1 Dimmer (Inovelli VZW31-SN)
+        "2_1_dimmer_3" = {
+            match = {id = "f524aad8544896e57b95317d7e995bd5"}
+            name = "2-1 Dimmer"
+            area = "primary_bathroom"
         }
         # mmWave Dimmer (Inovelli VZW32-SN)
         bathroom_mirror_mmwave_dimmer = {
             match = {id = "a32aca5f061176c7b9496ec19d0f095d"}
             name = "Bathroom Mirror mmWave Dimmer"
-            area = "bathroom"
+            area = "primary_bathroom"
+        }
+        # Bathroom (Signify Netherlands B.V. Room)
+        bathroom = {
+            match = {id = "9eb06e4b958a298a4d5c5c47e1b1d3df"}
+            area = "primary_bathroom"
+        }
+        # Hue color downlight 8 (Signify Netherlands B.V. Hue color downlight)
+        hue_color_downlight_8 = {
+            match = {id = "07d8afd3197c6928ed498629fa157d27"}
+            area = "primary_bathroom"
+        }
+        # Hue filament bulb 1 (Signify Netherlands B.V. Hue filament bulb)
+        hue_filament_bulb_1 = {
+            match = {id = "116b6f36d1d40ae3729e59e0f50f0e5c"}
+            area = "primary_bathroom"
+        }
+        # Hue filament bulb 2 (Signify Netherlands B.V. Hue filament bulb)
+        hue_filament_bulb_2 = {
+            match = {id = "201fa4dcfa3ecfc042ef55733ed1befa"}
+            area = "primary_bathroom"
+        }
+        # Hue filament bulb 3 (Signify Netherlands B.V. Hue filament bulb)
+        hue_filament_bulb_3 = {
+            match = {id = "8249dcf18f9bd5df176e7866a147876e"}
+            area = "primary_bathroom"
+        }
+        # Hue filament bulb 4 (Signify Netherlands B.V. Hue filament bulb)
+        hue_filament_bulb_4 = {
+            match = {id = "7eee832afb57cadcf133f8bb45b4e7ac"}
+            area = "primary_bathroom"
+        }
+        # Area: Office
+        # Office (Signify Netherlands B.V. Room)
+        office = {
+            match = {id = "f138e41fa5ca527b679ae55254e5a39d"}
+            area = "office"
+        }
+        # Desk Lamp (Signify Netherlands B.V. Hue color lamp)
+        desk_lamp = {
+            match = {id = "3c317e5bc9907f5a6be8ca32005c3b99"}
+            area = "office"
+        }
+        # Hue color lamp 1 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_1 = {
+            match = {id = "53451ddeac574db2b1a0654e8e29b0ac"}
+            area = "office"
+        }
+        # Hue ambiance lamp 3 (Signify Netherlands B.V. Hue ambiance lamp)
+        hue_ambiance_lamp_3 = {
+            match = {id = "f8cb71d422e81e9be24b2507031bd56d"}
+            area = "office"
+        }
+        # Offline since the move. Give each one an area here when it is back
+        # online, because the apply clears an area set in the UI.
+        # Hue white lamp 1 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_1 = {
+            match = {id = "77225322c59741101cb9160da06ae349"}
+            area = None
+        }
+        # Hue white lamp 2 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_2 = {
+            match = {id = "86f494ac914a9dd49ddddd775f0ba3de"}
+            area = None
+        }
+        # Hue white lamp 3 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_3 = {
+            match = {id = "28ac6f740a45a7d135661e444a18ba1f"}
+            area = None
+        }
+        # Hue white lamp 4 (Signify Netherlands B.V. Hue white lamp)
+        hue_white_lamp_4 = {
+            match = {id = "2930d21fef9f437bd13b369b7a0ddfa1"}
+            area = None
+        }
+        # Hue color lamp 4 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_4 = {
+            match = {id = "ee75e073d44419f6c6b8aa346aa9488c"}
+            area = None
+        }
+        # Hue color lamp 3 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_3 = {
+            match = {id = "a07c0dc60e4b498c6b4a2fb60b343fec"}
+            area = None
+        }
+        # Hue color lamp 1 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_1_2 = {
+            match = {id = "ae5e6765a5c84ed1be7d9c7cba64bc72"}
+            area = None
+        }
+        # Hue ambiance lamp 1 (Signify Netherlands B.V. Hue ambiance lamp)
+        hue_ambiance_lamp_1 = {
+            match = {id = "4fa76553098cadd57460fa188fe63e3e"}
+            area = None
+        }
+        # Hue ambiance lamp 2 (Signify Netherlands B.V. Hue ambiance lamp)
+        hue_ambiance_lamp_2 = {
+            match = {id = "214c46be719a76146bc44a571153c802"}
+            area = None
+        }
+        # Bed Lamp (Signify Netherlands B.V. Hue color lamp)
+        bed_lamp = {
+            match = {id = "1b71a57fdd5ab6909a07f1ca1b91c980"}
+            area = None
+        }
+        # Hue color lamp 8 (Signify Netherlands B.V. Hue color lamp)
+        hue_color_lamp_8 = {
+            match = {id = "db51fd0685ee53aefc6742c5e1033e0a"}
+            area = None
+        }
+        # Hue Play 2 (Signify Netherlands B.V. Hue Play)
+        hue_play_2 = {
+            match = {id = "504da6009ce6181f7caa439bce560705"}
+            area = None
+        }
+        # Hue Play 1 (Signify Netherlands B.V. Hue Play)
+        hue_play_1 = {
+            match = {id = "f8f2665d70a9a9c37577398eff785e09"}
+            area = None
+        }
+        # Hue gradient lightstrip 1 (Signify Netherlands B.V. Hue gradient lightstrip)
+        hue_gradient_lightstrip_1 = {
+            match = {id = "0f47ed6c62354c730315171c3b5b42fc"}
+            area = None
+        }
+        # Light Panels 52:5C:55 (Nanoleaf NL22)
+        light_panels_52_5c_55 = {
+            match = {id = "0d7b627ace1a9867298dac14c199d62c"}
+            area = None
+        }
+        # Apollo AIR-1 06ed14 (ApolloAutomation AIR-1)
+        apollo_air_1_06ed14 = {
+            match = {id = "ed35b8e3fe8bc4008af4b2c5aa45461e"}
+            area = None
+        }
+        # Apollo AIR-1 06ed14 (ApolloAutomation AIR-1)
+        apollo_air_1_06ed14_2 = {
+            match = {id = "62391b9b9267744880d84b58a8ce1383"}
+            area = None
+        }
+        # Kitchen (Ubiquiti G5 Flex)
+        kitchen_2 = {
+            match = {id = "7f0e6014a1fe68206ee174d50d188c53"}
+            area = None
+        }
+        # Kitchen (Ubiquiti G5 Flex)
+        kitchen_3 = {
+            match = {id = "f1a7641201f6f3e252cd5ec6aeeac3bb"}
+            area = None
         }
     }
     entities = {
@@ -477,6 +703,8 @@ hass_state = hstate.State {
             version = "v1.13.1"
         }
     }
+    # Delete each live floor and area that the state does not declare.
+    prune = ["floors", "areas"]
     http = {
         serverPort = 443
         sslCertificate = "/ssl/fullchain.pem"
