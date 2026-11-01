@@ -1,6 +1,6 @@
 # Home Assistant Config
 
-The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. No task deploys the YAML output to the Pi. [Delivery](#delivery) describes the open decision.
+The Home Assistant (HA) config for the Pi lives in KCL under `home/hass/`, and the `haconfig/` library renders it into a complete HA config directory. `task hass:render` writes that directory under the gitignored `.cache/`, and `task hass:gate` validates the library and `home/hass/` against the pinned HA release. `task hass:deploy` uploads the directory to the Pi over SSH, as [Delivery](#delivery) describes.
 
 The registries that HA keeps in `.storage`, such as floors, areas, and devices, are not YAML, and neither are the Supervisor apps, HACS, or the HTTP config. `home/hass/state.k` declares them, and `task hass:apply` writes them through HA's API, as [Registry State](#registry-state) describes.
 
@@ -228,6 +228,7 @@ The `hass` tasks live in `.taskfiles/hass/Taskfile.yaml`:
 | `hass:load` | `MODULE` | `hass:render`, then stages the output and loads it with `annotatedyaml` |
 | `hass:check` | `MODULE`, `HASS_IMAGE` | `hass:load`, then `check_config` in Docker |
 | `hass:diff` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `LIVE`, `SEMANTIC` | `hass:render`, then a diff from the live config to the render. See [Live Diff](#live-diff) |
+| `hass:deploy` | `MODULE`, `HASS_SSH`, `HASS_CONFIG_DIR`, `HASS_URL`, `YES`, `RESTART`, `DRY_RUN` | `hass:check`, the diff, a confirmation, the upload, HA's config check, and a reload. See [Delivery](#delivery) |
 | `hass:plan` | `MODULE`, `HASS_URL` | `hass:render`, then a plan of the registry state against live HA. See [Registry State](#registry-state) |
 | `hass:apply` | `MODULE`, `HASS_URL`, `YES`, `RESTART` | `hass:plan`, a confirmation, the apply, and a second plan |
 | `hass:import` | `OUT` (default `home/hass/state.k`), `VARIABLE`, `HASS_URL`, `FORCE` | writes a KCL state file from the live instance |
@@ -245,10 +246,10 @@ The negative render cases sit under `haconfig/examples/neg-*/`. Each one is a mo
 
 ## Live Diff
 
-`task hass:diff` shows what a deploy changes on the Pi. It renders the module, reads the live copy of every file and directory that the render writes, and prints a `git diff` from `live/` to `rendered/`:
+`task hass:diff` shows what `task hass:deploy` changes on the Pi. It renders the module, reads the live copy of every file that the render writes and of the package directory, and prints a `git diff` from `live/` to `rendered/`:
 
 - A rendered file that the Pi lacks shows as a new file.
-- A file that only the Pi holds under `packages/` shows as deleted, even when the render holds no packages. HA loads every file in that directory, so the delivery must remove the file.
+- A file that only the Pi holds under `packages/` shows as deleted, even when the render holds no packages. HA loads every file in that directory, so the deploy removes the file.
 - A referenced secret that no `secrets.yaml` on the Pi defines prints a warning after the diff, because HA fails to load the config.
 
 The task never writes to the Pi, and it never copies a `secrets.yaml` file or a symlink. Over SSH, the Pi checks each declared secret name itself and returns only the missing names, so no secret value leaves the Pi.
@@ -416,9 +417,30 @@ The repo is public, so everything in `state.k` is public, such as the names of y
 
 ## Delivery
 
-How the rendered config reaches the Pi is an open decision. The Git pull app on the Pi needs a branch whose root is the config directory. Both options therefore publish the rendered directory as the root of a separate branch:
+`task hass:deploy` uploads the rendered config to the Pi over SSH, then loads it into HA with a reload or a restart. It owns the paths that `task hass:diff` compares: `configuration.yaml`, `secrets.example.yaml`, `.gitignore`, and the package directory. Apart from its own `.hass-deploy/` directory, it never touches another path in the config directory, such as `secrets.yaml`, the UI files, `.storage`, or `custom_components`. It keeps every `secrets.yaml` inside `packages/`.
 
-- **CI renders to a deploy branch.** CI runs `task hass:gate` and `task hass:render`, then commits the output to the root of a `hass-deploy` branch. The Pi's Git pull app tracks that branch.
-- **Commit the rendered output.** You render into the default `OUT`, and a `hass:publish` task copies the output into a worktree of the deploy branch with `rsync --delete --exclude .git`. The render replaces the whole output directory. It refuses an `OUT` that holds `.git`, and any other non-empty directory that an earlier render did not write.
+The deploy replaces each path that it owns as a whole. It deletes every file under `packages/` that the render lacks, and it drops hand edits to `configuration.yaml`. Port the ones you want to keep into `home/hass/` first, as [Live Diff](#live-diff) describes.
 
-The emitted `.gitignore` lists the files that HA writes at runtime, and `secrets.yaml` and the UI files, so a deploy branch never tracks them. The render never ships `secrets.yaml`, so no deploy can overwrite the Pi's real secrets. Before each pull, the deploy step can compare the names in `secrets.example.yaml` with the Pi's `secrets.yaml`.
+The deploy needs the SSH app that [Live Diff](#live-diff) describes, and an admin token in `HASS_TOKEN`, as [Registry State](#registry-state) describes. It runs these steps, and stops at the first failure:
+
+1. It runs `task hass:check`, then diffs the render against the Pi as `task hass:diff` does. It stops when nothing changed. It also stops when the Pi's `secrets.yaml` lacks a referenced secret, because HA then fails to load the config.
+2. It plans the reload. `homeassistant.reload_all` reloads the themes and every integration that has a reload action, such as `automation` and `script`. It also re-reads the `homeassistant:` block, but integrations read the location, the units, and the region only at startup. The plan prints a warning for each change that needs a restart.
+3. It asks you to type `yes`. `YES=1` skips the question, and `DRY_RUN=1` stops before it.
+4. It uploads the owned paths in one SSH session and takes a lock on the Pi. The Pi checks that its files still match the diff and that the upload arrived whole. It saves the old files to a tar under `.hass-deploy/backups/`, then swaps in the new files.
+5. HA checks the config through its API. An error, or a warning that the check before the upload did not report, restores the backup and fails the deploy. Any other failure from the upload to this step, such as a dropped connection or Ctrl-C, also restores the backup.
+6. It calls `homeassistant.reload_all`. With `RESTART=1`, HA restarts instead, and the task waits until HA runs again.
+7. It checks that the Pi's owned files match the render, and lists each automation and script that became unavailable. It then releases the lock and keeps the five newest backups.
+
+HA's API check reports YAML errors and core config errors, and most other problems only as warnings or in its log. `task hass:check` fails on those log lines too, and it runs first, so the deploy uploads only a config that passed it.
+
+A deploy that dies without releasing its lock leaves the lock on the Pi, for example when the machine that runs it loses power. The next deploy waits until the lock is 30 minutes old. It then undoes the dead deploy by restoring that deploy's backup, and continues.
+
+The `core` block in `home/hass/main.k` sets the location, the units, and the URLs from YAML. Before the first deploy, you must add the block's `!secret` names to the Pi's `secrets.yaml`. After the first deploy, HA locks the **General** settings, the **Network** URL settings, and the home zone in the UI, so you change them in `main.k`.
+
+The first deploy also copies its backup to `.hass-deploy/original.tar`, which no deploy prunes, so the Pi's hand-made config stays recoverable. Each backup holds a copy of every `secrets.yaml` under `packages/`.
+
+To undo a deploy:
+
+1. Run the restore command that the deploy printed. It removes the owned paths and extracts that deploy's backup.
+2. Run `ha core check` on the Pi.
+3. Reload the YAML in **Developer tools** > **YAML**, or restart HA.

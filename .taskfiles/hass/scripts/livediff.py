@@ -10,12 +10,14 @@ Usage:
   livediff.py [--semantic] OUT WORK --live-dir PATH
 
 OUT is the directory that hass:render wrote. The script copies the live copy
-of every top-level path that OUT holds into WORK/live, together with every
-directory that OUT/configuration.yaml loads with an !include_dir_* tag. It
-copies OUT into WORK/rendered and prints `git diff --no-index` between the
-two. A path in OUT that the live config lacks shows as a new file. A file that
-only the live config holds in a package directory shows as deleted, and the
-delivery must remove it, because HA loads every file in that directory.
+of every top-level path that OUT holds into WORK/live, together with the
+package directory that OUT/configuration.yaml loads under `homeassistant:
+packages:`. It copies OUT into WORK/rendered and prints `git diff --no-index`
+between the two. A path in OUT that the live config lacks shows as a new file.
+A file that only the live config holds in the package directory shows as
+deleted, and hass:deploy removes it, because HA loads every file in that
+directory. Other directories, such as a themes directory that HACS fills, stay
+out of the diff.
 
 --ssh reads the live config over one SSH connection with tar, from
 --remote-dir (default /config). --live-dir reads it from a local directory,
@@ -105,25 +107,58 @@ def normalize(path: Path) -> None:
     )
 
 
-def included_dirs(config: Path) -> set[str]:
-    """Return the top-level directories that config loads with an !include_dir_* tag."""
-    found: set[str] = set()
-
-    def walk(node: object) -> None:
+def package_dir(config: Path) -> str | None:
+    """Return the top-level directory that config loads under `homeassistant: packages:`."""
+    for doc in load(config):
+        core = doc.get("homeassistant") if isinstance(doc, dict) else None
+        node = core.get("packages") if isinstance(core, dict) else None
         if isinstance(node, Tagged) and node.tag.startswith("!include_dir_"):
             path = Path(node.value.strip())
             if path.parts and not path.is_absolute() and path.parts[0] not in (".", ".."):
-                found.add(path.parts[0])
-        elif isinstance(node, dict):
-            for value in node.values():
-                walk(value)
-        elif isinstance(node, list):
-            for value in node:
-                walk(value)
+                return path.parts[0]
+    return None
 
-    for doc in load(config):
-        walk(doc)
-    return found
+
+def managed_names(out: Path) -> list[str]:
+    """Return the top-level paths that the render owns: every path in OUT and the package directory.
+
+    A package directory that the render leaves empty still exists on the Pi,
+    so it counts even when OUT lacks it.
+    """
+    names = {p.name for p in out.iterdir()}
+    if pkg := package_dir(out / "configuration.yaml"):
+        names.add(pkg)
+    return sorted(names)
+
+
+def prepare(out: Path, work: Path) -> tuple[Path, Path, list[str]]:
+    """Copy OUT into WORK/rendered next to an empty WORK/live, and return both and the managed names."""
+    live, rendered = work / "live", work / "rendered"
+    shutil.rmtree(work, ignore_errors=True)
+    live.mkdir(parents=True)
+    shutil.copytree(out, rendered)
+    names = managed_names(out)
+    for name in names:
+        if not (rendered / name).exists():
+            (rendered / name).mkdir()
+    return live, rendered, names
+
+
+def show_diff(work: Path, source_name: str) -> bool | None:
+    """Print the diff from WORK/live to WORK/rendered, and return whether they differ, or None on error."""
+    diff = ["git", "--no-pager", "-c", "core.quotePath=false", "diff", "--no-index", "--no-prefix", "--color=auto"]
+    stat = subprocess.run([*diff, "--stat", "--", "live", "rendered"], cwd=work, capture_output=True, text=True)
+    if stat.returncode not in (0, 1):
+        sys.stderr.write(stat.stderr)
+        return None
+    if stat.returncode == 0:
+        print(f"no changes against {source_name}")
+        return False
+    print(f"changes against {source_name}:")
+    sys.stdout.write(stat.stdout)
+    sys.stdout.flush()
+    subprocess.run([*diff, "--", "live", "rendered"], cwd=work)
+    return True
 
 
 def _member_filter(member: tarfile.TarInfo, dest: str) -> tarfile.TarInfo | None:
@@ -234,16 +269,7 @@ def main(argv: list[str]) -> int:
         return 1
 
     work: Path = args.work
-    live, rendered = work / "live", work / "rendered"
-    shutil.rmtree(work, ignore_errors=True)
-    live.mkdir(parents=True)
-    shutil.copytree(out, rendered)
-
-    # A package directory that the render leaves empty still exists on the
-    # Pi, so fetch it and diff it against an empty rendered directory.
-    for name in included_dirs(out / "configuration.yaml"):
-        (rendered / name).mkdir(exist_ok=True)
-    names = sorted(p.name for p in rendered.iterdir())
+    live, rendered, names = prepare(out, work)
 
     declared = declared_secrets(out)
     checkable = [s for s in declared if CHECKABLE_SECRET.match(s)]
@@ -265,18 +291,8 @@ def main(argv: list[str]) -> int:
                 if not path.is_symlink():
                     normalize(path)
 
-    diff = ["git", "--no-pager", "-c", "core.quotePath=false", "diff", "--no-index", "--no-prefix", "--color=auto"]
-    stat = subprocess.run([*diff, "--stat", "--", "live", "rendered"], cwd=work, capture_output=True, text=True)
-    if stat.returncode not in (0, 1):
-        sys.stderr.write(stat.stderr)
+    if show_diff(work, source_name) is None:
         return 1
-    if stat.returncode == 0:
-        print(f"no changes against {source_name}")
-    else:
-        print(f"changes against {source_name}:")
-        sys.stdout.write(stat.stdout)
-        sys.stdout.flush()
-        subprocess.run([*diff, "--", "live", "rendered"], cwd=work)
 
     # The warnings print last, so they stay on screen after a long diff.
     if missing:

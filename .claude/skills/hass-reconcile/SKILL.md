@@ -7,10 +7,10 @@ description: Reconcile the homelab repo's Home Assistant config with the live in
 
 The repo declares Home Assistant (HA) in two parts, which `docs/hass.md` describes:
 
-- **YAML config:** `home/hass/main.k` renders through `haconfig/` into a config directory. Nothing deploys it yet, because the delivery is an open decision (see the Delivery section of `docs/hass.md`).
+- **YAML config:** `home/hass/main.k` renders through `haconfig/` into a config directory, and `task hass:deploy` uploads it to the Pi over SSH (see the Delivery section of `docs/hass.md`).
 - **Registry state:** `home/hass/state.k` declares floors, areas, labels, categories, device, entity, and integration settings, apps, HACS repositories, and the HTTP config. The `hastate` engine plans and applies it over HA's WebSocket API.
 
-A reconcile runs five steps: diff, find what git lacks, import it and settle conflicts, apply, and report. Each step says what it runs and why.
+A reconcile runs six steps: diff, find what git lacks, import it and settle conflicts, apply, deploy, and report. Each step says what it runs and why.
 
 ## Questions
 
@@ -27,10 +27,10 @@ One call holds up to four questions, and each question offers two to four option
 
 ## Ground Rules
 
-- **Approval:** run `task hass:apply` only after the user approves the exact final plan in this session through AskUserQuestion. `CLAUDE.md` requires this, and an approval of an earlier plan does not carry over to a changed one.
+- **Approval:** run `task hass:apply` only after the user approves the exact final plan, and `task hass:deploy` only after the user approves the exact dry-run diff, in this session through AskUserQuestion. `CLAUDE.md` requires this, and an approval of an earlier plan or diff does not carry over to a changed one.
 - **Hand edits:** never write an import over `home/hass/state.k`. The file holds comments, ordering, `tags.secret()` calls, and options that an import cannot reproduce. Import into the scratchpad and copy blocks from there.
 - **Secrets:** the repo is public. Never write a secret value into it. Each app's comment names the options that the import left out. To manage one of them, write `tags.secret("<name>")`, declare the name in `HomeAssistant.secrets` in `home/hass/main.k` with a fake value, and ask the user to put the real value in the Pi's `secrets.yaml`. Hardware details, such as MAC addresses and device paths, are fine to commit.
-- **SSH:** do not read `~/.ssh` or the SSH agent. `task hass:diff` uses SSH by itself.
+- **SSH:** do not read `~/.ssh` or the SSH agent. `task hass:diff` and `task hass:deploy` use SSH by themselves.
 - **Token:** the state tasks need `HASS_TOKEN`. When it is unset, ask whether the user wants to stop and rerun with the token, for example under `doppler run -p <project> -c <config> --`, or to continue with the YAML diff only.
 
 ## 1. Diff
@@ -47,7 +47,7 @@ Run `task hass:plan`. It renders `home/hass`, writes `.cache/hass/home/hass/stat
 
 The plan also prints problems, which block the apply, and warnings. Fix each problem in `state.k` before step 4. When a fix needs a choice, such as which of two objects keeps a name, ask.
 
-Run `task hass:diff` for the YAML. It reads the Pi over SSH and prints a `git diff` from the live config to the render. When SSH fails, ask whether to continue with the state only or to stop while the user fixes SSH. The YAML has no apply path, so this step only reports. A file or a key that only the Pi holds, such as a hand-written package, can move into KCL under `home/hass/`. Ask which of those to port, with `multiSelect`, and port only the ones the user picks.
+Run `task hass:diff` for the YAML. It reads the Pi over SSH and prints a `git diff` from the live config to the render. When SSH fails, ask whether to continue with the state only or to stop while the user fixes SSH. Step 5 deploys the YAML. A file or a key that only the Pi holds, such as a hand-written package, can move into KCL under `home/hass/`. Ask which of those to port, with `multiSelect`, and port only the ones the user picks.
 
 ## 2. Find What Git Lacks
 
@@ -82,7 +82,7 @@ After the edits, run `task hass:gate`, which `CLAUDE.md` requires after any chan
 
 ## 4. Apply
 
-When the plan shows no changes, skip this step.
+When the plan shows no changes, skip the apply.
 
 Otherwise, ask for approval with AskUserQuestion, and put the final plan in the option preview. Offer `Apply`, `Apply and restart HA` when the plan downloads HACS integration code, and `Do not apply`. Name the changes that have side effects in the question:
 
@@ -92,13 +92,26 @@ Otherwise, ask for approval with AskUserQuestion, and put the final plan in the 
 
 After the user approves, run `task hass:apply YES=1`, with `RESTART=1` when the user chose the restart. The Bash tool has no terminal, so the task cannot ask for confirmation itself, and `YES=1` stands in for the approval that the user gave in the dialog. The apply plans again when it finishes and exits 1 when changes remain. When a step fails, the steps before it stay applied. Run `task hass:plan` again, and ask whether to retry, fix `state.k`, or stop.
 
-## 5. Report
+## 5. Deploy
+
+When `task hass:diff` shows no changes, skip the deploy.
+
+Otherwise, run `task hass:deploy DRY_RUN=1`. When it stops because the Pi's `secrets.yaml` lacks a referenced secret, skip the deploy, and list the names under what is left in the report.
+
+Ask for approval of the deploy with AskUserQuestion, with the diff and the reload plan in the option preview. Offer `Deploy`, `Deploy and restart HA` when the plan warns that a reload does not apply a change, and `Do not deploy`. Name the changes that the deploy destroys in the question:
+
+- Each file under `packages/` that only the Pi holds. The deploy deletes it.
+- Each hand edit to the Pi's `configuration.yaml`. The deploy drops it.
+
+After the user approves, run `task hass:deploy YES=1`, with `RESTART=1` when the user chose the restart. When HA rejects the uploaded config, or the upload fails, the deploy restores the Pi's previous files. When the reload or the restart fails, the new files stay on the Pi, and the deploy prints the command that restores the old ones.
+
+## 6. Report
 
 Tell the user:
 
 - what you imported into `state.k`, by collection.
 - what the apply changed, or that it did not run.
-- what the YAML diff showed and that it is not deployed.
+- what the YAML diff showed, and what the deploy changed, or why it did not run.
 - what is left, such as a missing integration, a secret to add on the Pi, or an `unmatched` object.
 
 Then ask whether to commit `home/hass/state.k` with the `commit` skill, with `Commit`, `Commit and push`, and `Leave uncommitted` as the options. Push only when the user picks it.

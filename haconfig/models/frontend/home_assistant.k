@@ -48,7 +48,7 @@ schema HomeAssistant:
         Assistant host. Names must match `[a-z0-9_]+`.
     deployGitignore: bool, default is True, optional.
         DeployGitignore emits a `.gitignore` for the files that HA writes at
-        runtime, so the rendered directory can be the root of a deploy branch.
+        runtime, so a git repository of the config directory leaves them out.
     state: hstate.State, default is Undefined, optional.
         State is the desired state of the registries in `.storage`, such as
         floors, areas, and labels. The render writes it to `state.json` next
