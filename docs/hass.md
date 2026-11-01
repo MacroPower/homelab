@@ -34,7 +34,7 @@ entries = ["*.k", "${haconfig:KCL_MOD}/models/render/render.k"]
 
 The `*.k` entry compiles every file in `home/hass/` as one KCL package, so adding a package file does not change `kcl.mod`. A second HA instance is one more module under `home/`, such as `home/hass-dev/`, with the same `kcl.mod` fields and its own package name. Pass its path to the tasks as `MODULE`.
 
-`home/hass/` holds no packages yet. The hallway example under `haconfig/examples/hallway` shows every part of a working config: a template sensor, an `input_boolean`, a timer, a script, an automation, and secrets.
+The hallway example under `haconfig/examples/hallway` shows every part of a working config: a template sensor, an `input_boolean`, a timer, a script, an automation, and secrets.
 
 The render prints one YAML stream, and `task hass:render` splits it into this directory:
 
@@ -78,6 +78,8 @@ A package is one `packages/<name>.yaml` file that groups the automations, script
 4. Run `task hass:check` to load the output with HA's loader and run `check_config`.
 
 If the package references a secret, declare it as [Secrets](#secrets) describes.
+
+The files in `home/hass/` share one namespace, so each `_`-prefixed top-level name is one variable across every file. Every later file can assign the same name again, and the render reports no error. Start each private top-level name with a prefix for its package, such as `_sbs` in `smart_bulb_switches.k`.
 
 Each `Package` collection is a map keyed by object id, and each one emits one HA domain:
 

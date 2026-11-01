@@ -3,7 +3,9 @@
 #
 # Add each package in its own file in this directory, such as `hallway.k`
 # holding `hallway = frontend.Package {name = "hallway", ...}`, and add it to
-# the list in `packages`. Define exactly one HomeAssistant in this module,
+# the list in `packages`. The files share one namespace, so start each
+# private top-level name with a prefix for its package, such as `_sbs`.
+# Define exactly one HomeAssistant in this module,
 # because each variable that holds one adds an instance and fails the render.
 # haconfig/examples/hallway holds a complete example, and docs/hass.md
 # describes the rules.
@@ -40,6 +42,6 @@ config = frontend.HomeAssistant {
     integrations = {
         frontend.themes = tags.include_dir_merge_named("themes")
     }
-    packages = {_p.name: _p for _p in []}
+    packages = {_p.name: _p for _p in [smart_bulb_switches]}
     state = hass_state
 }
