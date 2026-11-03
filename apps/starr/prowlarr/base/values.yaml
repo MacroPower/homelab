@@ -18,7 +18,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/home-operations/prowlarr
-          tag: "2.3.4.5307"
+          tag: "3.0.0.5737"
         env:
           PROWLARR__SERVER__PORT: { value: &port 9696 }
           PROWLARR__APP__INSTANCENAME: { value: Prowlarr }
