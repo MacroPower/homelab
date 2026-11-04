@@ -54,6 +54,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpec:
         The schedule in Cron format, see https://en.wikipedia.org/wiki/Cron.
     successfulJobsHistoryLimit : int, default is Undefined, optional
         SuccessfulJobsHistoryLimit determines how many past Scans will be kept until the oldest one will be deleted, defaults to 3. When set to 0, Scans will be deleted directly after completion
+    suspend : bool, default is Undefined, optional
+        Suspend specifies whether the ScheduledScan should be suspended. When a ScheduledScan is suspended, no new Scans will be created according to the schedule. This behaves similar to the suspend field in Kubernetes CronJobs.
     """
     concurrencyPolicy?: "Allow" | "Forbid" | "Replace"
     failedJobsHistoryLimit?: int
@@ -63,6 +65,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpec:
 
     schedule?: str
     successfulJobsHistoryLimit?: int
+    suspend?: bool = False
 
     check:
         failedJobsHistoryLimit >= 0 if failedJobsHistoryLimit not in [None, Undefined]
@@ -94,6 +97,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpec:
         resources
     scanType : str, default is Undefined, required
         The name of the scanType which should be started.
+    suspend : bool, default is Undefined, optional
+        Suspend specifies whether the Scan should be suspended. When a Scan is suspended, the reconciler will not process it, effectively pausing all operations until it is resumed. This behaves similar to the suspend field in Kubernetes Jobs.
     tolerations : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecTolerationsItems0], default is Undefined, optional
         Tolerations are a different way to control on which nodes your scan is executed. See https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
     ttlSecondsAfterFinished : int, default is Undefined, optional
@@ -115,6 +120,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpec:
     resources?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecResources
     scanType: str
 
+    suspend?: bool = False
     tolerations?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecTolerationsItems0]
     ttlSecondsAfterFinished?: int
     volumeMounts?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumeMountsItems0]
@@ -1042,7 +1048,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecEnvItems0ValueFromConf
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -1232,6 +1239,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0:
         readiness probe
     resizePolicy : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -1409,7 +1417,8 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0En
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -1582,6 +1591,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1591,6 +1603,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -1690,6 +1703,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1699,6 +1715,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -1811,6 +1828,10 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -1819,6 +1840,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -1840,6 +1862,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1849,6 +1874,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Li
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -1979,6 +2005,10 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Re
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -1987,6 +2017,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Re
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2008,6 +2039,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Re
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2017,6 +2051,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Re
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -2180,7 +2215,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Se
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
+        Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
         Default is false.
@@ -2394,6 +2429,10 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0St
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2402,6 +2441,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0St
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2423,6 +2463,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0St
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2432,6 +2475,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0St
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -2487,9 +2531,13 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Vo
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -2513,6 +2561,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecInitContainersItems0Vo
         Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
         Defaults to "" (volume's root).
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -2587,7 +2636,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
@@ -2610,9 +2659,13 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumeMountsItems0:
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -2636,6 +2689,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumeMountsItems0:
         Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
         Defaults to "" (volume's root).
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -2935,6 +2989,10 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ConfigMap
     defaultMode : int, default is Undefined, optional
         defaultMode is optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ConfigMapItemsItems0], default is Undefined, optional
         items if unspecified, each key-value pair in the Data field of the referenced
         ConfigMap will be projected into the volume as a file whose name is the
@@ -2949,6 +3007,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ConfigMap
         optional specify whether the ConfigMap or its keys must be defined
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ConfigMapItemsItems0]
     name?: str = ""
     optional?: bool
@@ -2970,11 +3029,17 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ConfigMap
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Csi:
     r"""
@@ -3033,10 +3098,15 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardA
         Optional: mode bits to use on created files by default. Must be a
         Optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of downward API volume file
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0]
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0:
@@ -3055,12 +3125,17 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardA
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -3109,11 +3184,16 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0EmptyDir:
         The default is "" which means to use the node's default medium.
         Must be an empty string (default) or Memory.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    mode : int, default is Undefined, optional
+        mode specifies the permission bits for the emptyDir directory, in numeric
+        notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+        If not specified, defaults to 0777.
     sizeLimit : int | str, default is Undefined, optional
         sizeLimit is the total amount of local storage required for this EmptyDir volume.
         The size limit is also applicable for memory medium.
     """
     medium?: str
+    mode?: int
     sizeLimit?: int | str
 
     check:
@@ -3245,6 +3325,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Ephemeral
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
+    Users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
 
     Attributes
     ----------
@@ -3639,7 +3722,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0PortworxV
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -3667,11 +3750,16 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         defaultMode are the mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
         YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     sources : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0], default is Undefined, optional
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
     defaultMode?: int
+    defaultUser?: int
     sources?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0]
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0:
@@ -3725,6 +3813,10 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         Select all ClusterTrustBundles that match this signer name.
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     labelSelector?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -3732,6 +3824,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
     path: str
 
     signerName?: str
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -3816,11 +3909,17 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
@@ -3849,12 +3948,17 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -3930,6 +4034,16 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         If omitted, kube-apiserver will set it to 86400(24 hours).
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -3938,6 +4052,9 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
 
     maxExpirationSeconds?: int
     signerName: str
+
+    user?: int
+    userAnnotations?: {str:str}
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -3979,11 +4096,17 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
@@ -4003,10 +4126,16 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Projected
     path : str, default is Undefined, required
         path is the path relative to the mount point of the file to project the
         token into.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     audience?: str
     expirationSeconds?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Quobyte:
     r"""
@@ -4181,6 +4310,10 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Secret:
     defaultMode : int, default is Undefined, optional
         defaultMode is Optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0SecretItemsItems0], default is Undefined, optional
         items If unspecified, each key-value pair in the Data field of the referenced
         Secret will be projected into the volume as a file whose name is the
@@ -4192,6 +4325,7 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Secret:
         More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0SecretItemsItems0]
     optional?: bool
     secretName?: str
@@ -4213,11 +4347,17 @@ schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0SecretIte
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ScheduledScanSpecScanSpecVolumesItems0Storageos:
     r"""

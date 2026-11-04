@@ -9,6 +9,13 @@
       "title": "allowIstioSidecarInjectionInJobs",
       "type": "boolean"
     },
+    "clusterDomain": {
+      "default": "cluster.local",
+      "description": "The cluster domain to use when building the in-cluster Garage endpoint (`\u003crelease\u003e-garage.\u003cnamespace\u003e.svc.\u003cclusterDomain\u003e`). Override this if your cluster uses a custom domain instead of the Kubernetes default `cluster.local`.",
+      "required": [],
+      "title": "clusterDomain",
+      "type": "string"
+    },
     "customCACertificate": {
       "additionalProperties": true,
       "description": "Setup for Custom CA certificates. These are automatically mounted into every secureCodeBox component (lurker, parser \u0026 hooks).\nRequires that every namespace has a configmap with the CA certificate(s)",
@@ -30,6 +37,288 @@
       },
       "required": [],
       "title": "customCACertificate",
+      "type": "object"
+    },
+    "extraVolumeMounts": {
+      "description": "Additional volume mounts to be mounted to the operator deployment",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumeMounts",
+      "type": "array"
+    },
+    "extraVolumes": {
+      "description": "Additional volumes to be mounted to the operator deployment",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraVolumes",
+      "type": "array"
+    },
+    "garage": {
+      "additionalProperties": true,
+      "description": "Garage configuration for direct deployment (S3-compatible quickstart storage backend). This replaces the previous `minio` configuration section; if your values file still sets `minio.enabled: false`, it will still be honored and disable Garage as well.",
+      "properties": {
+        "auth": {
+          "additionalProperties": true,
+          "description": "Authentication configuration",
+          "properties": {
+            "accessKey": {
+              "default": "",
+              "description": "Default access key (leave empty to generate a secure random one)",
+              "required": [],
+              "title": "accessKey",
+              "type": "string"
+            },
+            "adminToken": {
+              "default": "",
+              "description": "Garage admin API token (leave empty to generate a secure random one). Not used for anything outside the pod on a single-node deployment.",
+              "required": [],
+              "title": "adminToken",
+              "type": "string"
+            },
+            "existingSecret": {
+              "default": "",
+              "description": "Name of existing secret containing garage credentials (if set, auth.accessKey, auth.secretKey, auth.rpcSecret and auth.adminToken are ignored)",
+              "required": [],
+              "title": "existingSecret",
+              "type": "string"
+            },
+            "rpcSecret": {
+              "default": "",
+              "description": "Garage inter-node RPC secret, must be exactly 64 hex characters (leave empty to generate a secure random one). Not used for anything outside the pod on a single-node deployment.",
+              "required": [],
+              "title": "rpcSecret",
+              "type": "string"
+            },
+            "secretKey": {
+              "default": "",
+              "description": "Default secret key (leave empty to generate a secure random one)",
+              "required": [],
+              "title": "secretKey",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "auth",
+          "type": "object"
+        },
+        "defaultBucket": {
+          "default": "securecodebox",
+          "description": "Default bucket to create on startup",
+          "required": [],
+          "title": "defaultBucket",
+          "type": "string"
+        },
+        "enabled": {
+          "default": true,
+          "description": "Enable this to use Garage as storage backend instead of a cloud bucket provider like AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "image": {
+          "additionalProperties": true,
+          "description": "Garage image configuration",
+          "properties": {
+            "pullPolicy": {
+              "default": "IfNotPresent",
+              "required": [],
+              "title": "pullPolicy",
+              "type": "string"
+            },
+            "repository": {
+              "default": "docker.io/dxflrs/garage",
+              "required": [],
+              "title": "repository",
+              "type": "string"
+            },
+            "tag": {
+              "default": "v2.3.0",
+              "description": "renovate: image=docker.io/dxflrs/garage",
+              "required": [],
+              "title": "tag",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "image",
+          "type": "object"
+        },
+        "persistence": {
+          "additionalProperties": true,
+          "description": "Persistence configuration",
+          "properties": {
+            "size": {
+              "default": "10Gi",
+              "description": "Size of the persistent volume",
+              "required": [],
+              "title": "size",
+              "type": "string"
+            },
+            "storageClass": {
+              "default": "",
+              "description": "Storage class for garage data persistence",
+              "required": [],
+              "title": "storageClass",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "persistence",
+          "type": "object"
+        },
+        "podSecurityContext": {
+          "additionalProperties": true,
+          "description": "Pod security context for garage",
+          "properties": {
+            "fsGroup": {
+              "default": 1000,
+              "required": [],
+              "title": "fsGroup",
+              "type": "integer"
+            },
+            "runAsGroup": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsUser": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "podSecurityContext",
+          "type": "object"
+        },
+        "resources": {
+          "additionalProperties": true,
+          "description": "Resource limits and requests for garage",
+          "properties": {
+            "limits": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "500m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "ephemeral-storage": {
+                  "default": "1Gi",
+                  "required": [],
+                  "title": "ephemeral-storage",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "512Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "limits",
+              "type": "object"
+            },
+            "requests": {
+              "additionalProperties": true,
+              "properties": {
+                "cpu": {
+                  "default": "100m",
+                  "required": [],
+                  "title": "cpu",
+                  "type": "string"
+                },
+                "memory": {
+                  "default": "256Mi",
+                  "required": [],
+                  "title": "memory",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "requests",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "resources",
+          "type": "object"
+        },
+        "securityContext": {
+          "additionalProperties": true,
+          "description": "Container security context for garage",
+          "properties": {
+            "allowPrivilegeEscalation": {
+              "default": false,
+              "required": [],
+              "title": "allowPrivilegeEscalation",
+              "type": "boolean"
+            },
+            "capabilities": {
+              "additionalProperties": true,
+              "properties": {
+                "drop": {
+                  "items": {
+                    "required": [],
+                    "type": "string"
+                  },
+                  "required": [],
+                  "title": "drop",
+                  "type": "array"
+                }
+              },
+              "required": [],
+              "title": "capabilities",
+              "type": "object"
+            },
+            "runAsGroup": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsGroup",
+              "type": "integer"
+            },
+            "runAsNonRoot": {
+              "default": true,
+              "required": [],
+              "title": "runAsNonRoot",
+              "type": "boolean"
+            },
+            "runAsUser": {
+              "default": 1000,
+              "required": [],
+              "title": "runAsUser",
+              "type": "integer"
+            },
+            "seccompProfile": {
+              "additionalProperties": true,
+              "properties": {
+                "type": {
+                  "default": "RuntimeDefault",
+                  "required": [],
+                  "title": "type",
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "title": "seccompProfile",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "securityContext",
+          "type": "object"
+        }
+      },
+      "required": [],
+      "title": "garage",
       "type": "object"
     },
     "global": {
@@ -138,271 +427,6 @@
       "title": "metrics",
       "type": "object"
     },
-    "minio": {
-      "additionalProperties": true,
-      "description": "Minio configuration for direct deployment",
-      "properties": {
-        "auth": {
-          "additionalProperties": true,
-          "description": "Authentication configuration",
-          "properties": {
-            "existingSecret": {
-              "default": "",
-              "description": "Name of existing secret containing minio credentials (if set, auth.rootUser and auth.rootPassword are ignored)",
-              "required": [],
-              "title": "existingSecret",
-              "type": "string"
-            },
-            "rootPassword": {
-              "default": "",
-              "description": "Root password for minio (leave empty to generate a secure random password)",
-              "required": [],
-              "title": "rootPassword",
-              "type": "string"
-            },
-            "rootUser": {
-              "default": "admin",
-              "description": "Root user for minio",
-              "required": [],
-              "title": "rootUser",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "auth",
-          "type": "object"
-        },
-        "defaultBuckets": {
-          "default": "securecodebox",
-          "description": "Default buckets to create on startup",
-          "required": [],
-          "title": "defaultBuckets",
-          "type": "string"
-        },
-        "enabled": {
-          "default": true,
-          "description": "Enable this to use minio as storage backend instead of a cloud bucket provider like AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.",
-          "required": [],
-          "title": "enabled",
-          "type": "boolean"
-        },
-        "image": {
-          "additionalProperties": true,
-          "description": "Minio image configuration",
-          "properties": {
-            "pullPolicy": {
-              "default": "IfNotPresent",
-              "required": [],
-              "title": "pullPolicy",
-              "type": "string"
-            },
-            "repository": {
-              "default": "docker.io/minio/minio",
-              "required": [],
-              "title": "repository",
-              "type": "string"
-            },
-            "tag": {
-              "default": "RELEASE.2025-07-23T15-54-02Z",
-              "description": "renovate: image=docker.io/minio/minio",
-              "required": [],
-              "title": "tag",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "image",
-          "type": "object"
-        },
-        "persistence": {
-          "additionalProperties": true,
-          "description": "Persistence configuration",
-          "properties": {
-            "size": {
-              "default": "10Gi",
-              "description": "Size of the persistent volume",
-              "required": [],
-              "title": "size",
-              "type": "string"
-            },
-            "storageClass": {
-              "default": "",
-              "description": "Storage class for minio data persistence",
-              "required": [],
-              "title": "storageClass",
-              "type": "string"
-            }
-          },
-          "required": [],
-          "title": "persistence",
-          "type": "object"
-        },
-        "podSecurityContext": {
-          "additionalProperties": true,
-          "description": "Pod security context for minio",
-          "properties": {
-            "fsGroup": {
-              "default": 1000,
-              "required": [],
-              "title": "fsGroup",
-              "type": "integer"
-            },
-            "runAsGroup": {
-              "default": 1000,
-              "required": [],
-              "title": "runAsGroup",
-              "type": "integer"
-            },
-            "runAsUser": {
-              "default": 1000,
-              "required": [],
-              "title": "runAsUser",
-              "type": "integer"
-            }
-          },
-          "required": [],
-          "title": "podSecurityContext",
-          "type": "object"
-        },
-        "resources": {
-          "additionalProperties": true,
-          "description": "Resource limits and requests for minio",
-          "properties": {
-            "limits": {
-              "additionalProperties": true,
-              "properties": {
-                "cpu": {
-                  "default": "500m",
-                  "required": [],
-                  "title": "cpu",
-                  "type": "string"
-                },
-                "ephemeral-storage": {
-                  "default": "1Gi",
-                  "required": [],
-                  "title": "ephemeral-storage",
-                  "type": "string"
-                },
-                "memory": {
-                  "default": "512Mi",
-                  "required": [],
-                  "title": "memory",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "limits",
-              "type": "object"
-            },
-            "requests": {
-              "additionalProperties": true,
-              "properties": {
-                "cpu": {
-                  "default": "100m",
-                  "required": [],
-                  "title": "cpu",
-                  "type": "string"
-                },
-                "memory": {
-                  "default": "256Mi",
-                  "required": [],
-                  "title": "memory",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "requests",
-              "type": "object"
-            }
-          },
-          "required": [],
-          "title": "resources",
-          "type": "object"
-        },
-        "securityContext": {
-          "additionalProperties": true,
-          "description": "Container security context for minio",
-          "properties": {
-            "allowPrivilegeEscalation": {
-              "default": false,
-              "required": [],
-              "title": "allowPrivilegeEscalation",
-              "type": "boolean"
-            },
-            "capabilities": {
-              "additionalProperties": true,
-              "properties": {
-                "drop": {
-                  "items": {
-                    "required": [],
-                    "type": "string"
-                  },
-                  "required": [],
-                  "title": "drop",
-                  "type": "array"
-                }
-              },
-              "required": [],
-              "title": "capabilities",
-              "type": "object"
-            },
-            "runAsGroup": {
-              "default": 1000,
-              "required": [],
-              "title": "runAsGroup",
-              "type": "integer"
-            },
-            "runAsNonRoot": {
-              "default": true,
-              "required": [],
-              "title": "runAsNonRoot",
-              "type": "boolean"
-            },
-            "runAsUser": {
-              "default": 1000,
-              "required": [],
-              "title": "runAsUser",
-              "type": "integer"
-            },
-            "seccompProfile": {
-              "additionalProperties": true,
-              "properties": {
-                "type": {
-                  "default": "RuntimeDefault",
-                  "required": [],
-                  "title": "type",
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "title": "seccompProfile",
-              "type": "object"
-            }
-          },
-          "required": [],
-          "title": "securityContext",
-          "type": "object"
-        },
-        "tls": {
-          "additionalProperties": true,
-          "description": "TLS configuration (currently not implemented)",
-          "properties": {
-            "enabled": {
-              "default": false,
-              "required": [],
-              "title": "enabled",
-              "type": "boolean"
-            }
-          },
-          "required": [],
-          "title": "tls",
-          "type": "object"
-        }
-      },
-      "required": [],
-      "title": "minio",
-      "type": "object"
-    },
     "nodeSelector": {
       "additionalProperties": true,
       "required": [],
@@ -490,7 +514,7 @@
         },
         "readiness": {
           "additionalProperties": true,
-          "description": "Readiness probe configuration  ",
+          "description": "Readiness probe configuration",
           "properties": {
             "httpGet": {
               "additionalProperties": true,
@@ -542,13 +566,13 @@
           "additionalProperties": true,
           "properties": {
             "cpu": {
-              "default": "100m",
+              "default": "250m",
               "required": [],
               "title": "cpu",
               "type": "string"
             },
             "memory": {
-              "default": "30Mi",
+              "default": "100Mi",
               "required": [],
               "title": "memory",
               "type": "string"
@@ -568,7 +592,7 @@
               "type": "string"
             },
             "memory": {
-              "default": "20Mi",
+              "default": "50Mi",
               "required": [],
               "title": "memory",
               "type": "string"
@@ -609,7 +633,7 @@
         },
         "enabled": {
           "default": false,
-          "description": "s3.enabled Enable this and disable minio if you want to directly connect against AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.",
+          "description": "s3.enabled Enable this and disable garage if you want to directly connect against AWS S3, Google Cloud Storage, DigitalOcean Spaces etc.",
           "required": [],
           "title": "enabled",
           "type": "boolean"
@@ -778,13 +802,6 @@
       "required": [],
       "title": "serviceAccount",
       "type": "object"
-    },
-    "telemetryEnabled": {
-      "default": true,
-      "description": "telemetryEnabled -- The Operator sends anonymous telemetry data, to give the team an overview how much the secureCodeBox is used. Find out more at https://www.securecodebox.io/telemetry",
-      "required": [],
-      "title": "telemetryEnabled",
-      "type": "boolean"
     }
   },
   "required": [],
