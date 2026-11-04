@@ -126,6 +126,8 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRclone:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -153,6 +155,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRclone:
     moverResources?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0]
     rcloneConfig?: str
     rcloneConfigSection?: str
@@ -1293,6 +1296,40 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverSecurityContex
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
+
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRcloneMoverVolumesItems0:
     r"""
     volsync backube v1alpha1 replication destination spec rclone mover volumes items0
@@ -1477,6 +1514,10 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRestic:
         enableFileDeletion will pass the --delete flag to the restic restore command.
         This will remove files and directories in the pvc that do not exist in the snapshot being restored.
         Defaults to false.
+    enableSparseRestore : bool, default is Undefined, optional
+        enableSparseRestore will pass the --sparse flag to the restic restore command.
+        Files are restored sparse, so regions of zeros do not use disk space.
+        Defaults to false.
     moverAffinity : VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinity, default is Undefined, optional
         mover affinity
     moverPodLabels : {str:str}, default is Undefined, optional
@@ -1491,6 +1532,8 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRestic:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -1518,11 +1561,13 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRestic:
     customCA?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticCustomCA
     destinationPVC?: str
     enableFileDeletion?: bool
+    enableSparseRestore?: bool
     moverAffinity?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverAffinity
     moverPodLabels?: {str:str}
     moverResources?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0]
     previous?: int
     repository?: str
@@ -2664,6 +2709,40 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverSecurityContex
     hostProcess?: bool
     runAsUserName?: str
 
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
+
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecResticMoverVolumesItems0:
     r"""
     volsync backube v1alpha1 replication destination spec restic mover volumes items0
@@ -2991,6 +3070,8 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLS:
         that will be used by the data mover. This should only be used by advanced
         users who want to override the service account normally used by the mover.
         The service account needs to exist in the same namespace as this CR.
+    moverTolerations : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverTolerationsItems0], default is Undefined, optional
+        MoverTolerations allows specifying the tolerations that will be used by the data mover.
     moverVolumes : [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0], default is Undefined, optional
         MoverVolumes are PVCs or Secrets that should additionally be mounted to the mover job pod.
         This should only be used by advanced users.
@@ -3022,6 +3103,7 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLS:
     moverResources?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverResources
     moverSecurityContext?: VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverSecurityContext
     moverServiceAccount?: str
+    moverTolerations?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverTolerationsItems0]
     moverVolumes?: [VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0]
     serviceAnnotations?: {str:str}
     serviceType?: str
@@ -4142,6 +4224,40 @@ schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverSecurityCont
     gmsaCredentialSpecName?: str
     hostProcess?: bool
     runAsUserName?: str
+
+schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverTolerationsItems0:
+    r"""
+    The pod this Toleration is attached to tolerates any taint that matches
+    the triple <key,value,effect> using the matching operator <operator>.
+
+    Attributes
+    ----------
+    effect : str, default is Undefined, optional
+        Effect indicates the taint effect to match. Empty means match all taint effects.
+        When specified, allowed values are NoSchedule, PreferNoSchedule and NoExecute.
+    key : str, default is Undefined, optional
+        Key is the taint key that the toleration applies to. Empty means match all taint keys.
+        If the key is empty, operator must be Exists; this combination means to match all values and all keys.
+    operator : str, default is Undefined, optional
+        Operator represents a key's relationship to the value.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
+        Exists is equivalent to wildcard for value, so that a pod can
+        tolerate all taints of a particular category.
+        Lt and Gt perform numeric comparisons (requires feature gate TaintTolerationComparisonOperators).
+    tolerationSeconds : int, default is Undefined, optional
+        TolerationSeconds represents the period of time the toleration (which must be
+        of effect NoExecute, otherwise this field is ignored) tolerates the taint. By default,
+        it is not set, which means tolerate the taint forever (do not evict). Zero and
+        negative values will be treated as 0 (evict immediately) by the system.
+    value : str, default is Undefined, optional
+        Value is the taint value the toleration matches to.
+        If the operator is Exists, the value should be empty, otherwise just a regular string.
+    """
+    effect?: str
+    key?: str
+    operator?: str
+    tolerationSeconds?: int
+    value?: str
 
 schema VolsyncBackubeV1alpha1ReplicationDestinationSpecRsyncTLSMoverVolumesItems0:
     r"""

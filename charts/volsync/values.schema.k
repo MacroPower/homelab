@@ -23,6 +23,7 @@ schema Values:
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
         Default security context values are in deployment-controller.yaml
+    priorityClassName : str, optional, default is ""
     rclone : ValuesRclone, optional
     replicaCount : int, optional, default is 1
         Default values for volsync.
@@ -49,6 +50,7 @@ schema Values:
     podAnnotations?: ValuesPodAnnotations
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
+    priorityClassName?: str
     rclone?: ValuesRclone
     replicaCount?: int
     resources?: ValuesResources
