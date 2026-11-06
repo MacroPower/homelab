@@ -37,24 +37,50 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpec:
 
     Attributes
     ----------
+    backendPriority : int, default is Undefined, optional
+        BackendPriority sets the Envoy locality priority of the endpoints belonging to the
+        backendRef this filter is attached to, enabling priority-based failover between the
+        backendRefs of a single route rule. 0 is the highest priority.
+
+        Envoy sends traffic to the lowest priority value that has enough healthy endpoints,
+        and only spills over to the next value as that health degrades. It is highly
+        recommended to configure active or passive health checks so that failover can be
+        detected when the higher priority backends become unhealthy.
+
+        This overrides the priority derived from the referenced Backend's fallback field.
+        For additional details, see
+        https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/upstream/load_balancing/priority
+
+        This filter is only valid when referenced from a backendRef's filters. Referencing it
+        from a route rule's filters is rejected: a rule-level filter applies uniformly to every
+        backendRef of the rule, and a uniform priority carries no failover meaning.
     credentialInjection : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjection, default is Undefined, optional
         credential injection
     directResponse : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse, default is Undefined, optional
         direct response
+    grpcJSONTranscoder : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoder, default is Undefined, optional
+        grpc JSON transcoder
     matches : [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0], default is Undefined, optional
         Matches defines additional matching criteria for the HTTPRoute rule.
         As with HTTPRouteRule.Matches, the rule is matched if any one match applies.
         When both HTTPRouteRule.Matches and HTTPRouteFilter.Matches are set, the
         effective matching is the logical AND of the two sets.
+    requestMirror : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecRequestMirror, default is Undefined, optional
+        request mirror
     urlRewrite : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite, default is Undefined, optional
         url rewrite
     """
+    backendPriority?: int
     credentialInjection?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjection
     directResponse?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse
+    grpcJSONTranscoder?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoder
     matches?: [GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0]
+    requestMirror?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecRequestMirror
     urlRewrite?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite
 
     check:
+        backendPriority <= 128 if backendPriority not in [None, Undefined]
+        backendPriority >= 0 if backendPriority not in [None, Undefined]
         len(matches) <= 8 if matches
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjection:
@@ -98,7 +124,6 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjectionCredenti
     "credential", and the value should be the credential to be injected.
     For example, for basic authentication, the value should be "Basic <base64 encoded username:password>".
     for bearer token, the value should be "Bearer <token>".
-    Note: The secret must be in the same namespace as the HTTPRouteFilter.
 
     Attributes
     ----------
@@ -140,7 +165,14 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecCredentialInjectionCredenti
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
     r"""
-    HTTPDirectResponseFilter defines the configuration to return a fixed response.
+    DirectResponse returns a fixed response for matching requests.
+
+    When this filter is referenced from a GRPCRoute, only a non-2xx status code
+    is supported. gRPC signals success with a grpc-status trailer and a response
+    message, which a direct response cannot produce, so a 2xx status code (which
+    maps to the gRPC OK status) yields an invalid response for gRPC clients. Use a
+    non-2xx status code to deny or block gRPC requests (e.g. 403 maps to
+    PERMISSION_DENIED, 404 to UNIMPLEMENTED, 429/503 to UNAVAILABLE).
 
     Attributes
     ----------
@@ -153,6 +185,8 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
     statusCode : int, default is Undefined, optional
         Status Code of the HTTP response
         If unset, defaults to 200.
+        Note: when this filter is referenced from a GRPCRoute, a 2xx status code
+        (including the default 200) is rejected; a non-2xx status code must be set.
     """
     body?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody
     contentType?: str
@@ -162,6 +196,7 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponse:
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseBody:
     r"""
     Body of the direct response.
+    Supports Envoy command operators for dynamic content (see https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators).
 
     Attributes
     ----------
@@ -296,6 +331,12 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderAddItem
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -325,6 +366,12 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItem
         equivalent.
     value : str, default is Undefined, required
         Value is the value of HTTP Header to be matched.
+        <gateway:experimental:description>
+        Must consist of printable US-ASCII characters, optionally separated
+        by single tabs or spaces. See: https://tools.ietf.org/html/rfc7230#section-3.2
+        </gateway:experimental:description>
+
+        <gateway:experimental:validation:Pattern=`^[!-~]+([\t ]?[!-~]+)*$`>
     """
     name: str
 
@@ -336,6 +383,108 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecDirectResponseHeaderSetItem
         _regex_match(str(name), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
         len(value) <= 4096
         len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoder:
+    r"""
+    GRPCJSONTranscoder converts a JSON/HTTP request to a gRPC request, and the gRPC
+    response back to JSON.
+
+    It can only be used in the rule filters of an HTTPRoute. It is not supported in a
+    GRPCRoute or in the filters of a backendRef.
+
+    Attributes
+    ----------
+    convertGRPCStatus : bool, default is Undefined, optional
+        ConvertGRPCStatus converts the gRPC status of an error response to the HTTP
+        status code and a JSON body.
+    ignoreUnknownQueryParameters : bool, default is Undefined, optional
+        IgnoreUnknownQueryParameters ignores the query parameters that can't be mapped to
+        a field of the gRPC request.
+
+        If false, a request with such a parameter is not transcoded and is sent to the
+        backend as is.
+    printOptions : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderPrintOptions, default is Undefined, optional
+        print options
+    protoDescriptor : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderProtoDescriptor, default is Undefined, required
+        proto descriptor
+    services : [str], default is Undefined, optional
+        Services defines the gRPC services to transcode.
+
+        If not specified, all the services defined in the descriptor are transcoded,
+        except the ones that come from imported files.
+    """
+    convertGRPCStatus?: bool
+    ignoreUnknownQueryParameters?: bool
+    printOptions?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderPrintOptions
+    protoDescriptor: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderProtoDescriptor
+
+    services?: [str]
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderPrintOptions:
+    r"""
+    PrintOptions defines how the gRPC response is printed as JSON.
+
+    Attributes
+    ----------
+    addWhitespace : bool, default is Undefined, optional
+        AddWhitespace adds spaces, line breaks and indentation to the JSON output.
+    alwaysPrintPrimitiveFields : bool, default is Undefined, optional
+        AlwaysPrintPrimitiveFields prints the primitive fields even when they have
+        default values.
+    preserveProtoFieldNames : bool, default is Undefined, optional
+        PreserveProtoFieldNames uses the field names in the proto file instead of
+        lowerCamelCase names.
+    """
+    addWhitespace?: bool
+    alwaysPrintPrimitiveFields?: bool
+    preserveProtoFieldNames?: bool
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderProtoDescriptor:
+    r"""
+    ProtoDescriptor defines where to find the protobuf descriptor set of the gRPC services.
+
+    Attributes
+    ----------
+    valueRef : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderProtoDescriptorValueRef, default is Undefined, required
+        value ref
+    """
+    valueRef: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderProtoDescriptorValueRef
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecGrpcJSONTranscoderProtoDescriptorValueRef:
+    r"""
+    ValueRef references a ConfigMap in the same namespace that holds the descriptor set.
+
+    The descriptor set is read from the `proto-descriptor` key, either in `binaryData`
+    or in `data`, where it can be base64-encoded. If the ConfigMap has no `data` and only
+    one `binaryData` entry, that entry is used.
+
+    The descriptor set must include all the imported files. It can be generated with
+    `protoc --include_imports --descriptor_set_out=...`.
+
+    Attributes
+    ----------
+    group : str, default is Undefined, required
+        Group is the group of the referent. For example, "gateway.networking.k8s.io".
+        When unspecified or empty string, core API group is inferred.
+    kind : str, default is Undefined, required
+        Kind is kind of the referent. For example "HTTPRoute" or "Service".
+    name : str, default is Undefined, required
+        Name is the name of the referent.
+    """
+    group: str
+
+    kind: str
+
+    name: str
+
+    check:
+        len(group) <= 253
+        _regex_match(str(group), r"^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$")
+        len(kind) <= 63
+        len(kind) >= 1
+        _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
+        len(name) <= 253
+        len(name) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0:
     r"""
@@ -378,17 +527,57 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecMatchesItems0CookiesItems0:
         len(value) <= 4096
         len(value) >= 1
 
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecRequestMirror:
+    r"""
+    RequestMirror defines configuration for request mirroring modifiers.
+    This configuration works together with the Gateway API RequestMirror filter
+    on the attached HTTPRoute rule.
+
+    Attributes
+    ----------
+    hostname : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecRequestMirrorHostname, default is Undefined, optional
+        hostname
+    """
+    hostname?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecRequestMirrorHostname
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecRequestMirrorHostname:
+    r"""
+    Hostname defines the configuration to rewrite the Host header for mirrored requests.
+
+    Attributes
+    ----------
+    literal : str, default is Undefined, optional
+        Literal specifies a fixed hostname to rewrite the Host header to.
+        Required when Type is "Literal". Must be empty when Type is "Backend".
+        Note: gwapiv1.PreciseHostname already carries MinLength=1, MaxLength=253,
+        and RFC 1123 pattern validation, which automatically flow into the generated CRD.
+    $type : str, default is Undefined, required
+        Type defines the type of hostname rewrite.
+    """
+    literal?: str
+    $type: "Backend" | "Literal"
+
+    check:
+        len(literal) <= 253 if literal
+        len(literal) >= 1 if literal
+        _regex_match(str(literal), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if literal
+
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewrite:
     r"""
     HTTPURLRewriteFilter define rewrites of HTTP URL components such as path and host
 
     Attributes
     ----------
+    appendXForwardedHost : bool, default is Undefined, optional
+        AppendXForwardedHost controls whether the original Host header value is
+        appended to the X-Forwarded-Host header when hostname rewriting is configured.
+        Defaults to true for backward compatibility.
     hostname : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname, default is Undefined, optional
         hostname
     path : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath, default is Undefined, optional
         path
     """
+    appendXForwardedHost?: bool
     hostname?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname
     path?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath
 
@@ -401,11 +590,50 @@ schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostname:
     ----------
     header : str, default is Undefined, optional
         Header is the name of the header whose value would be used to rewrite the Host header
+    pathRegex : GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostnamePathRegex, default is Undefined, optional
+        path regex
     $type : str, default is Undefined, required
         HTTPPathModifierType defines the type of Hostname rewrite.
     """
     header?: str
-    $type: "Header" | "Backend"
+    pathRegex?: GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostnamePathRegex
+    $type: "Header" | "Backend" | "PathRegex"
+
+schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewriteHostnamePathRegex:
+    r"""
+    PathRegex defines a regex match and substitution applied to the request path to compute
+    the rewritten Host header.
+    For example, with:
+    pathRegex:
+      pattern: "^/tenant/([a-z0-9-]+)/.*"
+      substitution: "\\1.example.internal"
+    a request to "http://foo.bar.com/tenant/tenant1/api/v1" has its upstream Host header rewritten
+    to "tenant1.example.internal" (the request path "/tenant/tenant1/api/v1" is preserved).
+
+    Attributes
+    ----------
+    pattern : str, default is Undefined, required
+        Pattern matches a regular expression against the value of the HTTP Path. The regex string must
+        adhere to the syntax documented in https://github.com/google/re2/wiki/Syntax.
+    substitution : str, default is Undefined, required
+        Substitution is an expression that replaces the matched portion. The expression may include numbered
+        capture groups that adhere to syntax documented in https://github.com/google/re2/wiki/Syntax.
+
+        The resulting value is used as the upstream Host header and should be constrained to a valid
+        DNS hostname by using explicit regex capture groups in Pattern.
+
+        The NUL, CR, and LF characters are not allowed: they are invalid in an HTTP header value and are
+        rejected by the Envoy proto (well_known_regex HTTP_HEADER_VALUE), which would otherwise cause the
+        generated configuration to be rejected by the data plane.
+    """
+    pattern: str
+
+    substitution: str
+
+    check:
+        len(pattern) >= 1
+        len(substitution) >= 1
+        _regex_match(str(substitution), r"^[^\r\n\x00]*$")
 
 schema GatewayEnvoyproxyIoV1alpha1HTTPRouteFilterSpecURLRewritePath:
     r"""

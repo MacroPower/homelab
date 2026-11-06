@@ -49,10 +49,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpec:
         basic auth
     cors : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCors, default is Undefined, optional
         cors
+    csrf : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCsrf, default is Undefined, optional
+        csrf
     extAuth : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth, default is Undefined, optional
         ext auth
     jwt : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwt, default is Undefined, optional
         jwt
+    mergeType : str, default is Undefined, optional
+        MergeType determines how this configuration is merged with existing SecurityPolicy
+        configurations targeting a parent resource. When set, this configuration will be merged
+        into the closest parent SecurityPolicy in the route's attachment hierarchy (for
+        example, one targeting a Gateway, Gateway listener, ListenerSet, or ListenerSet
+        listener).
+        Currently, this field can only be set when targeting xRoute resources.
+        If unset, no merging occurs, and only the most specific configuration takes effect.
     oidc : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc, default is Undefined, optional
         oidc
     targetRef : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetRef, default is Undefined, optional
@@ -67,8 +77,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpec:
     authorization?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorization
     basicAuth?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecBasicAuth
     cors?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCors
+    csrf?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCsrf
     extAuth?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth
     jwt?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwt
+    mergeType?: str
     oidc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc
     targetRef?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetRef
     targetRefs?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetRefsItems0]
@@ -100,6 +112,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAPIKeyAuth:
 
     forwardClientIDHeader?: str
     sanitize?: bool
+
+    check:
+        len(extractFrom) >= 1
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAPIKeyAuthCredentialRefsItems0:
     r"""
@@ -154,26 +169,34 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAPIKeyAuthCredentialRefsItem
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAPIKeyAuthExtractFromItems0:
     r"""
     ExtractFrom is where to fetch the key from the coming request.
-    Only one of header, param or cookie is supposed to be specified.
+    Only one of headers, params or cookies must be specified.
 
     Attributes
     ----------
     cookies : [str], default is Undefined, optional
         Cookies is the names of the cookie to fetch the key from.
         If multiple cookies are specified, envoy will look for the api key in the order of the list.
-        This field is optional, but only one of headers, params or cookies is supposed to be specified.
+        This field is optional, but only one of headers, params or cookies must be specified.
     headers : [str], default is Undefined, optional
         Headers is the names of the header to fetch the key from.
         If multiple headers are specified, envoy will look for the api key in the order of the list.
-        This field is optional, but only one of headers, params or cookies is supposed to be specified.
+        This field is optional, but only one of headers, params or cookies must be specified.
     params : [str], default is Undefined, optional
         Params is the names of the query parameter to fetch the key from.
         If multiple params are specified, envoy will look for the api key in the order of the list.
-        This field is optional, but only one of headers, params or cookies is supposed to be specified.
+        This field is optional, but only one of headers, params or cookies must be specified.
     """
     cookies?: [str]
     headers?: [str]
     params?: [str]
+
+    check:
+        len(cookies) >= 1 if cookies
+        all cookies in cookies {len(cookies) >= 1 if cookies not in [None, Undefined]} if cookies
+        len(headers) >= 1 if headers
+        all headers in headers {len(headers) >= 1 if headers not in [None, Undefined]} if headers
+        len(params) >= 1 if params
+        all params in params {len(params) >= 1 if params not in [None, Undefined]} if params
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorization:
     r"""
@@ -203,21 +226,49 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0:
     ----------
     action : str, default is Undefined, required
         Action defines the action to be taken if the rule matches.
+    cel : str, default is Undefined, optional
+        CEL specifies a Common Expression Language expression to evaluate for the
+        request. If specified, the expression must evaluate to true for the rule to match.
+
+        The expression can use Envoy attributes exposed to the CEL runtime.
+        Request attributes, such as request.path, request.url_path, request.host,
+        request.scheme, request.method, request.headers, and request.query, are
+        generally available during authorization. Connection attributes, such as
+        source.address, source.port, destination.address, destination.port,
+        connection.mtls, and connection.requested_server_name, may also be used.
+        Dynamic metadata and filter state produced by earlier filters may also be
+        available through attributes such as metadata and filter_state.
+        Response attributes are only available after the request completes and
+        should not be used for authorization decisions.
+
+        For more details, see:
+        https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/advanced/attributes
+
+        The rule matches only when the expression evaluates to a boolean true.
+        Non-boolean results, false, null, and CEL evaluation errors are treated as
+        no match.
+
+        Examples:
+        `request.headers['x-tenant'] == 'team-a'`
+        `request.method == 'POST' && request.path.startsWith('/admin')`
     name : str, default is Undefined, optional
         Name is a user-friendly name for the rule.
         If not specified, Envoy Gateway will generate a unique name for the rule.
     operation : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Operation, default is Undefined, optional
         operation
-    principal : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Principal, default is Undefined, required
+    principal : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Principal, default is Undefined, optional
         principal
     """
     action: "Allow" | "Deny"
 
+    cel?: str
     name?: str
     operation?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Operation
-    principal: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Principal
+    principal?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Principal
 
     check:
+        len(cel) <= 4096 if cel
+        len(cel) >= 1 if cel
         len(name) <= 253 if name
         len(name) >= 1 if name
 
@@ -228,15 +279,39 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Oper
 
     Attributes
     ----------
-    methods : [str], default is Undefined, required
+    methods : [str], default is Undefined, optional
         Methods are the HTTP methods of the request.
         If multiple methods are specified, all specified methods are allowed or denied, based on the action of the rule.
+    path : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0OperationPath, default is Undefined, optional
+        path
     """
-    methods: [str]
+    methods?: [str]
+    path?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0OperationPath
 
     check:
-        len(methods) >= 1
-        len(methods) <= 16
+        len(methods) >= 1 if methods
+        len(methods) <= 16 if methods
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0OperationPath:
+    r"""
+    Path is the HTTP path of the request.
+    Support Exact, PathPrefix and RegularExpression match types.
+
+    Attributes
+    ----------
+    invert : bool, default is Undefined, optional
+        Invert specifies whether the value match result will be inverted.
+    $type : str, default is "PathPrefix", optional
+        Type specifies how to match against the value of the path.
+    value : str, default is "/", required
+        Value specifies the HTTP path.
+    """
+    invert?: bool = False
+    $type?: "Exact" | "PathPrefix" | "RegularExpression" = "PathPrefix"
+    value: str = "/"
+
+    check:
+        len(value) <= 1024
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Principal:
     r"""
@@ -259,46 +334,107 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Prin
         You can use the `ClientIPDetection` or the `ProxyProtocol` field in
         the `ClientTrafficPolicy` to configure how the client IP is detected.
 
-        For TCPRoute targets (raw TCP connections), HTTP headers such as
+        For TCPRoute and UDPRoute targets (raw L4 traffic), HTTP headers such as
         X-Forwarded-For are not available. The client IP is obtained from the
-        TCP connection's peer address. If intermediaries (load balancers, NAT)
-        terminate or proxy TCP, the original client IP will only be available
-        if the intermediary preserves the source address (for example by
-        enabling the PROXY protocol or avoiding SNAT). Ensure your L4 proxy is
+        TCP connection's peer address, or from the source address of the UDP
+        datagram. If intermediaries (load balancers, NAT) terminate or proxy the
+        traffic, the original client IP will only be available if the
+        intermediary preserves the source address (for example by enabling the
+        PROXY protocol or avoiding SNAT). Note that the PROXY protocol is not
+        available on the UDP path, so a UDPRoute target relies entirely on the
+        datagram source address being preserved. Ensure your L4 proxy is
         configured to preserve the source IP to enable correct client-IP
-        matching for TCPRoute targets.
+        matching for TCPRoute and UDPRoute targets.
+    clientIPGeoLocations : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalClientIPGeoLocationsItems0], default is Undefined, optional
+        ClientIPGeoLocations authorizes the request based on geolocation metadata derived from the client IP.
+        This field is supported for HTTPRoute and GRPCRoute authorization.
+        It is not supported for TCPRoute or UDPRoute targets.
+
+        If multiple entries are specified,  one of the ClientIPGeoLocation entries must match for the rule to match.
+
+        The client IP is inferred from the X-Forwarded-For header, a custom header, or the
+        direct downstream connection source address (the TCP peer of the connection terminated by Envoy).
+        You can use the `ClientIPDetection` field in the `ClientTrafficPolicy` to configure the client IP detection.
     headers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalHeadersItems0], default is Undefined, optional
         Headers authorize the request based on user identity extracted from custom headers.
         If multiple headers are specified, all headers must match for the rule to match.
     jwt : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalJwt, default is Undefined, optional
         jwt
-    sourceCIDRs : [str], default is Undefined, optional
-        SourceCIDRs are the IP CIDR ranges of the source (L4 peer IP).
-        Valid examples are "192.168.1.0/24" or "2001:db8::/64"
-
-        If multiple CIDR ranges are specified, one of the CIDR ranges must match
-        the source IP for the rule to match.
-
-        The source IP is the IP address of the peer that connected to Envoy.
-        This IP is obtained from the TCP connection's peer address and is not
-        affected by X-Forwarded-For or other IP detection headers.
-        If intermediaries (load balancers, NAT) terminate or proxy TCP,
-        the original client IP will only be available if the intermediary
-        preserves the source address (for example by enabling the PROXY protocol
-        or avoiding SNAT).
     """
     clientCIDRs?: [str]
+    clientIPGeoLocations?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalClientIPGeoLocationsItems0]
     headers?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalHeadersItems0]
     jwt?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalJwt
-    sourceCIDRs?: [str]
 
     check:
         len(clientCIDRs) >= 1 if clientCIDRs
+        all clientCIDRs in clientCIDRs {len(clientCIDRs) <= 64 if clientCIDRs not in [None, Undefined]} if clientCIDRs
         all clientCIDRs in clientCIDRs {_regex_match(str(clientCIDRs), r"((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]+))|((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/([0-9]+))") if clientCIDRs} if clientCIDRs
+        len(clientIPGeoLocations) >= 1 if clientIPGeoLocations
         len(headers) >= 1 if headers
         len(headers) <= 256 if headers
-        len(sourceCIDRs) >= 1 if sourceCIDRs
-        all sourceCIDRs in sourceCIDRs {_regex_match(str(sourceCIDRs), r"((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]+))|((([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\/([0-9]+))") if sourceCIDRs} if sourceCIDRs
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalClientIPGeoLocationsItems0:
+    r"""
+    ClientIPGeoLocation specifies geolocation-based match criteria for authorization.
+
+    Attributes
+    ----------
+    anonymous : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalClientIPGeoLocationsItems0Anonymous, default is Undefined, optional
+        anonymous
+    asn : int, default is Undefined, optional
+        ASN is the autonomous system number associated with the client IP.
+    city : str, default is Undefined, optional
+        City is the city associated with the client IP.
+    country : str, default is Undefined, optional
+        Country is the country ISO code associated with the client IP.
+    isp : str, default is Undefined, optional
+        ISP is the internet service provider associated with the client IP.
+    region : str, default is Undefined, optional
+        Region is the region ISO code associated with the client IP.
+    """
+    anonymous?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalClientIPGeoLocationsItems0Anonymous
+    asn?: int
+    city?: str
+    country?: str
+    isp?: str
+    region?: str
+
+    check:
+        asn >= 1 if asn not in [None, Undefined]
+        len(city) <= 128 if city
+        len(city) >= 1 if city
+        len(country) <= 2 if country
+        len(country) >= 2 if country
+        _regex_match(str(country), r"^[A-Za-z]{2}$") if country
+        len(isp) <= 256 if isp
+        len(isp) >= 1 if isp
+        len(region) <= 16 if region
+        len(region) >= 1 if region
+        _regex_match(str(region), r"^[A-Za-z0-9-]+$") if region
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalClientIPGeoLocationsItems0Anonymous:
+    r"""
+    Anonymous matches anonymous network detection signals.
+
+    Attributes
+    ----------
+    isAnonymous : bool, default is Undefined, optional
+        IsAnonymous matches whether the client IP is considered anonymous.
+    isHosting : bool, default is Undefined, optional
+        IsHosting matches whether the client IP belongs to a hosting provider.
+    isProxy : bool, default is Undefined, optional
+        IsProxy matches whether the client IP belongs to a public proxy.
+    isTor : bool, default is Undefined, optional
+        IsTor matches whether the client IP belongs to a Tor exit node.
+    isVPN : bool, default is Undefined, optional
+        IsVPN matches whether the client IP is detected as VPN.
+    """
+    isAnonymous?: bool
+    isHosting?: bool
+    isProxy?: bool
+    isTor?: bool
+    isVPN?: bool
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0PrincipalHeadersItems0:
     r"""
@@ -341,7 +477,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecAuthorizationRulesItems0Prin
     provider : str, default is Undefined, required
         Provider is the name of the JWT provider that used to verify the JWT token.
         In order to use JWT claims for authorization, you must configure the JWT
-        authentication with the same provider in the same `SecurityPolicy`.
+        authentication with the same provider in the same `SecurityPolicy`, or,
+        when `mergeType` is set, in the parent `SecurityPolicy` this policy is
+        merged into.
     scopes : [str], default is Undefined, optional
         Scopes are a special type of claim in a JWT token that represents the permissions of the client.
 
@@ -427,8 +565,6 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecBasicAuthUsers:
     Reference to https://httpd.apache.org/docs/2.4/programs/htpasswd.html
     for more details.
 
-    Note: The secret must be in the same namespace as the SecurityPolicy.
-
     Attributes
     ----------
     group : str, default is Undefined, optional
@@ -485,6 +621,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCors:
         AllowMethods defines the methods that are allowed to make requests.
         It specifies the allowed methods in the Access-Control-Allow-Methods CORS response header..
         The value "*" allows any method to be used.
+    allowOriginRegexes : [str], default is Undefined, optional
+        AllowOriginRegexes defines regular expressions that are matched against the Origin header.
+        It specifies additional allowed origins in the Access-Control-Allow-Origin CORS response header.
+        An origin is allowed when it matches any entry in AllowOrigins or AllowOriginRegexes.
     allowOrigins : [str], default is Undefined, optional
         AllowOrigins defines the origins that are allowed to make requests.
         It specifies the allowed origins in the Access-Control-Allow-Origin CORS response header.
@@ -501,15 +641,75 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCors:
     allowCredentials?: bool
     allowHeaders?: [str]
     allowMethods?: [str]
+    allowOriginRegexes?: [str]
     allowOrigins?: [str]
     exposeHeaders?: [str]
     maxAge?: str
 
     check:
+        all allowOriginRegexes in allowOriginRegexes {len(allowOriginRegexes) <= 1024 if allowOriginRegexes not in [None, Undefined]} if allowOriginRegexes
+        all allowOriginRegexes in allowOriginRegexes {len(allowOriginRegexes) >= 1 if allowOriginRegexes not in [None, Undefined]} if allowOriginRegexes
         all allowOrigins in allowOrigins {len(allowOrigins) <= 253 if allowOrigins not in [None, Undefined]} if allowOrigins
         all allowOrigins in allowOrigins {len(allowOrigins) >= 1 if allowOrigins not in [None, Undefined]} if allowOrigins
-        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"^(\*|https?:\/\/(\*|(\*\.)?(([\w-]+\.?)+)?[\w-]+)(:\d{1,5})?)$") if allowOrigins} if allowOrigins
+        all allowOrigins in allowOrigins {_regex_match(str(allowOrigins), r"^(\*|[A-Za-z][A-Za-z0-9+.-]*:\/\/(\*|(\*\.)?(([\w-]+\.?)+)?[\w-]+)(:\d{1,5})?)$") if allowOrigins} if allowOrigins
         _regex_match(str(maxAge), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxAge
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCsrf:
+    r"""
+    CSRF defines the configuration for Cross-Site Request Forgery (CSRF) protection.
+    When enabled, the CSRF filter checks that the Origin header matches the destination
+    or one of the additional allowed origins on mutating requests (POST, PUT, DELETE, PATCH).
+
+    Attributes
+    ----------
+    additionalOrigins : [str], default is Undefined, optional
+        AdditionalOrigins specifies additional origins that are allowed to make mutating
+        requests, beyond the destination origin. A request whose Origin header matches one
+        of them is allowed. The value "*" allows any origin, which effectively disables
+        origin validation.
+
+        Note: Envoy's CSRF filter compares the host and port of the origin only, so the
+        scheme is ignored: "https://www.example.com" and "http://www.example.com" are
+        equivalent here, and both allow the request regardless of the scheme the client
+        used.
+    shadowFraction : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCsrfShadowFraction, default is Undefined, optional
+        shadow fraction
+    """
+    additionalOrigins?: [str]
+    shadowFraction?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCsrfShadowFraction
+
+    check:
+        len(additionalOrigins) <= 16 if additionalOrigins
+        all additionalOrigins in additionalOrigins {len(additionalOrigins) <= 253 if additionalOrigins not in [None, Undefined]} if additionalOrigins
+        all additionalOrigins in additionalOrigins {len(additionalOrigins) >= 1 if additionalOrigins not in [None, Undefined]} if additionalOrigins
+        all additionalOrigins in additionalOrigins {_regex_match(str(additionalOrigins), r"^(\*|[A-Za-z][A-Za-z0-9+.-]*:\/\/(\*|(\*\.)?(([\w-]+\.?)+)?[\w-]+)(:\d{1,5})?)$") if additionalOrigins} if additionalOrigins
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecCsrfShadowFraction:
+    r"""
+    ShadowFraction represents the fraction of requests for which the CSRF policy is
+    evaluated in shadow (dry-run) mode. For these requests, the filter records whether
+    the request would have been allowed or rejected in the `csrf.request_valid` and
+    `csrf.request_invalid` stats, but always lets the request through. The remaining
+    requests are enforced, i.e. a mutating request with a missing or non-matching
+    Origin header is rejected with a 403.
+
+    Defaults to 0% (all requests are enforced) if not specified. Set it to 100% to
+    dry run the filter, watch the stats to find origins that would be rejected, then
+    lower it to roll enforcement out gradually.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
     r"""
@@ -548,11 +748,35 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
         in HeadersToExtAuth or not.
     http : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTP, default is Undefined, optional
         http
+    includeRouteMetadata : bool, default is Undefined, optional
+        IncludeRouteMetadata sends Envoy Gateway's built-in route metadata to the
+        external authorization service as context.
+
+        This includes Envoy Gateway's built-in metadata for the selected route in
+        the "envoy-gateway" metadata namespace.
+
+        The metadata is exposed under the "resources" field as a list of route
+        resource objects. For example:
+
+        envoy-gateway:
+          resources:
+          - kind: HTTPRoute
+            name: backend
+            namespace: default
+            annotations:
+              foo: bar
+
+        The resource object may include fields such as kind, namespace, name,
+        sectionName, and supported route annotations.
     recomputeRoute : bool, default is Undefined, optional
         RecomputeRoute clears the route cache and recalculates the routing decision.
         This field must be enabled if the headers added or modified by the ExtAuth are used for
         route matching decisions. If the recomputation selects a new route, features targeting
         the new matched route will be applied.
+    statusOnError : int, default is Undefined, optional
+        Sets the HTTP status that is returned when the authorization service returns an error
+        or cannot be reached. Defaults to 403 Forbidden.
+        Only 4xx and 5xx status codes are supported.
     timeout : str, default is Undefined, optional
         Timeout defines the timeout for requests to the external authorization service.
         If not specified, defaults to 10 seconds.
@@ -563,7 +787,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuth:
     grpc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpc
     headersToExtAuth?: [str]
     http?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTP
+    includeRouteMetadata?: bool
     recomputeRoute?: bool
+    statusOnError?: 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 500 | 501 | 502 | 503 | 504 | 505 | 506 | 507 | 508 | 510 | 511
     timeout?: str
 
     check:
@@ -575,16 +801,24 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthBodyToExtAuth:
 
     Attributes
     ----------
-    maxRequestBytes : int, default is Undefined, required
+    maxRequestBytes : int, default is Undefined, optional
         MaxRequestBytes is the maximum size of a message body that the filter will hold in memory.
         Envoy will return HTTP 413 and will not initiate the authorization process when buffer
         reaches the number set in this field.
         Note that this setting will have precedence over failOpen mode.
+        Defaults to 32768 bytes (32KiB), which matches the default per-connection buffer limit.
+    packAsBytes : bool, default is Undefined, optional
+        PackAsBytes, when true, sends the request body to the external authorization
+        service as raw bytes, populating the raw_body field of the HTTP request
+        attribute context. Otherwise, the body is sent as a UTF-8 string in the body field.
+        This field is only supported for gRPC external authorization services.
+        Defaults to false.
     """
-    maxRequestBytes: int
+    maxRequestBytes?: int
+    packAsBytes?: bool
 
     check:
-        maxRequestBytes >= 1
+        maxRequestBytes >= 1 if maxRequestBytes not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthContextExtensionsItems0:
     r"""
@@ -674,7 +908,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendRef:
     BackendRef references a Kubernetes object that represents the
     backend server to which the authorization request will be sent.
 
-    Deprecated: Use BackendRefs instead.
+    Deprecated: Use BackendRefs instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -840,8 +1074,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettings:
         dns
     healthCheck : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheck, default is Undefined, optional
         health check
+    http1 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp1, default is Undefined, optional
+        http1
     http2 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2, default is Undefined, optional
         http2
+    http3 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp3, default is Undefined, optional
+        http3
     loadBalancer : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancer, default is Undefined, optional
         load balancer
     proxyProtocol : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsProxyProtocol, default is Undefined, optional
@@ -857,7 +1095,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettings:
     connection?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsConnection
     dns?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsDNS
     healthCheck?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheck
+    http1?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp1
     http2?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2
+    http3?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp3
     loadBalancer?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancer
     proxyProtocol?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsProxyProtocol
     retry?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsRetry
@@ -884,6 +1124,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCi
         Default: unlimited.
     perEndpoint : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerPerEndpoint, default is Undefined, optional
         per endpoint
+    retryBudget : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerRetryBudget, default is Undefined, optional
+        retry budget
     """
     maxConnections?: int = 1024
     maxParallelRequests?: int = 1024
@@ -891,6 +1133,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCi
     maxPendingRequests?: int = 1024
     maxRequestsPerConnection?: int
     perEndpoint?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerPerEndpoint
+    retryBudget?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerRetryBudget
 
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
@@ -918,6 +1161,45 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCi
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
         maxConnections >= 0 if maxConnections not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerRetryBudget:
+    r"""
+    RetryBudget provides settings for retry budget, which limits the number of retries in a given percentage.
+    RetryBudget take precedence over maxParallelRetries.
+
+    Attributes
+    ----------
+    minRetryConcurrency : int, default is Undefined, optional
+        MinRetryConcurrency specifies the minimum retry concurrency allowed for the retry budget.
+        For example, a budget of 20% with a minimum retry concurrency of 3
+        will allow 5 active retries while there are 25 active requests.
+        If there are 2 active requests, there are still 3 active retries
+        allowed because of the minimum retry concurrency.
+        Defaults to 3.
+    percent : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerRetryBudgetPercent, default is Undefined, required
+        percent
+    """
+    minRetryConcurrency?: int
+    percent: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerRetryBudgetPercent
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsCircuitBreakerRetryBudgetPercent:
+    r"""
+    Percent specifies the limit on concurrent retries as a percentage [0, 100] of
+    the sum of active requests and active pending requests.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsConnection:
     r"""
@@ -1040,8 +1322,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
 
     Attributes
     ----------
+    disableConnectionReuse : bool, default is Undefined, optional
+        DisableConnectionReuse determines whether the active health check connection to a
+        backend host is closed after each health check probe. When set to true, Envoy opens a
+        new connection for each health check, which is useful for backends (such as
+        haproxy-style agent checks) that do not expect a reused connection.
+        Defaults to false, which reuses the connection across probes.
     grpc : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveGrpc, default is Undefined, optional
         grpc
+    healthCheckLog : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLog, default is Undefined, optional
+        health check log
     healthyThreshold : int, default is 1, optional
         HealthyThreshold defines the number of healthy health checks required before a backend host is marked healthy.
     http : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTP, default is Undefined, optional
@@ -1051,6 +1341,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
         Envoy will randomly select a value between 0 and the initial jitter value.
     interval : str, default is "3s", optional
         Interval defines the time between active health checks.
+    overrides : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveOverrides, default is Undefined, optional
+        overrides
     tcp : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveTCP, default is Undefined, optional
         tcp
     timeout : str, default is "1s", optional
@@ -1059,12 +1351,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
         Type defines the type of health checker.
     unhealthyThreshold : int, default is 3, optional
         UnhealthyThreshold defines the number of unhealthy health checks required before a backend host is marked unhealthy.
+        Without RetriableStatuses configured, any health check failure results in the host being immediately
+        considered unhealthy. When RetriableStatuses is set, health checks returning those statuses are retried
+        up to this threshold before the host is marked unhealthy.
     """
+    disableConnectionReuse?: bool
     grpc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveGrpc
+    healthCheckLog?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLog
     healthyThreshold?: int = 1
     http?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTP
     initialJitter?: str
     interval?: str = "3s"
+    overrides?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveOverrides
     tcp?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveTCP
     timeout?: str = "1s"
     $type: str
@@ -1085,12 +1383,25 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
 
     Attributes
     ----------
+    hostname : str, default is Undefined, optional
+        Hostname defines the value of the :authority header sent with active gRPC
+        health checks. Authority selection uses this order: this field, the
+        associated Backend endpoint hostname if available, then the effective Route
+        hostname. If none of them is set, Envoy falls back to the name of the
+        cluster, which is not a valid authority and is rejected by some gRPC
+        servers.
     service : str, default is Undefined, optional
         Service to send in the health check request.
         If this is not specified, then the health check request applies to the entire
         server and not to a specific service.
     """
+    hostname?: str
     service?: str
+
+    check:
+        len(hostname) <= 253 if hostname
+        len(hostname) >= 1 if hostname
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTP:
     r"""
@@ -1105,13 +1416,36 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
         ExpectedStatuses defines a list of HTTP response statuses considered healthy.
         Defaults to 200 only
     hostname : str, default is Undefined, optional
-        Hostname defines the HTTP host that will be requested during health checking.
-        Default: HTTPRoute or GRPCRoute hostname.
+        Hostname defines the HTTP Host header used for active HTTP health checks.
+        Host selection uses this order: this field, the associated Backend endpoint
+        hostname if available, then the effective Route hostname.
     method : str, default is Undefined, optional
         Method defines the HTTP method used for health checking.
         Defaults to GET
     path : str, default is Undefined, required
         Path defines the HTTP path that will be requested during health checking.
+    $protocol : str, default is "Auto", optional
+        Protocol is the HTTP protocol that active health check requests are sent with.
+
+        Defaults to Auto, which uses the same protocol as regular requests to the backend:
+
+          - HTTP2 for a backend configured for HTTP/2, through a `kubernetes.io/h2c`,
+            `gateway.envoyproxy.io/h2c` or `grpc` appProtocol, or as the backend of a
+            GRPCRoute.
+          - The protocol negotiated through ALPN for a TLS backend that negotiates it,
+            with HTTP1 as the fallback when nothing is negotiated.
+          - HTTP1 otherwise.
+
+        Set HTTP1 or HTTP2 when the health check endpoint speaks a different protocol than
+        the application, for example a backend that serves HTTP/1.1 traffic but only
+        accepts HTTP/2 health checks. An explicit protocol is always used as is.
+    requestBody : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTPRequestBody, default is Undefined, optional
+        request body
+    retriableStatuses : [int], default is Undefined, optional
+        RetriableStatuses defines a list of HTTP response statuses considered retriable.
+        Responses matching these statuses count towards the unhealthy threshold but
+        do not result in the host being considered immediately unhealthy.
+        The expected statuses take precedence for any range overlaps with this field.
     """
     expectedResponse?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTPExpectedResponse
     expectedStatuses?: [int]
@@ -1119,14 +1453,21 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
     method?: str
     path: str
 
+    $protocol?: "Auto" | "HTTP1" | "HTTP2" = "Auto"
+    requestBody?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTPRequestBody
+    retriableStatuses?: [int]
+
     check:
         all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
+        len(method) <= 16 if method
         len(path) <= 1024
         len(path) >= 1
+        all retriableStatuses in retriableStatuses {retriableStatuses <= 599 if retriableStatuses not in [None, Undefined]} if retriableStatuses
+        all retriableStatuses in retriableStatuses {retriableStatuses >= 100 if retriableStatuses not in [None, Undefined]} if retriableStatuses
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTPExpectedResponse:
     r"""
@@ -1144,6 +1485,98 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
     binary?: str
     text?: str
     $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHTTPRequestBody:
+    r"""
+    RequestBody defines the HTTP request body payload sent during health checking.
+
+    Attributes
+    ----------
+    binary : str, default is Undefined, optional
+        Binary payload base64 encoded.
+    text : str, default is Undefined, optional
+        Text payload in plain text.
+    $type : str, default is Undefined, required
+        Type defines the type of the payload.
+    """
+    binary?: str
+    text?: str
+    $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLog:
+    r"""
+    HealthCheckLog defines health check event logging configuration for this cluster.
+    When set, HC probe outcomes are logged to the configured sinks.
+    Takes precedence over the gateway-level EnvoyProxy.spec.telemetry.healthCheckLog.
+
+    Attributes
+    ----------
+    matches : [str], default is Undefined, optional
+        Matches defines which health check probe outcomes produce a log entry.
+        When omitted or empty, all events are logged.
+
+        Each value must be unique. Multiple values are ORed. If any failure type is
+        specified then a success type must also be specified, and vice versa.
+    sinks : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0], default is Undefined, optional
+        Sinks defines where health check events are written.
+        When omitted, events are written to /dev/stdout.
+    """
+    matches?: [str]
+    sinks?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0]
+
+    check:
+        len(matches) <= 4 if matches
+        len(sinks) <= 1 if sinks
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0:
+    r"""
+    ProxyHealthCheckLogSink defines a destination for health check event logs.
+
+    Attributes
+    ----------
+    file : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File, default is Undefined, optional
+        file
+    $type : str, default is Undefined, required
+        Type defines the type of sink.
+    """
+    file?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File
+    $type: "File"
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File:
+    r"""
+    File defines the file sink configuration.
+    Required when type is File.
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        Path specifies the file path for health check event output.
+        Use /dev/stdout to write to standard output.
+    """
+    path: str
+
+    check:
+        len(path) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveOverrides:
+    r"""
+    Overrides defines the configuration of the overriding health check settings for all endpoints
+    in the backend cluster. This allows customization of port and other settings that may differ
+    from the main service configuration.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, optional
+        Port overrides the health check port.
+        If not set, the endpoint's serving port is used for health checks.
+        This is useful when health checks are served on a different port than
+        the main service port (e.g., port 443 for service, port 9090 for health checks).
+    """
+    port?: int
+
+    check:
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHealthCheckActiveTCP:
     r"""
@@ -1200,6 +1633,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
 
     Attributes
     ----------
+    alwaysEjectOneEndpoint : bool, default is Undefined, optional
+        AlwaysEjectOneEndpoint defines whether at least one host should be ejected,
+        regardless of MaxEjectionPercent.
     baseEjectionTime : str, default is "30s", optional
         BaseEjectionTime defines the base duration for which a host will be ejected on consecutive failures.
     consecutive5XxErrors : int, default is 5, optional
@@ -1220,6 +1656,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
     splitExternalLocalOriginErrors : bool, default is Undefined, optional
         SplitExternalLocalOriginErrors enables splitting of errors between external and local origin.
     """
+    alwaysEjectOneEndpoint?: bool = False
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
     consecutiveGatewayErrors?: int
@@ -1234,6 +1671,35 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHe
         failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
         failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        maxEjectionPercent <= 100 if maxEjectionPercent not in [None, Undefined]
+        maxEjectionPercent >= 0 if maxEjectionPercent not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp1:
+    r"""
+    HTTP1 provides HTTP/1 configuration for backend connections.
+    When both this field and the deprecated HTTP1 field on ClientTrafficPolicy are set,
+    this field takes precedence for backend (upstream) traffic.
+
+    Behavior when targeting route kinds that do not use HTTP/1:
+      - GRPCRoute, TCPRoute, TLSRoute, UDPRoute: targeting these route kinds
+        directly adds a Warning condition on the policy; the field is ignored.
+      - Gateway / ListenerSet / sectionName targets: this field is silently
+        ignored for any GRPCRoute, TCPRoute, TLSRoute, or UDPRoute destinations
+        beneath that target; no warning is emitted.
+      - gRPC-only external services (ExtProc, gRPC ExtAuth, ALS, OpenTelemetry
+        access log/metrics, tracing providers): rejected at admission on their
+        own BackendSettings via separate validation rules.
+
+    Attributes
+    ----------
+    enableTrailers : bool, default is Undefined, optional
+        EnableTrailers defines if HTTP/1 trailers should be proxied by Envoy.
+    preserveHeaderCase : bool, default is Undefined, optional
+        PreserveHeaderCase defines if Envoy should preserve the letter case of headers.
+        By default, Envoy will lowercase all the headers.
+    """
+    enableTrailers?: bool
+    preserveHeaderCase?: bool
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2:
     r"""
@@ -1241,6 +1707,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHt
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -1256,6 +1724,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHt
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -1269,6 +1738,52 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHt
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsHttp3:
+    r"""
+    HTTP3 enables HTTP/3 for backend connections.
+    HTTP/3 always runs over TLS, so the backend must be configured
+    with TLS through a BackendTLSPolicy or the Backend's spec.tls.
+    HTTP/3 is only supported for the backends of a route, through
+    BackendTrafficPolicy. It is rejected for the backends of other
+    resources, such as the external services of a SecurityPolicy
+    or EnvoyExtensionPolicy and the sinks of an EnvoyProxy.
+
+    Attributes
+    ----------
+    mode : str, default is Undefined, optional
+        Mode determines when HTTP/3 is used to reach the backend.
+        Defaults to Auto, which only uses HTTP/3 for backends advertising it via alt-svc.
+    """
+    mode?: "Auto" | "Always"
+
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancer:
     r"""
     LoadBalancer policy to apply when routing traffic from the gateway to
@@ -1276,8 +1791,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
 
     Attributes
     ----------
+    backendUtilization : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerBackendUtilization, default is Undefined, optional
+        backend utilization
     consistentHash : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHash, default is Undefined, optional
         consistent hash
+    dynamicModule : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerDynamicModule, default is Undefined, optional
+        dynamic module
     endpointOverride : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerEndpointOverride, default is Undefined, optional
         endpoint override
     slowStart : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerSlowStart, default is Undefined, optional
@@ -1288,16 +1807,102 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
         "ConsistentHash",
         "LeastRequest",
         "Random",
-        "RoundRobin".
+        "RoundRobin",
+        "BackendUtilization",
+        "DynamicModule".
     zoneAware : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAware, default is Undefined, optional
         zone aware
     """
+    backendUtilization?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerBackendUtilization
     consistentHash?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHash
+    dynamicModule?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerDynamicModule
     endpointOverride?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerEndpointOverride
     slowStart?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerSlowStart
-    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin"
+    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin" | "BackendUtilization" | "DynamicModule"
 
     zoneAware?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAware
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerBackendUtilization:
+    r"""
+    BackendUtilization defines the configuration when the load balancer type is
+    set to BackendUtilization.
+
+    Attributes
+    ----------
+    blackoutPeriod : str, default is Undefined, optional
+        A given endpoint must report load metrics continuously for at least this long before the endpoint weight will be used.
+        Default is 10s.
+    errorUtilizationPenaltyPercent : int, default is Undefined, optional
+        ErrorUtilizationPenaltyPercent adjusts endpoint weights based on the error rate (eps/qps).
+        This is expressed as a percentage-based integer where 100 represents 1.0, 150 represents 1.5, etc.
+
+        For example:
+        - 100 => 1.0x
+        - 120 => 1.2x
+        - 200 => 2.0x
+
+        Must be non-negative.
+    keepResponseHeaders : bool, default is Undefined, optional
+        KeepResponseHeaders keeps the ORCA load report headers/trailers before sending the response to the client.
+        Defaults to false.
+    metricNamesForComputingUtilization : [str], default is Undefined, optional
+        Metric names used to compute utilization if application_utilization is not set.
+        For map fields in ORCA proto, use the form "<map_field>.<key>", e.g., "named_metrics.foo".
+    outOfBand : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerBackendUtilizationOutOfBand, default is Undefined, optional
+        out of band
+    weightExpirationPeriod : str, default is Undefined, optional
+        If a given endpoint has not reported load metrics in this long, stop using the reported weight. Defaults to 3m.
+    weightUpdatePeriod : str, default is Undefined, optional
+        How often endpoint weights are recalculated. Values less than 100ms are capped at 100ms. Default 1s.
+    """
+    blackoutPeriod?: str
+    errorUtilizationPenaltyPercent?: int
+    keepResponseHeaders?: bool = False
+    metricNamesForComputingUtilization?: [str]
+    outOfBand?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerBackendUtilizationOutOfBand
+    weightExpirationPeriod?: str
+    weightUpdatePeriod?: str
+
+    check:
+        _regex_match(str(blackoutPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if blackoutPeriod
+        errorUtilizationPenaltyPercent >= 0 if errorUtilizationPenaltyPercent not in [None, Undefined]
+        _regex_match(str(weightExpirationPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightExpirationPeriod
+        _regex_match(str(weightUpdatePeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightUpdatePeriod
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerBackendUtilizationOutOfBand:
+    r"""
+    OutOfBand enables out-of-band ORCA load reporting. When set, Envoy opens a
+    server-streaming gRPC connection to each endpoint's
+    xds.service.orca.v3.OpenRcaService/StreamCoreMetrics and pulls load
+    reports periodically, instead of relying on in-band ORCA metrics
+    carried in response headers/trailers.
+
+    The backend must implement OpenRcaService for this to take effect.
+
+    Attributes
+    ----------
+    authority : str, default is Undefined, optional
+        Authority overrides the :authority header on the OutOfBand gRPC stream.
+        If unset, Envoy uses the endpoint hostname, then the dialed address, then
+        the cluster name.
+    port : int, default is Undefined, optional
+        Port overrides the port used for the OutOfBand reporting connection, e.g. to
+        reach a separate reporting sidecar. Defaults to the endpoint's port.
+    reportingPeriod : str, default is Undefined, optional
+        ReportingPeriod is how often Envoy requests load reports from the server.
+        Must be greater than 0. Defaults to 10s.
+    """
+    authority?: str
+    port?: int
+    reportingPeriod?: str
+
+    check:
+        len(authority) <= 259 if authority
+        len(authority) >= 1 if authority
+        _regex_match(str(authority), r"^[^\x00\n\r]*$") if authority
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+        _regex_match(str(reportingPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if reportingPeriod
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerConsistentHash:
     r"""
@@ -1365,7 +1970,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
 
-    Deprecated: use Headers instead
+    Deprecated: use Headers instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -1397,6 +2002,40 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
         Name of the query param to hash.
     """
     name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerDynamicModule:
+    r"""
+    DynamicModule defines the configuration when the load balancer type is
+    set to DynamicModule. The referenced module must be registered in the
+    EnvoyProxy resource's dynamicModules allowlist.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is optional configuration for the module's load balancer
+        implementation. This is serialized and passed to the module's
+        initialization function.
+    lbPolicyName : str, default is Undefined, required
+        LBPolicyName identifies a specific load balancer implementation within
+        the dynamic module. A single shared library can contain multiple LB
+        policy implementations. This value is passed to the module's
+        initialization function to select the appropriate implementation.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    """
+    config?: any
+    lbPolicyName: str
+
+    name: str
+
+    check:
+        len(lbPolicyName) <= 253
+        len(lbPolicyName) >= 1
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerEndpointOverride:
     r"""
@@ -1434,7 +2073,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
     r"""
     SlowStart defines the configuration related to the slow start load balancer policy.
     If set, during slow start window, traffic sent to the newly added hosts will gradually increase.
-    Currently this is only supported for RoundRobin and LeastRequest load balancers
+    Supported for RoundRobin, LeastRequest, and BackendUtilization load balancers.
 
     Attributes
     ----------
@@ -1457,8 +2096,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
     ----------
     preferLocal : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocal, default is Undefined, optional
         prefer local
+    weightedZones : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0], default is Undefined, optional
+        WeightedZones configures weight-based traffic distribution across locality zones.
+        Traffic is distributed proportionally based on the sum of all zone weights.
     """
     preferLocal?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocal
+    weightedZones?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocal:
     r"""
@@ -1466,6 +2109,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
 
     Attributes
     ----------
+    failTrafficOnPanic : bool, default is Undefined, optional
+        FailTrafficOnPanic rejects traffic instead of routing to all endpoints when the
+        cluster is in panic mode. Panic mode is entered when the share of healthy endpoints
+        drops below HealthCheck.PanicThreshold, and by default Envoy then load balances
+        across every endpoint, healthy or not. Setting this to true makes Envoy fail the
+        requests instead, applying backpressure to clients and giving the backend room to
+        recover.
+        Defaults to false.
     force : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocalForce, default is Undefined, optional
         force
     minEndpointsThreshold : int, default is Undefined, optional
@@ -1473,6 +2124,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
     percentageEnabled : int, default is Undefined, optional
         Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
+    failTrafficOnPanic?: bool
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
     percentageEnabled?: int
@@ -1494,6 +2146,26 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLo
     """
     minEndpointsInZoneThreshold?: int
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0:
+    r"""
+    WeightedZoneConfig defines the weight for a specific locality zone.
+
+    Attributes
+    ----------
+    weight : int, default is Undefined, required
+        Weight defines the weight for this locality.
+        Higher values receive more traffic. The actual traffic distribution
+        is proportional to this value relative to other localities.
+    zone : str, default is Undefined, required
+        Zone specifies the topology zone this weight applies to.
+        The value should match the topology.kubernetes.io/zone label
+        of the nodes where endpoints are running.
+        Zones not listed in the configuration receive a default weight of 1.
+    """
+    weight: int
+
+    zone: str
+
 protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsProxyProtocol:
     r"""
     ProxyProtocol enables the Proxy Protocol when communicating with the backend.
@@ -1501,7 +2173,7 @@ protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettings
     Attributes
     ----------
     version : str, default is Undefined, required
-        Version of ProxyProtol
+        Version of ProxyProtocol
         Valid ProxyProtocolVersion values are
         "V1"
         "V2"
@@ -1654,17 +2326,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsTi
         When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
+    streamIdleTimeout : str, default is Undefined, optional
+         The stream idle timeout defines the amount of time a stream can exist without any upstream or downstream activity.
+         If not specified, StreamIdleTimeout is inherited from the listener-level setting, which can be configured via ClientTrafficPolicy.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
     maxStreamDuration?: str
     requestTimeout?: str
+    streamIdleTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
+        _regex_match(str(streamIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if streamIdleTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthGrpcBackendSettingsTimeoutTCP:
     r"""
@@ -1711,12 +2388,20 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTP:
         For example, if the original request path is "/hello", and the path specified here is "/auth",
         then the path of the authorization request will be "/auth/hello". If the path is not specified,
         the path of the authorization request will be "/hello".
+        Only one of Path or PathOverride can be set.
+    pathOverride : str, default is Undefined, optional
+        PathOverride replaces the original request path in the authorization request.
+        If set, the path will be overridden to this value during authorization.
+        For example, if the original request path is "/hello", and PathOverride is set to "/auth",
+        then the path of the authorization request will be "/auth".
+        Only one of Path or PathOverride can be set.
     """
     backendRef?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendRef
     backendRefs?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendRefsItems0]
     backendSettings?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettings
     headersToBackend?: [str]
     path?: str
+    pathOverride?: str
 
     check:
         len(backendRefs) <= 16 if backendRefs
@@ -1726,7 +2411,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendRef:
     BackendRef references a Kubernetes object that represents the
     backend server to which the authorization request will be sent.
 
-    Deprecated: Use BackendRefs instead.
+    Deprecated: Use BackendRefs instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -1892,8 +2577,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettings:
         dns
     healthCheck : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheck, default is Undefined, optional
         health check
+    http1 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp1, default is Undefined, optional
+        http1
     http2 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2, default is Undefined, optional
         http2
+    http3 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp3, default is Undefined, optional
+        http3
     loadBalancer : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancer, default is Undefined, optional
         load balancer
     proxyProtocol : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsProxyProtocol, default is Undefined, optional
@@ -1909,7 +2598,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettings:
     connection?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsConnection
     dns?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsDNS
     healthCheck?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheck
+    http1?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp1
     http2?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2
+    http3?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp3
     loadBalancer?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancer
     proxyProtocol?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsProxyProtocol
     retry?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsRetry
@@ -1936,6 +2627,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCi
         Default: unlimited.
     perEndpoint : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerPerEndpoint, default is Undefined, optional
         per endpoint
+    retryBudget : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerRetryBudget, default is Undefined, optional
+        retry budget
     """
     maxConnections?: int = 1024
     maxParallelRequests?: int = 1024
@@ -1943,6 +2636,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCi
     maxPendingRequests?: int = 1024
     maxRequestsPerConnection?: int
     perEndpoint?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerPerEndpoint
+    retryBudget?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerRetryBudget
 
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
@@ -1970,6 +2664,45 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCi
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
         maxConnections >= 0 if maxConnections not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerRetryBudget:
+    r"""
+    RetryBudget provides settings for retry budget, which limits the number of retries in a given percentage.
+    RetryBudget take precedence over maxParallelRetries.
+
+    Attributes
+    ----------
+    minRetryConcurrency : int, default is Undefined, optional
+        MinRetryConcurrency specifies the minimum retry concurrency allowed for the retry budget.
+        For example, a budget of 20% with a minimum retry concurrency of 3
+        will allow 5 active retries while there are 25 active requests.
+        If there are 2 active requests, there are still 3 active retries
+        allowed because of the minimum retry concurrency.
+        Defaults to 3.
+    percent : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerRetryBudgetPercent, default is Undefined, required
+        percent
+    """
+    minRetryConcurrency?: int
+    percent: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerRetryBudgetPercent
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsCircuitBreakerRetryBudgetPercent:
+    r"""
+    Percent specifies the limit on concurrent retries as a percentage [0, 100] of
+    the sum of active requests and active pending requests.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsConnection:
     r"""
@@ -2092,8 +2825,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
 
     Attributes
     ----------
+    disableConnectionReuse : bool, default is Undefined, optional
+        DisableConnectionReuse determines whether the active health check connection to a
+        backend host is closed after each health check probe. When set to true, Envoy opens a
+        new connection for each health check, which is useful for backends (such as
+        haproxy-style agent checks) that do not expect a reused connection.
+        Defaults to false, which reuses the connection across probes.
     grpc : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveGrpc, default is Undefined, optional
         grpc
+    healthCheckLog : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLog, default is Undefined, optional
+        health check log
     healthyThreshold : int, default is 1, optional
         HealthyThreshold defines the number of healthy health checks required before a backend host is marked healthy.
     http : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTP, default is Undefined, optional
@@ -2103,6 +2844,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
         Envoy will randomly select a value between 0 and the initial jitter value.
     interval : str, default is "3s", optional
         Interval defines the time between active health checks.
+    overrides : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveOverrides, default is Undefined, optional
+        overrides
     tcp : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveTCP, default is Undefined, optional
         tcp
     timeout : str, default is "1s", optional
@@ -2111,12 +2854,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
         Type defines the type of health checker.
     unhealthyThreshold : int, default is 3, optional
         UnhealthyThreshold defines the number of unhealthy health checks required before a backend host is marked unhealthy.
+        Without RetriableStatuses configured, any health check failure results in the host being immediately
+        considered unhealthy. When RetriableStatuses is set, health checks returning those statuses are retried
+        up to this threshold before the host is marked unhealthy.
     """
+    disableConnectionReuse?: bool
     grpc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveGrpc
+    healthCheckLog?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLog
     healthyThreshold?: int = 1
     http?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTP
     initialJitter?: str
     interval?: str = "3s"
+    overrides?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveOverrides
     tcp?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveTCP
     timeout?: str = "1s"
     $type: str
@@ -2137,12 +2886,25 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
 
     Attributes
     ----------
+    hostname : str, default is Undefined, optional
+        Hostname defines the value of the :authority header sent with active gRPC
+        health checks. Authority selection uses this order: this field, the
+        associated Backend endpoint hostname if available, then the effective Route
+        hostname. If none of them is set, Envoy falls back to the name of the
+        cluster, which is not a valid authority and is rejected by some gRPC
+        servers.
     service : str, default is Undefined, optional
         Service to send in the health check request.
         If this is not specified, then the health check request applies to the entire
         server and not to a specific service.
     """
+    hostname?: str
     service?: str
+
+    check:
+        len(hostname) <= 253 if hostname
+        len(hostname) >= 1 if hostname
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTP:
     r"""
@@ -2157,13 +2919,36 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
         ExpectedStatuses defines a list of HTTP response statuses considered healthy.
         Defaults to 200 only
     hostname : str, default is Undefined, optional
-        Hostname defines the HTTP host that will be requested during health checking.
-        Default: HTTPRoute or GRPCRoute hostname.
+        Hostname defines the HTTP Host header used for active HTTP health checks.
+        Host selection uses this order: this field, the associated Backend endpoint
+        hostname if available, then the effective Route hostname.
     method : str, default is Undefined, optional
         Method defines the HTTP method used for health checking.
         Defaults to GET
     path : str, default is Undefined, required
         Path defines the HTTP path that will be requested during health checking.
+    $protocol : str, default is "Auto", optional
+        Protocol is the HTTP protocol that active health check requests are sent with.
+
+        Defaults to Auto, which uses the same protocol as regular requests to the backend:
+
+          - HTTP2 for a backend configured for HTTP/2, through a `kubernetes.io/h2c`,
+            `gateway.envoyproxy.io/h2c` or `grpc` appProtocol, or as the backend of a
+            GRPCRoute.
+          - The protocol negotiated through ALPN for a TLS backend that negotiates it,
+            with HTTP1 as the fallback when nothing is negotiated.
+          - HTTP1 otherwise.
+
+        Set HTTP1 or HTTP2 when the health check endpoint speaks a different protocol than
+        the application, for example a backend that serves HTTP/1.1 traffic but only
+        accepts HTTP/2 health checks. An explicit protocol is always used as is.
+    requestBody : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTPRequestBody, default is Undefined, optional
+        request body
+    retriableStatuses : [int], default is Undefined, optional
+        RetriableStatuses defines a list of HTTP response statuses considered retriable.
+        Responses matching these statuses count towards the unhealthy threshold but
+        do not result in the host being considered immediately unhealthy.
+        The expected statuses take precedence for any range overlaps with this field.
     """
     expectedResponse?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTPExpectedResponse
     expectedStatuses?: [int]
@@ -2171,14 +2956,21 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
     method?: str
     path: str
 
+    $protocol?: "Auto" | "HTTP1" | "HTTP2" = "Auto"
+    requestBody?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTPRequestBody
+    retriableStatuses?: [int]
+
     check:
         all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
+        len(method) <= 16 if method
         len(path) <= 1024
         len(path) >= 1
+        all retriableStatuses in retriableStatuses {retriableStatuses <= 599 if retriableStatuses not in [None, Undefined]} if retriableStatuses
+        all retriableStatuses in retriableStatuses {retriableStatuses >= 100 if retriableStatuses not in [None, Undefined]} if retriableStatuses
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTPExpectedResponse:
     r"""
@@ -2196,6 +2988,98 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
     binary?: str
     text?: str
     $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHTTPRequestBody:
+    r"""
+    RequestBody defines the HTTP request body payload sent during health checking.
+
+    Attributes
+    ----------
+    binary : str, default is Undefined, optional
+        Binary payload base64 encoded.
+    text : str, default is Undefined, optional
+        Text payload in plain text.
+    $type : str, default is Undefined, required
+        Type defines the type of the payload.
+    """
+    binary?: str
+    text?: str
+    $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLog:
+    r"""
+    HealthCheckLog defines health check event logging configuration for this cluster.
+    When set, HC probe outcomes are logged to the configured sinks.
+    Takes precedence over the gateway-level EnvoyProxy.spec.telemetry.healthCheckLog.
+
+    Attributes
+    ----------
+    matches : [str], default is Undefined, optional
+        Matches defines which health check probe outcomes produce a log entry.
+        When omitted or empty, all events are logged.
+
+        Each value must be unique. Multiple values are ORed. If any failure type is
+        specified then a success type must also be specified, and vice versa.
+    sinks : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0], default is Undefined, optional
+        Sinks defines where health check events are written.
+        When omitted, events are written to /dev/stdout.
+    """
+    matches?: [str]
+    sinks?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0]
+
+    check:
+        len(matches) <= 4 if matches
+        len(sinks) <= 1 if sinks
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0:
+    r"""
+    ProxyHealthCheckLogSink defines a destination for health check event logs.
+
+    Attributes
+    ----------
+    file : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File, default is Undefined, optional
+        file
+    $type : str, default is Undefined, required
+        Type defines the type of sink.
+    """
+    file?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File
+    $type: "File"
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File:
+    r"""
+    File defines the file sink configuration.
+    Required when type is File.
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        Path specifies the file path for health check event output.
+        Use /dev/stdout to write to standard output.
+    """
+    path: str
+
+    check:
+        len(path) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveOverrides:
+    r"""
+    Overrides defines the configuration of the overriding health check settings for all endpoints
+    in the backend cluster. This allows customization of port and other settings that may differ
+    from the main service configuration.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, optional
+        Port overrides the health check port.
+        If not set, the endpoint's serving port is used for health checks.
+        This is useful when health checks are served on a different port than
+        the main service port (e.g., port 443 for service, port 9090 for health checks).
+    """
+    port?: int
+
+    check:
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHealthCheckActiveTCP:
     r"""
@@ -2252,6 +3136,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
 
     Attributes
     ----------
+    alwaysEjectOneEndpoint : bool, default is Undefined, optional
+        AlwaysEjectOneEndpoint defines whether at least one host should be ejected,
+        regardless of MaxEjectionPercent.
     baseEjectionTime : str, default is "30s", optional
         BaseEjectionTime defines the base duration for which a host will be ejected on consecutive failures.
     consecutive5XxErrors : int, default is 5, optional
@@ -2272,6 +3159,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
     splitExternalLocalOriginErrors : bool, default is Undefined, optional
         SplitExternalLocalOriginErrors enables splitting of errors between external and local origin.
     """
+    alwaysEjectOneEndpoint?: bool = False
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
     consecutiveGatewayErrors?: int
@@ -2286,6 +3174,35 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHe
         failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
         failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        maxEjectionPercent <= 100 if maxEjectionPercent not in [None, Undefined]
+        maxEjectionPercent >= 0 if maxEjectionPercent not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp1:
+    r"""
+    HTTP1 provides HTTP/1 configuration for backend connections.
+    When both this field and the deprecated HTTP1 field on ClientTrafficPolicy are set,
+    this field takes precedence for backend (upstream) traffic.
+
+    Behavior when targeting route kinds that do not use HTTP/1:
+      - GRPCRoute, TCPRoute, TLSRoute, UDPRoute: targeting these route kinds
+        directly adds a Warning condition on the policy; the field is ignored.
+      - Gateway / ListenerSet / sectionName targets: this field is silently
+        ignored for any GRPCRoute, TCPRoute, TLSRoute, or UDPRoute destinations
+        beneath that target; no warning is emitted.
+      - gRPC-only external services (ExtProc, gRPC ExtAuth, ALS, OpenTelemetry
+        access log/metrics, tracing providers): rejected at admission on their
+        own BackendSettings via separate validation rules.
+
+    Attributes
+    ----------
+    enableTrailers : bool, default is Undefined, optional
+        EnableTrailers defines if HTTP/1 trailers should be proxied by Envoy.
+    preserveHeaderCase : bool, default is Undefined, optional
+        PreserveHeaderCase defines if Envoy should preserve the letter case of headers.
+        By default, Envoy will lowercase all the headers.
+    """
+    enableTrailers?: bool
+    preserveHeaderCase?: bool
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2:
     r"""
@@ -2293,6 +3210,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHt
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -2308,6 +3227,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHt
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -2321,6 +3241,52 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHt
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsHttp3:
+    r"""
+    HTTP3 enables HTTP/3 for backend connections.
+    HTTP/3 always runs over TLS, so the backend must be configured
+    with TLS through a BackendTLSPolicy or the Backend's spec.tls.
+    HTTP/3 is only supported for the backends of a route, through
+    BackendTrafficPolicy. It is rejected for the backends of other
+    resources, such as the external services of a SecurityPolicy
+    or EnvoyExtensionPolicy and the sinks of an EnvoyProxy.
+
+    Attributes
+    ----------
+    mode : str, default is Undefined, optional
+        Mode determines when HTTP/3 is used to reach the backend.
+        Defaults to Auto, which only uses HTTP/3 for backends advertising it via alt-svc.
+    """
+    mode?: "Auto" | "Always"
+
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancer:
     r"""
     LoadBalancer policy to apply when routing traffic from the gateway to
@@ -2328,8 +3294,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
 
     Attributes
     ----------
+    backendUtilization : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerBackendUtilization, default is Undefined, optional
+        backend utilization
     consistentHash : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHash, default is Undefined, optional
         consistent hash
+    dynamicModule : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerDynamicModule, default is Undefined, optional
+        dynamic module
     endpointOverride : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerEndpointOverride, default is Undefined, optional
         endpoint override
     slowStart : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerSlowStart, default is Undefined, optional
@@ -2340,16 +3310,102 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
         "ConsistentHash",
         "LeastRequest",
         "Random",
-        "RoundRobin".
+        "RoundRobin",
+        "BackendUtilization",
+        "DynamicModule".
     zoneAware : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAware, default is Undefined, optional
         zone aware
     """
+    backendUtilization?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerBackendUtilization
     consistentHash?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHash
+    dynamicModule?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerDynamicModule
     endpointOverride?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerEndpointOverride
     slowStart?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerSlowStart
-    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin"
+    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin" | "BackendUtilization" | "DynamicModule"
 
     zoneAware?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAware
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerBackendUtilization:
+    r"""
+    BackendUtilization defines the configuration when the load balancer type is
+    set to BackendUtilization.
+
+    Attributes
+    ----------
+    blackoutPeriod : str, default is Undefined, optional
+        A given endpoint must report load metrics continuously for at least this long before the endpoint weight will be used.
+        Default is 10s.
+    errorUtilizationPenaltyPercent : int, default is Undefined, optional
+        ErrorUtilizationPenaltyPercent adjusts endpoint weights based on the error rate (eps/qps).
+        This is expressed as a percentage-based integer where 100 represents 1.0, 150 represents 1.5, etc.
+
+        For example:
+        - 100 => 1.0x
+        - 120 => 1.2x
+        - 200 => 2.0x
+
+        Must be non-negative.
+    keepResponseHeaders : bool, default is Undefined, optional
+        KeepResponseHeaders keeps the ORCA load report headers/trailers before sending the response to the client.
+        Defaults to false.
+    metricNamesForComputingUtilization : [str], default is Undefined, optional
+        Metric names used to compute utilization if application_utilization is not set.
+        For map fields in ORCA proto, use the form "<map_field>.<key>", e.g., "named_metrics.foo".
+    outOfBand : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerBackendUtilizationOutOfBand, default is Undefined, optional
+        out of band
+    weightExpirationPeriod : str, default is Undefined, optional
+        If a given endpoint has not reported load metrics in this long, stop using the reported weight. Defaults to 3m.
+    weightUpdatePeriod : str, default is Undefined, optional
+        How often endpoint weights are recalculated. Values less than 100ms are capped at 100ms. Default 1s.
+    """
+    blackoutPeriod?: str
+    errorUtilizationPenaltyPercent?: int
+    keepResponseHeaders?: bool = False
+    metricNamesForComputingUtilization?: [str]
+    outOfBand?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerBackendUtilizationOutOfBand
+    weightExpirationPeriod?: str
+    weightUpdatePeriod?: str
+
+    check:
+        _regex_match(str(blackoutPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if blackoutPeriod
+        errorUtilizationPenaltyPercent >= 0 if errorUtilizationPenaltyPercent not in [None, Undefined]
+        _regex_match(str(weightExpirationPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightExpirationPeriod
+        _regex_match(str(weightUpdatePeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightUpdatePeriod
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerBackendUtilizationOutOfBand:
+    r"""
+    OutOfBand enables out-of-band ORCA load reporting. When set, Envoy opens a
+    server-streaming gRPC connection to each endpoint's
+    xds.service.orca.v3.OpenRcaService/StreamCoreMetrics and pulls load
+    reports periodically, instead of relying on in-band ORCA metrics
+    carried in response headers/trailers.
+
+    The backend must implement OpenRcaService for this to take effect.
+
+    Attributes
+    ----------
+    authority : str, default is Undefined, optional
+        Authority overrides the :authority header on the OutOfBand gRPC stream.
+        If unset, Envoy uses the endpoint hostname, then the dialed address, then
+        the cluster name.
+    port : int, default is Undefined, optional
+        Port overrides the port used for the OutOfBand reporting connection, e.g. to
+        reach a separate reporting sidecar. Defaults to the endpoint's port.
+    reportingPeriod : str, default is Undefined, optional
+        ReportingPeriod is how often Envoy requests load reports from the server.
+        Must be greater than 0. Defaults to 10s.
+    """
+    authority?: str
+    port?: int
+    reportingPeriod?: str
+
+    check:
+        len(authority) <= 259 if authority
+        len(authority) >= 1 if authority
+        _regex_match(str(authority), r"^[^\x00\n\r]*$") if authority
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+        _regex_match(str(reportingPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if reportingPeriod
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerConsistentHash:
     r"""
@@ -2417,7 +3473,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
 
-    Deprecated: use Headers instead
+    Deprecated: use Headers instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -2449,6 +3505,40 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
         Name of the query param to hash.
     """
     name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerDynamicModule:
+    r"""
+    DynamicModule defines the configuration when the load balancer type is
+    set to DynamicModule. The referenced module must be registered in the
+    EnvoyProxy resource's dynamicModules allowlist.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is optional configuration for the module's load balancer
+        implementation. This is serialized and passed to the module's
+        initialization function.
+    lbPolicyName : str, default is Undefined, required
+        LBPolicyName identifies a specific load balancer implementation within
+        the dynamic module. A single shared library can contain multiple LB
+        policy implementations. This value is passed to the module's
+        initialization function to select the appropriate implementation.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    """
+    config?: any
+    lbPolicyName: str
+
+    name: str
+
+    check:
+        len(lbPolicyName) <= 253
+        len(lbPolicyName) >= 1
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerEndpointOverride:
     r"""
@@ -2486,7 +3576,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
     r"""
     SlowStart defines the configuration related to the slow start load balancer policy.
     If set, during slow start window, traffic sent to the newly added hosts will gradually increase.
-    Currently this is only supported for RoundRobin and LeastRequest load balancers
+    Supported for RoundRobin, LeastRequest, and BackendUtilization load balancers.
 
     Attributes
     ----------
@@ -2509,8 +3599,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
     ----------
     preferLocal : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocal, default is Undefined, optional
         prefer local
+    weightedZones : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0], default is Undefined, optional
+        WeightedZones configures weight-based traffic distribution across locality zones.
+        Traffic is distributed proportionally based on the sum of all zone weights.
     """
     preferLocal?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocal
+    weightedZones?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocal:
     r"""
@@ -2518,6 +3612,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
 
     Attributes
     ----------
+    failTrafficOnPanic : bool, default is Undefined, optional
+        FailTrafficOnPanic rejects traffic instead of routing to all endpoints when the
+        cluster is in panic mode. Panic mode is entered when the share of healthy endpoints
+        drops below HealthCheck.PanicThreshold, and by default Envoy then load balances
+        across every endpoint, healthy or not. Setting this to true makes Envoy fail the
+        requests instead, applying backpressure to clients and giving the backend room to
+        recover.
+        Defaults to false.
     force : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocalForce, default is Undefined, optional
         force
     minEndpointsThreshold : int, default is Undefined, optional
@@ -2525,6 +3627,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
     percentageEnabled : int, default is Undefined, optional
         Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
+    failTrafficOnPanic?: bool
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
     percentageEnabled?: int
@@ -2546,6 +3649,26 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLo
     """
     minEndpointsInZoneThreshold?: int
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0:
+    r"""
+    WeightedZoneConfig defines the weight for a specific locality zone.
+
+    Attributes
+    ----------
+    weight : int, default is Undefined, required
+        Weight defines the weight for this locality.
+        Higher values receive more traffic. The actual traffic distribution
+        is proportional to this value relative to other localities.
+    zone : str, default is Undefined, required
+        Zone specifies the topology zone this weight applies to.
+        The value should match the topology.kubernetes.io/zone label
+        of the nodes where endpoints are running.
+        Zones not listed in the configuration receive a default weight of 1.
+    """
+    weight: int
+
+    zone: str
+
 protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsProxyProtocol:
     r"""
     ProxyProtocol enables the Proxy Protocol when communicating with the backend.
@@ -2553,7 +3676,7 @@ protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettings
     Attributes
     ----------
     version : str, default is Undefined, required
-        Version of ProxyProtol
+        Version of ProxyProtocol
         Valid ProxyProtocolVersion values are
         "V1"
         "V2"
@@ -2706,17 +3829,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsTi
         When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
+    streamIdleTimeout : str, default is Undefined, optional
+         The stream idle timeout defines the amount of time a stream can exist without any upstream or downstream activity.
+         If not specified, StreamIdleTimeout is inherited from the listener-level setting, which can be configured via ClientTrafficPolicy.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
     maxStreamDuration?: str
     requestTimeout?: str
+    streamIdleTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
+        _regex_match(str(streamIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if streamIdleTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecExtAuthHTTPBackendSettingsTimeoutTCP:
     r"""
@@ -2739,21 +3867,36 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwt:
 
     Attributes
     ----------
+    failOpen : bool, default is Undefined, optional
+        FailOpen lets a request pass JWT authentication even when its JWT is
+        missing or invalid, rather than being rejected. This helps when a header
+        that clients use to carry a JWT may also legitimately hold a non-JWT value
+        that the backend relies on.
+
+        A valid JWT is still verified and its claims forwarded as usual; only the
+        rejection of requests with a missing or invalid JWT is relaxed. Because this
+        does not enforce authentication on its own, pair it with an Authorization
+        policy when access needs to be restricted.
+
+        This is broader than Optional (which tolerates a missing JWT but still
+        rejects an invalid one) and takes precedence over it.
     optional : bool, default is Undefined, optional
         Optional determines whether a missing JWT is acceptable, defaulting to false if not specified.
-        Note: Even if optional is set to true, JWT authentication will still fail if an invalid JWT is presented.
+        Note: Even if optional is set to true, JWT authentication will still fail if an invalid JWT
+        is presented. See FailOpen if this is necessary for your use case.
     providers : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0], default is Undefined, required
         Providers defines the JSON Web Token (JWT) authentication provider type.
         When multiple JWT providers are specified, the JWT is considered valid if
         any of the providers successfully validate the JWT. For additional details,
         see https://www.envoyproxy.io/docs/envoy/latest/configuration/http/http_filters/jwt_authn_filter.html.
     """
+    failOpen?: bool
     optional?: bool
     providers: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0]
 
     check:
         len(providers) >= 1
-        len(providers) <= 4
+        len(providers) <= 16
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0:
     r"""
@@ -2811,16 +3954,43 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0ClaimToHea
 
     Attributes
     ----------
-    claim : str, default is Undefined, required
+    claim : str, default is Undefined, optional
         Claim is the JWT Claim that should be saved into the header : it can be a nested claim of type
         (eg. "claim.nested.key", "sub"). The nested claim name must use dot "."
         to separate the JSON name path.
+
+        Because the name is always split on ".", a claim whose own name contains a dot -- a
+        URI-namespaced claim such as "https://example.com/claims/tenant_name" commonly emitted by
+        OIDC providers -- cannot be addressed this way. Use ClaimPath for those claims instead.
+
+        Exactly one of Claim or ClaimPath must be specified.
+    claimPath : [str], default is Undefined, optional
+        ClaimPath is the path to the claim to copy, given as an explicit list of segments. Each
+        segment is matched in full against a key of the enclosing JSON object, so claim names
+        containing dots are addressable. For example, a top-level claim named
+        "https://example.com/claims/tenant_name" is selected with:
+
+        	claimPath:
+        	- "https://example.com/claims/tenant_name"
+
+        and a nested claim `{"nested": {"claim": {"key": "value"}}}` is selected with:
+
+        	claimPath:
+        	- nested
+        	- claim
+        	- key
+
+        Exactly one of Claim or ClaimPath must be specified.
     header : str, default is Undefined, required
         Header defines the name of the HTTP request header that the JWT Claim will be saved into.
     """
-    claim: str
-
+    claim?: str
+    claimPath?: [str]
     header: str
+
+    check:
+        len(claimPath) >= 1 if claimPath
+        all claimPath in claimPath {len(claimPath) >= 1 if claimPath not in [None, Undefined]} if claimPath
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0ExtractFrom:
     r"""
@@ -2926,6 +4096,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     cacheDuration : str, default is "300s", optional
         Duration is a string value representing a duration in time. The format is as specified
         in GEP-2257, a strict subset of the syntax parsed by Golang time.ParseDuration.
+    failedRefetchDuration : str, default is Undefined, optional
+        FailedRefetchDuration is the duration Envoy waits before re-fetching the JWKS
+        after a failed fetch.
+        This does not control retries within a single fetch attempt (see BackendSettings.Retry),
+        only the interval between fetch attempts after a failure.
+        If not specified, Envoy's default of 1 second is used.
     uri : str, default is Undefined, required
         URI is the HTTPS URI to fetch the JWKS. Envoy's system trust bundle is used to validate the server certificate.
         If a custom trust bundle is needed, it can be specified in a BackendTLSConfig resource and target the BackendRefs.
@@ -2934,11 +4110,13 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     backendRefs?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendRefsItems0]
     backendSettings?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettings
     cacheDuration?: str = "300s"
+    failedRefetchDuration?: str
     uri: str
 
     check:
         len(backendRefs) <= 16 if backendRefs
         _regex_match(str(cacheDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if cacheDuration
+        _regex_match(str(failedRefetchDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if failedRefetchDuration
         len(uri) <= 253
         len(uri) >= 1
 
@@ -2947,7 +4125,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     BackendRef references a Kubernetes object that represents the
     backend server to which the authorization request will be sent.
 
-    Deprecated: Use BackendRefs instead.
+    Deprecated: Use BackendRefs instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -3113,8 +4291,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         dns
     healthCheck : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheck, default is Undefined, optional
         health check
+    http1 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp1, default is Undefined, optional
+        http1
     http2 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2, default is Undefined, optional
         http2
+    http3 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp3, default is Undefined, optional
+        http3
     loadBalancer : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancer, default is Undefined, optional
         load balancer
     proxyProtocol : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsProxyProtocol, default is Undefined, optional
@@ -3130,7 +4312,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     connection?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsConnection
     dns?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsDNS
     healthCheck?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheck
+    http1?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp1
     http2?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2
+    http3?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp3
     loadBalancer?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancer
     proxyProtocol?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsProxyProtocol
     retry?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsRetry
@@ -3157,6 +4341,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         Default: unlimited.
     perEndpoint : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerPerEndpoint, default is Undefined, optional
         per endpoint
+    retryBudget : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerRetryBudget, default is Undefined, optional
+        retry budget
     """
     maxConnections?: int = 1024
     maxParallelRequests?: int = 1024
@@ -3164,6 +4350,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     maxPendingRequests?: int = 1024
     maxRequestsPerConnection?: int
     perEndpoint?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerPerEndpoint
+    retryBudget?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerRetryBudget
 
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
@@ -3191,6 +4378,45 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
         maxConnections >= 0 if maxConnections not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerRetryBudget:
+    r"""
+    RetryBudget provides settings for retry budget, which limits the number of retries in a given percentage.
+    RetryBudget take precedence over maxParallelRetries.
+
+    Attributes
+    ----------
+    minRetryConcurrency : int, default is Undefined, optional
+        MinRetryConcurrency specifies the minimum retry concurrency allowed for the retry budget.
+        For example, a budget of 20% with a minimum retry concurrency of 3
+        will allow 5 active retries while there are 25 active requests.
+        If there are 2 active requests, there are still 3 active retries
+        allowed because of the minimum retry concurrency.
+        Defaults to 3.
+    percent : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerRetryBudgetPercent, default is Undefined, required
+        percent
+    """
+    minRetryConcurrency?: int
+    percent: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerRetryBudgetPercent
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsCircuitBreakerRetryBudgetPercent:
+    r"""
+    Percent specifies the limit on concurrent retries as a percentage [0, 100] of
+    the sum of active requests and active pending requests.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsConnection:
     r"""
@@ -3313,8 +4539,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     Attributes
     ----------
+    disableConnectionReuse : bool, default is Undefined, optional
+        DisableConnectionReuse determines whether the active health check connection to a
+        backend host is closed after each health check probe. When set to true, Envoy opens a
+        new connection for each health check, which is useful for backends (such as
+        haproxy-style agent checks) that do not expect a reused connection.
+        Defaults to false, which reuses the connection across probes.
     grpc : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveGrpc, default is Undefined, optional
         grpc
+    healthCheckLog : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLog, default is Undefined, optional
+        health check log
     healthyThreshold : int, default is 1, optional
         HealthyThreshold defines the number of healthy health checks required before a backend host is marked healthy.
     http : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTP, default is Undefined, optional
@@ -3324,6 +4558,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         Envoy will randomly select a value between 0 and the initial jitter value.
     interval : str, default is "3s", optional
         Interval defines the time between active health checks.
+    overrides : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveOverrides, default is Undefined, optional
+        overrides
     tcp : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveTCP, default is Undefined, optional
         tcp
     timeout : str, default is "1s", optional
@@ -3332,12 +4568,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         Type defines the type of health checker.
     unhealthyThreshold : int, default is 3, optional
         UnhealthyThreshold defines the number of unhealthy health checks required before a backend host is marked unhealthy.
+        Without RetriableStatuses configured, any health check failure results in the host being immediately
+        considered unhealthy. When RetriableStatuses is set, health checks returning those statuses are retried
+        up to this threshold before the host is marked unhealthy.
     """
+    disableConnectionReuse?: bool
     grpc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveGrpc
+    healthCheckLog?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLog
     healthyThreshold?: int = 1
     http?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTP
     initialJitter?: str
     interval?: str = "3s"
+    overrides?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveOverrides
     tcp?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveTCP
     timeout?: str = "1s"
     $type: str
@@ -3358,12 +4600,25 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     Attributes
     ----------
+    hostname : str, default is Undefined, optional
+        Hostname defines the value of the :authority header sent with active gRPC
+        health checks. Authority selection uses this order: this field, the
+        associated Backend endpoint hostname if available, then the effective Route
+        hostname. If none of them is set, Envoy falls back to the name of the
+        cluster, which is not a valid authority and is rejected by some gRPC
+        servers.
     service : str, default is Undefined, optional
         Service to send in the health check request.
         If this is not specified, then the health check request applies to the entire
         server and not to a specific service.
     """
+    hostname?: str
     service?: str
+
+    check:
+        len(hostname) <= 253 if hostname
+        len(hostname) >= 1 if hostname
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTP:
     r"""
@@ -3378,13 +4633,36 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         ExpectedStatuses defines a list of HTTP response statuses considered healthy.
         Defaults to 200 only
     hostname : str, default is Undefined, optional
-        Hostname defines the HTTP host that will be requested during health checking.
-        Default: HTTPRoute or GRPCRoute hostname.
+        Hostname defines the HTTP Host header used for active HTTP health checks.
+        Host selection uses this order: this field, the associated Backend endpoint
+        hostname if available, then the effective Route hostname.
     method : str, default is Undefined, optional
         Method defines the HTTP method used for health checking.
         Defaults to GET
     path : str, default is Undefined, required
         Path defines the HTTP path that will be requested during health checking.
+    $protocol : str, default is "Auto", optional
+        Protocol is the HTTP protocol that active health check requests are sent with.
+
+        Defaults to Auto, which uses the same protocol as regular requests to the backend:
+
+          - HTTP2 for a backend configured for HTTP/2, through a `kubernetes.io/h2c`,
+            `gateway.envoyproxy.io/h2c` or `grpc` appProtocol, or as the backend of a
+            GRPCRoute.
+          - The protocol negotiated through ALPN for a TLS backend that negotiates it,
+            with HTTP1 as the fallback when nothing is negotiated.
+          - HTTP1 otherwise.
+
+        Set HTTP1 or HTTP2 when the health check endpoint speaks a different protocol than
+        the application, for example a backend that serves HTTP/1.1 traffic but only
+        accepts HTTP/2 health checks. An explicit protocol is always used as is.
+    requestBody : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTPRequestBody, default is Undefined, optional
+        request body
+    retriableStatuses : [int], default is Undefined, optional
+        RetriableStatuses defines a list of HTTP response statuses considered retriable.
+        Responses matching these statuses count towards the unhealthy threshold but
+        do not result in the host being considered immediately unhealthy.
+        The expected statuses take precedence for any range overlaps with this field.
     """
     expectedResponse?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTPExpectedResponse
     expectedStatuses?: [int]
@@ -3392,14 +4670,21 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     method?: str
     path: str
 
+    $protocol?: "Auto" | "HTTP1" | "HTTP2" = "Auto"
+    requestBody?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTPRequestBody
+    retriableStatuses?: [int]
+
     check:
         all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
+        len(method) <= 16 if method
         len(path) <= 1024
         len(path) >= 1
+        all retriableStatuses in retriableStatuses {retriableStatuses <= 599 if retriableStatuses not in [None, Undefined]} if retriableStatuses
+        all retriableStatuses in retriableStatuses {retriableStatuses >= 100 if retriableStatuses not in [None, Undefined]} if retriableStatuses
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTPExpectedResponse:
     r"""
@@ -3417,6 +4702,98 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     binary?: str
     text?: str
     $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHTTPRequestBody:
+    r"""
+    RequestBody defines the HTTP request body payload sent during health checking.
+
+    Attributes
+    ----------
+    binary : str, default is Undefined, optional
+        Binary payload base64 encoded.
+    text : str, default is Undefined, optional
+        Text payload in plain text.
+    $type : str, default is Undefined, required
+        Type defines the type of the payload.
+    """
+    binary?: str
+    text?: str
+    $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLog:
+    r"""
+    HealthCheckLog defines health check event logging configuration for this cluster.
+    When set, HC probe outcomes are logged to the configured sinks.
+    Takes precedence over the gateway-level EnvoyProxy.spec.telemetry.healthCheckLog.
+
+    Attributes
+    ----------
+    matches : [str], default is Undefined, optional
+        Matches defines which health check probe outcomes produce a log entry.
+        When omitted or empty, all events are logged.
+
+        Each value must be unique. Multiple values are ORed. If any failure type is
+        specified then a success type must also be specified, and vice versa.
+    sinks : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0], default is Undefined, optional
+        Sinks defines where health check events are written.
+        When omitted, events are written to /dev/stdout.
+    """
+    matches?: [str]
+    sinks?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0]
+
+    check:
+        len(matches) <= 4 if matches
+        len(sinks) <= 1 if sinks
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0:
+    r"""
+    ProxyHealthCheckLogSink defines a destination for health check event logs.
+
+    Attributes
+    ----------
+    file : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File, default is Undefined, optional
+        file
+    $type : str, default is Undefined, required
+        Type defines the type of sink.
+    """
+    file?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File
+    $type: "File"
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File:
+    r"""
+    File defines the file sink configuration.
+    Required when type is File.
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        Path specifies the file path for health check event output.
+        Use /dev/stdout to write to standard output.
+    """
+    path: str
+
+    check:
+        len(path) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveOverrides:
+    r"""
+    Overrides defines the configuration of the overriding health check settings for all endpoints
+    in the backend cluster. This allows customization of port and other settings that may differ
+    from the main service configuration.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, optional
+        Port overrides the health check port.
+        If not set, the endpoint's serving port is used for health checks.
+        This is useful when health checks are served on a different port than
+        the main service port (e.g., port 443 for service, port 9090 for health checks).
+    """
+    port?: int
+
+    check:
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHealthCheckActiveTCP:
     r"""
@@ -3473,6 +4850,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     Attributes
     ----------
+    alwaysEjectOneEndpoint : bool, default is Undefined, optional
+        AlwaysEjectOneEndpoint defines whether at least one host should be ejected,
+        regardless of MaxEjectionPercent.
     baseEjectionTime : str, default is "30s", optional
         BaseEjectionTime defines the base duration for which a host will be ejected on consecutive failures.
     consecutive5XxErrors : int, default is 5, optional
@@ -3493,6 +4873,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     splitExternalLocalOriginErrors : bool, default is Undefined, optional
         SplitExternalLocalOriginErrors enables splitting of errors between external and local origin.
     """
+    alwaysEjectOneEndpoint?: bool = False
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
     consecutiveGatewayErrors?: int
@@ -3507,6 +4888,35 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
         failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        maxEjectionPercent <= 100 if maxEjectionPercent not in [None, Undefined]
+        maxEjectionPercent >= 0 if maxEjectionPercent not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp1:
+    r"""
+    HTTP1 provides HTTP/1 configuration for backend connections.
+    When both this field and the deprecated HTTP1 field on ClientTrafficPolicy are set,
+    this field takes precedence for backend (upstream) traffic.
+
+    Behavior when targeting route kinds that do not use HTTP/1:
+      - GRPCRoute, TCPRoute, TLSRoute, UDPRoute: targeting these route kinds
+        directly adds a Warning condition on the policy; the field is ignored.
+      - Gateway / ListenerSet / sectionName targets: this field is silently
+        ignored for any GRPCRoute, TCPRoute, TLSRoute, or UDPRoute destinations
+        beneath that target; no warning is emitted.
+      - gRPC-only external services (ExtProc, gRPC ExtAuth, ALS, OpenTelemetry
+        access log/metrics, tracing providers): rejected at admission on their
+        own BackendSettings via separate validation rules.
+
+    Attributes
+    ----------
+    enableTrailers : bool, default is Undefined, optional
+        EnableTrailers defines if HTTP/1 trailers should be proxied by Envoy.
+    preserveHeaderCase : bool, default is Undefined, optional
+        PreserveHeaderCase defines if Envoy should preserve the letter case of headers.
+        By default, Envoy will lowercase all the headers.
+    """
+    enableTrailers?: bool
+    preserveHeaderCase?: bool
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2:
     r"""
@@ -3514,6 +4924,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -3529,6 +4941,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -3542,6 +4955,52 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsHttp3:
+    r"""
+    HTTP3 enables HTTP/3 for backend connections.
+    HTTP/3 always runs over TLS, so the backend must be configured
+    with TLS through a BackendTLSPolicy or the Backend's spec.tls.
+    HTTP/3 is only supported for the backends of a route, through
+    BackendTrafficPolicy. It is rejected for the backends of other
+    resources, such as the external services of a SecurityPolicy
+    or EnvoyExtensionPolicy and the sinks of an EnvoyProxy.
+
+    Attributes
+    ----------
+    mode : str, default is Undefined, optional
+        Mode determines when HTTP/3 is used to reach the backend.
+        Defaults to Auto, which only uses HTTP/3 for backends advertising it via alt-svc.
+    """
+    mode?: "Auto" | "Always"
+
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancer:
     r"""
     LoadBalancer policy to apply when routing traffic from the gateway to
@@ -3549,8 +5008,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     Attributes
     ----------
+    backendUtilization : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerBackendUtilization, default is Undefined, optional
+        backend utilization
     consistentHash : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHash, default is Undefined, optional
         consistent hash
+    dynamicModule : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerDynamicModule, default is Undefined, optional
+        dynamic module
     endpointOverride : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerEndpointOverride, default is Undefined, optional
         endpoint override
     slowStart : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerSlowStart, default is Undefined, optional
@@ -3561,16 +5024,102 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         "ConsistentHash",
         "LeastRequest",
         "Random",
-        "RoundRobin".
+        "RoundRobin",
+        "BackendUtilization",
+        "DynamicModule".
     zoneAware : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAware, default is Undefined, optional
         zone aware
     """
+    backendUtilization?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerBackendUtilization
     consistentHash?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHash
+    dynamicModule?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerDynamicModule
     endpointOverride?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerEndpointOverride
     slowStart?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerSlowStart
-    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin"
+    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin" | "BackendUtilization" | "DynamicModule"
 
     zoneAware?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAware
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerBackendUtilization:
+    r"""
+    BackendUtilization defines the configuration when the load balancer type is
+    set to BackendUtilization.
+
+    Attributes
+    ----------
+    blackoutPeriod : str, default is Undefined, optional
+        A given endpoint must report load metrics continuously for at least this long before the endpoint weight will be used.
+        Default is 10s.
+    errorUtilizationPenaltyPercent : int, default is Undefined, optional
+        ErrorUtilizationPenaltyPercent adjusts endpoint weights based on the error rate (eps/qps).
+        This is expressed as a percentage-based integer where 100 represents 1.0, 150 represents 1.5, etc.
+
+        For example:
+        - 100 => 1.0x
+        - 120 => 1.2x
+        - 200 => 2.0x
+
+        Must be non-negative.
+    keepResponseHeaders : bool, default is Undefined, optional
+        KeepResponseHeaders keeps the ORCA load report headers/trailers before sending the response to the client.
+        Defaults to false.
+    metricNamesForComputingUtilization : [str], default is Undefined, optional
+        Metric names used to compute utilization if application_utilization is not set.
+        For map fields in ORCA proto, use the form "<map_field>.<key>", e.g., "named_metrics.foo".
+    outOfBand : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerBackendUtilizationOutOfBand, default is Undefined, optional
+        out of band
+    weightExpirationPeriod : str, default is Undefined, optional
+        If a given endpoint has not reported load metrics in this long, stop using the reported weight. Defaults to 3m.
+    weightUpdatePeriod : str, default is Undefined, optional
+        How often endpoint weights are recalculated. Values less than 100ms are capped at 100ms. Default 1s.
+    """
+    blackoutPeriod?: str
+    errorUtilizationPenaltyPercent?: int
+    keepResponseHeaders?: bool = False
+    metricNamesForComputingUtilization?: [str]
+    outOfBand?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerBackendUtilizationOutOfBand
+    weightExpirationPeriod?: str
+    weightUpdatePeriod?: str
+
+    check:
+        _regex_match(str(blackoutPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if blackoutPeriod
+        errorUtilizationPenaltyPercent >= 0 if errorUtilizationPenaltyPercent not in [None, Undefined]
+        _regex_match(str(weightExpirationPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightExpirationPeriod
+        _regex_match(str(weightUpdatePeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightUpdatePeriod
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerBackendUtilizationOutOfBand:
+    r"""
+    OutOfBand enables out-of-band ORCA load reporting. When set, Envoy opens a
+    server-streaming gRPC connection to each endpoint's
+    xds.service.orca.v3.OpenRcaService/StreamCoreMetrics and pulls load
+    reports periodically, instead of relying on in-band ORCA metrics
+    carried in response headers/trailers.
+
+    The backend must implement OpenRcaService for this to take effect.
+
+    Attributes
+    ----------
+    authority : str, default is Undefined, optional
+        Authority overrides the :authority header on the OutOfBand gRPC stream.
+        If unset, Envoy uses the endpoint hostname, then the dialed address, then
+        the cluster name.
+    port : int, default is Undefined, optional
+        Port overrides the port used for the OutOfBand reporting connection, e.g. to
+        reach a separate reporting sidecar. Defaults to the endpoint's port.
+    reportingPeriod : str, default is Undefined, optional
+        ReportingPeriod is how often Envoy requests load reports from the server.
+        Must be greater than 0. Defaults to 10s.
+    """
+    authority?: str
+    port?: int
+    reportingPeriod?: str
+
+    check:
+        len(authority) <= 259 if authority
+        len(authority) >= 1 if authority
+        _regex_match(str(authority), r"^[^\x00\n\r]*$") if authority
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+        _regex_match(str(reportingPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if reportingPeriod
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerConsistentHash:
     r"""
@@ -3638,7 +5187,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
 
-    Deprecated: use Headers instead
+    Deprecated: use Headers instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -3670,6 +5219,40 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         Name of the query param to hash.
     """
     name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerDynamicModule:
+    r"""
+    DynamicModule defines the configuration when the load balancer type is
+    set to DynamicModule. The referenced module must be registered in the
+    EnvoyProxy resource's dynamicModules allowlist.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is optional configuration for the module's load balancer
+        implementation. This is serialized and passed to the module's
+        initialization function.
+    lbPolicyName : str, default is Undefined, required
+        LBPolicyName identifies a specific load balancer implementation within
+        the dynamic module. A single shared library can contain multiple LB
+        policy implementations. This value is passed to the module's
+        initialization function to select the appropriate implementation.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    """
+    config?: any
+    lbPolicyName: str
+
+    name: str
+
+    check:
+        len(lbPolicyName) <= 253
+        len(lbPolicyName) >= 1
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerEndpointOverride:
     r"""
@@ -3707,7 +5290,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     r"""
     SlowStart defines the configuration related to the slow start load balancer policy.
     If set, during slow start window, traffic sent to the newly added hosts will gradually increase.
-    Currently this is only supported for RoundRobin and LeastRequest load balancers
+    Supported for RoundRobin, LeastRequest, and BackendUtilization load balancers.
 
     Attributes
     ----------
@@ -3730,8 +5313,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     ----------
     preferLocal : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocal, default is Undefined, optional
         prefer local
+    weightedZones : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0], default is Undefined, optional
+        WeightedZones configures weight-based traffic distribution across locality zones.
+        Traffic is distributed proportionally based on the sum of all zone weights.
     """
     preferLocal?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocal
+    weightedZones?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocal:
     r"""
@@ -3739,6 +5326,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
 
     Attributes
     ----------
+    failTrafficOnPanic : bool, default is Undefined, optional
+        FailTrafficOnPanic rejects traffic instead of routing to all endpoints when the
+        cluster is in panic mode. Panic mode is entered when the share of healthy endpoints
+        drops below HealthCheck.PanicThreshold, and by default Envoy then load balances
+        across every endpoint, healthy or not. Setting this to true makes Envoy fail the
+        requests instead, applying backpressure to clients and giving the backend room to
+        recover.
+        Defaults to false.
     force : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocalForce, default is Undefined, optional
         force
     minEndpointsThreshold : int, default is Undefined, optional
@@ -3746,6 +5341,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     percentageEnabled : int, default is Undefined, optional
         Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
+    failTrafficOnPanic?: bool
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
     percentageEnabled?: int
@@ -3767,6 +5363,26 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
     """
     minEndpointsInZoneThreshold?: int
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0:
+    r"""
+    WeightedZoneConfig defines the weight for a specific locality zone.
+
+    Attributes
+    ----------
+    weight : int, default is Undefined, required
+        Weight defines the weight for this locality.
+        Higher values receive more traffic. The actual traffic distribution
+        is proportional to this value relative to other localities.
+    zone : str, default is Undefined, required
+        Zone specifies the topology zone this weight applies to.
+        The value should match the topology.kubernetes.io/zone label
+        of the nodes where endpoints are running.
+        Zones not listed in the configuration receive a default weight of 1.
+    """
+    weight: int
+
+    zone: str
+
 protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsProxyProtocol:
     r"""
     ProxyProtocol enables the Proxy Protocol when communicating with the backend.
@@ -3774,7 +5390,7 @@ protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJW
     Attributes
     ----------
     version : str, default is Undefined, required
-        Version of ProxyProtol
+        Version of ProxyProtocol
         Valid ProxyProtocolVersion values are
         "V1"
         "V2"
@@ -3927,17 +5543,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKS
         When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
+    streamIdleTimeout : str, default is Undefined, optional
+         The stream idle timeout defines the amount of time a stream can exist without any upstream or downstream activity.
+         If not specified, StreamIdleTimeout is inherited from the listener-level setting, which can be configured via ClientTrafficPolicy.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
     maxStreamDuration?: str
     requestTimeout?: str
+    streamIdleTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
+        _regex_match(str(streamIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if streamIdleTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecJwtProvidersItems0RemoteJWKSBackendSettingsTimeoutTCP:
     r"""
@@ -3969,6 +5590,21 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
         client ID ref
     clientSecret : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcClientSecret, default is Undefined, required
         client secret
+    codeVerifierTTL : str, default is Undefined, optional
+        CodeVerifierTTL defines how long the PKCE code verifier generated during the OAuth2
+        authorization flow remains valid.
+
+        This duration determines the lifetime of the code verifier cookie, which is exchanged
+        for the access token when the provider redirects back to the callback endpoint.
+
+        Both this cookie and the CSRF cookie are only consumed on the callback endpoint, so an
+        authorization flow that is started but never completed leaves them behind until they
+        expire. Lowering this value along with csrfTokenTTL bounds how many such cookies a
+        browser can accumulate. It must stay long enough for a user to complete the login,
+        including any multi-factor prompt: once it elapses the browser drops the cookie and
+        the callback fails.
+
+        If omitted, Envoy Gateway defaults the code verifier expiration to 10 minutes.
     cookieConfig : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieConfig, default is Undefined, optional
         cookie config
     cookieDomain : str, default is Undefined, optional
@@ -4011,6 +5647,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
         ForwardAccessToken indicates whether the Envoy should forward the access token
         via the Authorization header Bearer scheme to the upstream.
         If not specified, defaults to false.
+    forwardIDToken : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcForwardIDToken, default is Undefined, optional
+        forward ID token
     logoutPath : str, default is Undefined, optional
         The path to log a user out, clearing their credential cookies.
 
@@ -4023,6 +5661,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
         redirects and wish to directly supply a token instead.
 
         If not specified, defaults to false.
+    postLogoutRedirect : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcPostLogoutRedirect, default is Undefined, optional
+        post logout redirect
     provider : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProvider, default is Undefined, required
         provider
     redirectURL : str, default is Undefined, optional
@@ -4049,6 +5689,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
     clientIDRef?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcClientIDRef
     clientSecret: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcClientSecret
 
+    codeVerifierTTL?: str
     cookieConfig?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieConfig
     cookieDomain?: str
     cookieNames?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieNames
@@ -4058,8 +5699,10 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
     denyRedirect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcDenyRedirect
     disableTokenEncryption?: bool
     forwardAccessToken?: bool
+    forwardIDToken?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcForwardIDToken
     logoutPath?: str
     passThroughAuthHeader?: bool
+    postLogoutRedirect?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcPostLogoutRedirect
     provider: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProvider
 
     redirectURL?: str
@@ -4069,7 +5712,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidc:
 
     check:
         len(clientID) >= 1 if clientID
-        _regex_match(str(cookieDomain), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9]))*$") if cookieDomain
+        _regex_match(str(codeVerifierTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if codeVerifierTTL
+        _regex_match(str(cookieDomain), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if cookieDomain
         _regex_match(str(csrfTokenTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if csrfTokenTTL
         _regex_match(str(defaultRefreshTokenTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if defaultRefreshTokenTTL
         _regex_match(str(defaultTokenTTL), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if defaultTokenTTL
@@ -4181,23 +5825,79 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieConfig:
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcCookieNames:
     r"""
-    The optional cookie name overrides to be used for Bearer and IdToken cookies in the
+    CookieNames configures the names of the cookies that Envoy sets for the
     [Authentication Request](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest).
-    If not specified, uses a randomly generated suffix
+
+    By default, every cookie is named "<Purpose>-<suffix>", where the suffix is
+    derived from the identity of this SecurityPolicy. Set "suffix" to pin that
+    suffix for all cookies at once, or set a per-cookie field to name a single
+    cookie outright.
 
     Attributes
     ----------
     accessToken : str, default is Undefined, optional
         The name of the cookie used to store the AccessToken in the
         [Authentication Request](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest).
-        If not specified, defaults to "AccessToken-(randomly generated uid)"
+        If not specified, defaults to "AccessToken-<suffix>", see the "suffix" field.
+    codeVerifier : str, default is Undefined, optional
+        The name of the cookie used to store the PKCE code verifier.
+        If not specified, defaults to "CodeVerifier-<suffix>", see the "suffix" field.
     idToken : str, default is Undefined, optional
         The name of the cookie used to store the IdToken in the
         [Authentication Request](https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest).
-        If not specified, defaults to "IdToken-(randomly generated uid)"
+        If not specified, defaults to "IdToken-<suffix>", see the "suffix" field.
+    oauthExpires : str, default is Undefined, optional
+        The name of the cookie used to store the OAuth expires value.
+        If not specified, defaults to "OauthExpires-<suffix>", see the "suffix" field.
+    oauthHmac : str, default is Undefined, optional
+        The name of the cookie used to store the OAuth HMAC value.
+        If not specified, defaults to "OauthHMAC-<suffix>", see the "suffix" field.
+    oauthNonce : str, default is Undefined, optional
+        The name of the cookie used to store the OAuth nonce value.
+        If not specified, defaults to "OauthNonce-<suffix>", see the "suffix" field.
+    refreshToken : str, default is Undefined, optional
+        The name of the cookie used to store the RefreshToken.
+        If not specified, defaults to "RefreshToken-<suffix>", see the "suffix" field.
+    suffix : str, default is Undefined, optional
+        Suffix replaces the generated suffix in the default name of every OAuth2
+        cookie, for example "AccessToken-<suffix>" and "IdToken-<suffix>".
+
+        The generated suffix is derived from the identity of the SecurityPolicy, so
+        it changes when the policy is deleted and recreated, which logs users out.
+        Set this field to keep the cookie names stable across the lifetime of the
+        policy, or to share a session between policies that authenticate the same
+        users against the same provider. Policies sharing a suffix must also agree
+        on the OIDC provider, the client, and the cookieDomain.
+
+        If not specified, the generated suffix is used.
     """
     accessToken?: str
+    codeVerifier?: str
     idToken?: str
+    oauthExpires?: str
+    oauthHmac?: str
+    oauthNonce?: str
+    refreshToken?: str
+    suffix?: str
+
+    check:
+        len(accessToken) <= 256 if accessToken
+        len(accessToken) >= 1 if accessToken
+        len(codeVerifier) <= 256 if codeVerifier
+        len(codeVerifier) >= 1 if codeVerifier
+        len(idToken) <= 256 if idToken
+        len(idToken) >= 1 if idToken
+        len(oauthExpires) <= 256 if oauthExpires
+        len(oauthExpires) >= 1 if oauthExpires
+        len(oauthHmac) <= 256 if oauthHmac
+        len(oauthHmac) >= 1 if oauthHmac
+        len(oauthNonce) <= 256 if oauthNonce
+        len(oauthNonce) >= 1 if oauthNonce
+        len(refreshToken) <= 256 if refreshToken
+        len(refreshToken) >= 1 if refreshToken
+        len(suffix) <= 238 if suffix
+        len(suffix) >= 1 if suffix
+        _regex_match(str(suffix), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$") if suffix
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcDenyRedirect:
     r"""
@@ -4237,6 +5937,78 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcDenyRedirectHeadersItems
         len(name) >= 1
         len(value) <= 1024
         len(value) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcForwardIDToken:
+    r"""
+    ForwardIDToken configures forwarding of the OIDC ID token to the upstream.
+
+    If the configured header is "Authorization", EG forwards the ID token using
+    the "Bearer " prefix. For any other header, EG forwards the raw token value.
+    If not specified, the ID token will not be forwarded.
+
+    Note: when passThroughAuthHeader is enabled, this header must not be the same
+    as a header a JWT provider extracts from (the "Authorization" header by
+    default). The forwarded ID token header is owned by Envoy, and Envoy rejects
+    an OAuth2 configuration whose pass-through matcher keys on it.
+
+    Attributes
+    ----------
+    header : str, default is Undefined, required
+        Header is the upstream request header that will carry the ID token.
+        It must be a valid HTTP header name. Pseudo-headers (names starting with ":")
+        and the "Host" header are not allowed.
+    """
+    header: str
+
+    check:
+        len(header) <= 256
+        len(header) >= 1
+        _regex_match(str(header), r"^[A-Za-z0-9!#$%&'*+\-.^_\x60|~]+$")
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcPostLogoutRedirect:
+    r"""
+    PostLogoutRedirect configures the `post_logout_redirect_uri` parameter that EG sends to the
+    OIDC Provider's end session endpoint when a user accesses the logout path.
+
+    This only applies when the OIDC Provider's end session endpoint is configured or discovered,
+    i.e. when RP-Initiated Logout is in use. It is ignored otherwise.
+
+    If not specified, Envoy sends the root of the request's host, "<scheme>://<host>/".
+    Note that many OIDC Providers require the post logout redirect URI to be pre-registered for
+    the client and reject the logout request otherwise. If the default value is not registered,
+    set an explicit uri here, or set disabled to true to omit the parameter altogether.
+
+    Attributes
+    ----------
+    disabled : bool, default is Undefined, optional
+        Disabled omits the `post_logout_redirect_uri` parameter from the logout request entirely.
+        Use this when the OIDC Provider rejects unregistered post logout redirect URIs and you do
+        not need the user redirected back after the logout completes. In that case the user is left
+        on a page controlled by the provider.
+
+        Setting this to false is equivalent to leaving disabled unset.
+    uri : str, default is Undefined, optional
+        URI is sent as the `post_logout_redirect_uri` parameter to the OIDC Provider's end session
+        endpoint. The provider redirects the user to this URI after the logout completes, so it
+        usually must be pre-registered for the client with the provider.
+
+        The URI may contain the Envoy "%REQ(header)%"
+        [command operator](https://www.envoyproxy.io/docs/envoy/latest/configuration/observability/access_log/usage#command-operators)
+        to build the URI from the request, for example
+        "%REQ(x-forwarded-proto)%://%REQ(:authority)%/loggedout". Envoy Gateway accepts only that
+        operator here, since it is the only one meaningful in a URI derived from the request, and
+        rejects any other so that a typo surfaces on this policy instead of being rejected by Envoy
+        as an invalid configuration. A literal percent is written as "%%".
+
+        The scheme must be http, https, or a "%REQ(header)%" command operator. The URI is
+        percent-encoded automatically when the logout URL is built, so do not pre-encode it.
+    """
+    disabled?: bool
+    uri?: str
+
+    check:
+        len(uri) <= 2048 if uri
+        len(uri) >= 1 if uri
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProvider:
     r"""
@@ -4279,14 +6051,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProvider:
 
     check:
         len(backendRefs) <= 16 if backendRefs
-        len(issuer) >= 1
+        _regex_match(str(issuer), r"^https://[^/?#@]+(/[^?#]*)?$")
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendRef:
     r"""
     BackendRef references a Kubernetes object that represents the
     backend server to which the authorization request will be sent.
 
-    Deprecated: Use BackendRefs instead.
+    Deprecated: Use BackendRefs instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -4452,8 +6224,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettings:
         dns
     healthCheck : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheck, default is Undefined, optional
         health check
+    http1 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp1, default is Undefined, optional
+        http1
     http2 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2, default is Undefined, optional
         http2
+    http3 : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp3, default is Undefined, optional
+        http3
     loadBalancer : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancer, default is Undefined, optional
         load balancer
     proxyProtocol : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsProxyProtocol, default is Undefined, optional
@@ -4469,7 +6245,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettings:
     connection?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsConnection
     dns?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsDNS
     healthCheck?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheck
+    http1?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp1
     http2?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2
+    http3?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp3
     loadBalancer?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancer
     proxyProtocol?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsProxyProtocol
     retry?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsRetry
@@ -4496,6 +6274,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsC
         Default: unlimited.
     perEndpoint : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerPerEndpoint, default is Undefined, optional
         per endpoint
+    retryBudget : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerRetryBudget, default is Undefined, optional
+        retry budget
     """
     maxConnections?: int = 1024
     maxParallelRequests?: int = 1024
@@ -4503,6 +6283,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsC
     maxPendingRequests?: int = 1024
     maxRequestsPerConnection?: int
     perEndpoint?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerPerEndpoint
+    retryBudget?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerRetryBudget
 
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
@@ -4530,6 +6311,45 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsC
     check:
         maxConnections <= 4294967295 if maxConnections not in [None, Undefined]
         maxConnections >= 0 if maxConnections not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerRetryBudget:
+    r"""
+    RetryBudget provides settings for retry budget, which limits the number of retries in a given percentage.
+    RetryBudget take precedence over maxParallelRetries.
+
+    Attributes
+    ----------
+    minRetryConcurrency : int, default is Undefined, optional
+        MinRetryConcurrency specifies the minimum retry concurrency allowed for the retry budget.
+        For example, a budget of 20% with a minimum retry concurrency of 3
+        will allow 5 active retries while there are 25 active requests.
+        If there are 2 active requests, there are still 3 active retries
+        allowed because of the minimum retry concurrency.
+        Defaults to 3.
+    percent : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerRetryBudgetPercent, default is Undefined, required
+        percent
+    """
+    minRetryConcurrency?: int
+    percent: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerRetryBudgetPercent
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsCircuitBreakerRetryBudgetPercent:
+    r"""
+    Percent specifies the limit on concurrent retries as a percentage [0, 100] of
+    the sum of active requests and active pending requests.
+
+    Attributes
+    ----------
+    denominator : int, default is 100, optional
+        denominator
+    numerator : int, default is Undefined, required
+        numerator
+    """
+    denominator?: int = 100
+    numerator: int
+
+    check:
+        denominator >= 1 if denominator not in [None, Undefined]
+        numerator >= 0
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsConnection:
     r"""
@@ -4652,8 +6472,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
 
     Attributes
     ----------
+    disableConnectionReuse : bool, default is Undefined, optional
+        DisableConnectionReuse determines whether the active health check connection to a
+        backend host is closed after each health check probe. When set to true, Envoy opens a
+        new connection for each health check, which is useful for backends (such as
+        haproxy-style agent checks) that do not expect a reused connection.
+        Defaults to false, which reuses the connection across probes.
     grpc : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveGrpc, default is Undefined, optional
         grpc
+    healthCheckLog : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLog, default is Undefined, optional
+        health check log
     healthyThreshold : int, default is 1, optional
         HealthyThreshold defines the number of healthy health checks required before a backend host is marked healthy.
     http : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTP, default is Undefined, optional
@@ -4663,6 +6491,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
         Envoy will randomly select a value between 0 and the initial jitter value.
     interval : str, default is "3s", optional
         Interval defines the time between active health checks.
+    overrides : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveOverrides, default is Undefined, optional
+        overrides
     tcp : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveTCP, default is Undefined, optional
         tcp
     timeout : str, default is "1s", optional
@@ -4671,12 +6501,18 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
         Type defines the type of health checker.
     unhealthyThreshold : int, default is 3, optional
         UnhealthyThreshold defines the number of unhealthy health checks required before a backend host is marked unhealthy.
+        Without RetriableStatuses configured, any health check failure results in the host being immediately
+        considered unhealthy. When RetriableStatuses is set, health checks returning those statuses are retried
+        up to this threshold before the host is marked unhealthy.
     """
+    disableConnectionReuse?: bool
     grpc?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveGrpc
+    healthCheckLog?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLog
     healthyThreshold?: int = 1
     http?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTP
     initialJitter?: str
     interval?: str = "3s"
+    overrides?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveOverrides
     tcp?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveTCP
     timeout?: str = "1s"
     $type: str
@@ -4697,12 +6533,25 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
 
     Attributes
     ----------
+    hostname : str, default is Undefined, optional
+        Hostname defines the value of the :authority header sent with active gRPC
+        health checks. Authority selection uses this order: this field, the
+        associated Backend endpoint hostname if available, then the effective Route
+        hostname. If none of them is set, Envoy falls back to the name of the
+        cluster, which is not a valid authority and is rejected by some gRPC
+        servers.
     service : str, default is Undefined, optional
         Service to send in the health check request.
         If this is not specified, then the health check request applies to the entire
         server and not to a specific service.
     """
+    hostname?: str
     service?: str
+
+    check:
+        len(hostname) <= 253 if hostname
+        len(hostname) >= 1 if hostname
+        _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTP:
     r"""
@@ -4717,13 +6566,36 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
         ExpectedStatuses defines a list of HTTP response statuses considered healthy.
         Defaults to 200 only
     hostname : str, default is Undefined, optional
-        Hostname defines the HTTP host that will be requested during health checking.
-        Default: HTTPRoute or GRPCRoute hostname.
+        Hostname defines the HTTP Host header used for active HTTP health checks.
+        Host selection uses this order: this field, the associated Backend endpoint
+        hostname if available, then the effective Route hostname.
     method : str, default is Undefined, optional
         Method defines the HTTP method used for health checking.
         Defaults to GET
     path : str, default is Undefined, required
         Path defines the HTTP path that will be requested during health checking.
+    $protocol : str, default is "Auto", optional
+        Protocol is the HTTP protocol that active health check requests are sent with.
+
+        Defaults to Auto, which uses the same protocol as regular requests to the backend:
+
+          - HTTP2 for a backend configured for HTTP/2, through a `kubernetes.io/h2c`,
+            `gateway.envoyproxy.io/h2c` or `grpc` appProtocol, or as the backend of a
+            GRPCRoute.
+          - The protocol negotiated through ALPN for a TLS backend that negotiates it,
+            with HTTP1 as the fallback when nothing is negotiated.
+          - HTTP1 otherwise.
+
+        Set HTTP1 or HTTP2 when the health check endpoint speaks a different protocol than
+        the application, for example a backend that serves HTTP/1.1 traffic but only
+        accepts HTTP/2 health checks. An explicit protocol is always used as is.
+    requestBody : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTPRequestBody, default is Undefined, optional
+        request body
+    retriableStatuses : [int], default is Undefined, optional
+        RetriableStatuses defines a list of HTTP response statuses considered retriable.
+        Responses matching these statuses count towards the unhealthy threshold but
+        do not result in the host being considered immediately unhealthy.
+        The expected statuses take precedence for any range overlaps with this field.
     """
     expectedResponse?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTPExpectedResponse
     expectedStatuses?: [int]
@@ -4731,14 +6603,21 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
     method?: str
     path: str
 
+    $protocol?: "Auto" | "HTTP1" | "HTTP2" = "Auto"
+    requestBody?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTPRequestBody
+    retriableStatuses?: [int]
+
     check:
         all expectedStatuses in expectedStatuses {expectedStatuses <= 599 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         all expectedStatuses in expectedStatuses {expectedStatuses >= 100 if expectedStatuses not in [None, Undefined]} if expectedStatuses
         len(hostname) <= 253 if hostname
         len(hostname) >= 1 if hostname
         _regex_match(str(hostname), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if hostname
+        len(method) <= 16 if method
         len(path) <= 1024
         len(path) >= 1
+        all retriableStatuses in retriableStatuses {retriableStatuses <= 599 if retriableStatuses not in [None, Undefined]} if retriableStatuses
+        all retriableStatuses in retriableStatuses {retriableStatuses >= 100 if retriableStatuses not in [None, Undefined]} if retriableStatuses
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTPExpectedResponse:
     r"""
@@ -4756,6 +6635,98 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
     binary?: str
     text?: str
     $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHTTPRequestBody:
+    r"""
+    RequestBody defines the HTTP request body payload sent during health checking.
+
+    Attributes
+    ----------
+    binary : str, default is Undefined, optional
+        Binary payload base64 encoded.
+    text : str, default is Undefined, optional
+        Text payload in plain text.
+    $type : str, default is Undefined, required
+        Type defines the type of the payload.
+    """
+    binary?: str
+    text?: str
+    $type: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLog:
+    r"""
+    HealthCheckLog defines health check event logging configuration for this cluster.
+    When set, HC probe outcomes are logged to the configured sinks.
+    Takes precedence over the gateway-level EnvoyProxy.spec.telemetry.healthCheckLog.
+
+    Attributes
+    ----------
+    matches : [str], default is Undefined, optional
+        Matches defines which health check probe outcomes produce a log entry.
+        When omitted or empty, all events are logged.
+
+        Each value must be unique. Multiple values are ORed. If any failure type is
+        specified then a success type must also be specified, and vice versa.
+    sinks : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0], default is Undefined, optional
+        Sinks defines where health check events are written.
+        When omitted, events are written to /dev/stdout.
+    """
+    matches?: [str]
+    sinks?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0]
+
+    check:
+        len(matches) <= 4 if matches
+        len(sinks) <= 1 if sinks
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0:
+    r"""
+    ProxyHealthCheckLogSink defines a destination for health check event logs.
+
+    Attributes
+    ----------
+    file : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File, default is Undefined, optional
+        file
+    $type : str, default is Undefined, required
+        Type defines the type of sink.
+    """
+    file?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File
+    $type: "File"
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveHealthCheckLogSinksItems0File:
+    r"""
+    File defines the file sink configuration.
+    Required when type is File.
+
+    Attributes
+    ----------
+    path : str, default is Undefined, required
+        Path specifies the file path for health check event output.
+        Use /dev/stdout to write to standard output.
+    """
+    path: str
+
+    check:
+        len(path) >= 1
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveOverrides:
+    r"""
+    Overrides defines the configuration of the overriding health check settings for all endpoints
+    in the backend cluster. This allows customization of port and other settings that may differ
+    from the main service configuration.
+
+    Attributes
+    ----------
+    port : int, default is Undefined, optional
+        Port overrides the health check port.
+        If not set, the endpoint's serving port is used for health checks.
+        This is useful when health checks are served on a different port than
+        the main service port (e.g., port 443 for service, port 9090 for health checks).
+    """
+    port?: int
+
+    check:
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHealthCheckActiveTCP:
     r"""
@@ -4812,6 +6783,9 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
 
     Attributes
     ----------
+    alwaysEjectOneEndpoint : bool, default is Undefined, optional
+        AlwaysEjectOneEndpoint defines whether at least one host should be ejected,
+        regardless of MaxEjectionPercent.
     baseEjectionTime : str, default is "30s", optional
         BaseEjectionTime defines the base duration for which a host will be ejected on consecutive failures.
     consecutive5XxErrors : int, default is 5, optional
@@ -4832,6 +6806,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
     splitExternalLocalOriginErrors : bool, default is Undefined, optional
         SplitExternalLocalOriginErrors enables splitting of errors between external and local origin.
     """
+    alwaysEjectOneEndpoint?: bool = False
     baseEjectionTime?: str = "30s"
     consecutive5XxErrors?: int = 5
     consecutiveGatewayErrors?: int
@@ -4846,6 +6821,35 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
         failurePercentageThreshold <= 100 if failurePercentageThreshold not in [None, Undefined]
         failurePercentageThreshold >= 0 if failurePercentageThreshold not in [None, Undefined]
         _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        maxEjectionPercent <= 100 if maxEjectionPercent not in [None, Undefined]
+        maxEjectionPercent >= 0 if maxEjectionPercent not in [None, Undefined]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp1:
+    r"""
+    HTTP1 provides HTTP/1 configuration for backend connections.
+    When both this field and the deprecated HTTP1 field on ClientTrafficPolicy are set,
+    this field takes precedence for backend (upstream) traffic.
+
+    Behavior when targeting route kinds that do not use HTTP/1:
+      - GRPCRoute, TCPRoute, TLSRoute, UDPRoute: targeting these route kinds
+        directly adds a Warning condition on the policy; the field is ignored.
+      - Gateway / ListenerSet / sectionName targets: this field is silently
+        ignored for any GRPCRoute, TCPRoute, TLSRoute, or UDPRoute destinations
+        beneath that target; no warning is emitted.
+      - gRPC-only external services (ExtProc, gRPC ExtAuth, ALS, OpenTelemetry
+        access log/metrics, tracing providers): rejected at admission on their
+        own BackendSettings via separate validation rules.
+
+    Attributes
+    ----------
+    enableTrailers : bool, default is Undefined, optional
+        EnableTrailers defines if HTTP/1 trailers should be proxied by Envoy.
+    preserveHeaderCase : bool, default is Undefined, optional
+        PreserveHeaderCase defines if Envoy should preserve the letter case of headers.
+        By default, Envoy will lowercase all the headers.
+    """
+    enableTrailers?: bool
+    preserveHeaderCase?: bool
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2:
     r"""
@@ -4853,6 +6857,8 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
 
     Attributes
     ----------
+    connectionKeepalive : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2ConnectionKeepalive, default is Undefined, optional
+        connection keepalive
     initialConnectionWindowSize : int | str, default is Undefined, optional
         InitialConnectionWindowSize sets the initial window size for HTTP/2 connections.
         If not set, the default value is 1 MiB.
@@ -4868,6 +6874,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
         https://www.envoyproxy.io/docs/envoy/latest/configuration/best_practices/level_two
         Default: TerminateConnection
     """
+    connectionKeepalive?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2ConnectionKeepalive
     initialConnectionWindowSize?: int | str
     initialStreamWindowSize?: int | str
     maxConcurrentStreams?: int
@@ -4881,6 +6888,52 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsH
         maxConcurrentStreams <= 2147483647 if maxConcurrentStreams not in [None, Undefined]
         maxConcurrentStreams >= 1 if maxConcurrentStreams not in [None, Undefined]
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp2ConnectionKeepalive:
+    r"""
+    ConnectionKeepalive configures HTTP/2 connection keepalive using PING frames.
+
+    Attributes
+    ----------
+    idleInterval : str, default is Undefined, optional
+        IdleInterval specifies how long a connection must be idle before a PING is sent.
+    interval : str, default is Undefined, optional
+        Interval specifies how often to send HTTP/2 PING frames to keep the connection alive.
+    intervalJitter : int, default is Undefined, optional
+        IntervalJitter specifies a random jitter percentage added to each interval.
+        Defaults to 15% if not specified.
+    timeout : str, default is Undefined, optional
+        Timeout specifies how long to wait for a PING response before considering the connection dead.
+    """
+    idleInterval?: str
+    interval?: str
+    intervalJitter?: int
+    timeout?: str
+
+    check:
+        _regex_match(str(idleInterval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if idleInterval
+        _regex_match(str(interval), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if interval
+        intervalJitter <= 100 if intervalJitter not in [None, Undefined]
+        intervalJitter >= 0 if intervalJitter not in [None, Undefined]
+        _regex_match(str(timeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if timeout
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsHttp3:
+    r"""
+    HTTP3 enables HTTP/3 for backend connections.
+    HTTP/3 always runs over TLS, so the backend must be configured
+    with TLS through a BackendTLSPolicy or the Backend's spec.tls.
+    HTTP/3 is only supported for the backends of a route, through
+    BackendTrafficPolicy. It is rejected for the backends of other
+    resources, such as the external services of a SecurityPolicy
+    or EnvoyExtensionPolicy and the sinks of an EnvoyProxy.
+
+    Attributes
+    ----------
+    mode : str, default is Undefined, optional
+        Mode determines when HTTP/3 is used to reach the backend.
+        Defaults to Auto, which only uses HTTP/3 for backends advertising it via alt-svc.
+    """
+    mode?: "Auto" | "Always"
+
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancer:
     r"""
     LoadBalancer policy to apply when routing traffic from the gateway to
@@ -4888,8 +6941,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
 
     Attributes
     ----------
+    backendUtilization : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerBackendUtilization, default is Undefined, optional
+        backend utilization
     consistentHash : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHash, default is Undefined, optional
         consistent hash
+    dynamicModule : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerDynamicModule, default is Undefined, optional
+        dynamic module
     endpointOverride : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerEndpointOverride, default is Undefined, optional
         endpoint override
     slowStart : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerSlowStart, default is Undefined, optional
@@ -4900,16 +6957,102 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
         "ConsistentHash",
         "LeastRequest",
         "Random",
-        "RoundRobin".
+        "RoundRobin",
+        "BackendUtilization",
+        "DynamicModule".
     zoneAware : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAware, default is Undefined, optional
         zone aware
     """
+    backendUtilization?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerBackendUtilization
     consistentHash?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHash
+    dynamicModule?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerDynamicModule
     endpointOverride?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerEndpointOverride
     slowStart?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerSlowStart
-    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin"
+    $type: "ConsistentHash" | "LeastRequest" | "Random" | "RoundRobin" | "BackendUtilization" | "DynamicModule"
 
     zoneAware?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAware
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerBackendUtilization:
+    r"""
+    BackendUtilization defines the configuration when the load balancer type is
+    set to BackendUtilization.
+
+    Attributes
+    ----------
+    blackoutPeriod : str, default is Undefined, optional
+        A given endpoint must report load metrics continuously for at least this long before the endpoint weight will be used.
+        Default is 10s.
+    errorUtilizationPenaltyPercent : int, default is Undefined, optional
+        ErrorUtilizationPenaltyPercent adjusts endpoint weights based on the error rate (eps/qps).
+        This is expressed as a percentage-based integer where 100 represents 1.0, 150 represents 1.5, etc.
+
+        For example:
+        - 100 => 1.0x
+        - 120 => 1.2x
+        - 200 => 2.0x
+
+        Must be non-negative.
+    keepResponseHeaders : bool, default is Undefined, optional
+        KeepResponseHeaders keeps the ORCA load report headers/trailers before sending the response to the client.
+        Defaults to false.
+    metricNamesForComputingUtilization : [str], default is Undefined, optional
+        Metric names used to compute utilization if application_utilization is not set.
+        For map fields in ORCA proto, use the form "<map_field>.<key>", e.g., "named_metrics.foo".
+    outOfBand : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerBackendUtilizationOutOfBand, default is Undefined, optional
+        out of band
+    weightExpirationPeriod : str, default is Undefined, optional
+        If a given endpoint has not reported load metrics in this long, stop using the reported weight. Defaults to 3m.
+    weightUpdatePeriod : str, default is Undefined, optional
+        How often endpoint weights are recalculated. Values less than 100ms are capped at 100ms. Default 1s.
+    """
+    blackoutPeriod?: str
+    errorUtilizationPenaltyPercent?: int
+    keepResponseHeaders?: bool = False
+    metricNamesForComputingUtilization?: [str]
+    outOfBand?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerBackendUtilizationOutOfBand
+    weightExpirationPeriod?: str
+    weightUpdatePeriod?: str
+
+    check:
+        _regex_match(str(blackoutPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if blackoutPeriod
+        errorUtilizationPenaltyPercent >= 0 if errorUtilizationPenaltyPercent not in [None, Undefined]
+        _regex_match(str(weightExpirationPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightExpirationPeriod
+        _regex_match(str(weightUpdatePeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if weightUpdatePeriod
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerBackendUtilizationOutOfBand:
+    r"""
+    OutOfBand enables out-of-band ORCA load reporting. When set, Envoy opens a
+    server-streaming gRPC connection to each endpoint's
+    xds.service.orca.v3.OpenRcaService/StreamCoreMetrics and pulls load
+    reports periodically, instead of relying on in-band ORCA metrics
+    carried in response headers/trailers.
+
+    The backend must implement OpenRcaService for this to take effect.
+
+    Attributes
+    ----------
+    authority : str, default is Undefined, optional
+        Authority overrides the :authority header on the OutOfBand gRPC stream.
+        If unset, Envoy uses the endpoint hostname, then the dialed address, then
+        the cluster name.
+    port : int, default is Undefined, optional
+        Port overrides the port used for the OutOfBand reporting connection, e.g. to
+        reach a separate reporting sidecar. Defaults to the endpoint's port.
+    reportingPeriod : str, default is Undefined, optional
+        ReportingPeriod is how often Envoy requests load reports from the server.
+        Must be greater than 0. Defaults to 10s.
+    """
+    authority?: str
+    port?: int
+    reportingPeriod?: str
+
+    check:
+        len(authority) <= 259 if authority
+        len(authority) >= 1 if authority
+        _regex_match(str(authority), r"^[^\x00\n\r]*$") if authority
+        port <= 65535 if port not in [None, Undefined]
+        port >= 1 if port not in [None, Undefined]
+        _regex_match(str(reportingPeriod), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if reportingPeriod
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerConsistentHash:
     r"""
@@ -4977,7 +7120,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
     r"""
     Header configures the header hash policy when the consistent hash type is set to Header.
 
-    Deprecated: use Headers instead
+    Deprecated: use Headers instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -5009,6 +7152,40 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
         Name of the query param to hash.
     """
     name: str
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerDynamicModule:
+    r"""
+    DynamicModule defines the configuration when the load balancer type is
+    set to DynamicModule. The referenced module must be registered in the
+    EnvoyProxy resource's dynamicModules allowlist.
+
+    Attributes
+    ----------
+    config : any, default is Undefined, optional
+        Config is optional configuration for the module's load balancer
+        implementation. This is serialized and passed to the module's
+        initialization function.
+    lbPolicyName : str, default is Undefined, required
+        LBPolicyName identifies a specific load balancer implementation within
+        the dynamic module. A single shared library can contain multiple LB
+        policy implementations. This value is passed to the module's
+        initialization function to select the appropriate implementation.
+    name : str, default is Undefined, required
+        Name references a dynamic module registered in the EnvoyProxy resource's
+        dynamicModules list. The referenced module must exist in the registry;
+        otherwise, the policy will be rejected.
+    """
+    config?: any
+    lbPolicyName: str
+
+    name: str
+
+    check:
+        len(lbPolicyName) <= 253
+        len(lbPolicyName) >= 1
+        len(name) <= 253
+        len(name) >= 1
+        _regex_match(str(name), r"^[a-z0-9]([a-z0-9.-]*[a-z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerEndpointOverride:
     r"""
@@ -5046,7 +7223,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
     r"""
     SlowStart defines the configuration related to the slow start load balancer policy.
     If set, during slow start window, traffic sent to the newly added hosts will gradually increase.
-    Currently this is only supported for RoundRobin and LeastRequest load balancers
+    Supported for RoundRobin, LeastRequest, and BackendUtilization load balancers.
 
     Attributes
     ----------
@@ -5069,8 +7246,12 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
     ----------
     preferLocal : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocal, default is Undefined, optional
         prefer local
+    weightedZones : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0], default is Undefined, optional
+        WeightedZones configures weight-based traffic distribution across locality zones.
+        Traffic is distributed proportionally based on the sum of all zone weights.
     """
     preferLocal?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocal
+    weightedZones?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0]
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocal:
     r"""
@@ -5078,6 +7259,14 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
 
     Attributes
     ----------
+    failTrafficOnPanic : bool, default is Undefined, optional
+        FailTrafficOnPanic rejects traffic instead of routing to all endpoints when the
+        cluster is in panic mode. Panic mode is entered when the share of healthy endpoints
+        drops below HealthCheck.PanicThreshold, and by default Envoy then load balances
+        across every endpoint, healthy or not. Setting this to true makes Envoy fail the
+        requests instead, applying backpressure to clients and giving the backend room to
+        recover.
+        Defaults to false.
     force : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocalForce, default is Undefined, optional
         force
     minEndpointsThreshold : int, default is Undefined, optional
@@ -5085,6 +7274,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
     percentageEnabled : int, default is Undefined, optional
         Configures percentage of requests that will be considered for zone aware routing if zone aware routing is configured. If not specified, Envoy defaults to 100%.
     """
+    failTrafficOnPanic?: bool
     force?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwarePreferLocalForce
     minEndpointsThreshold?: int
     percentageEnabled?: int
@@ -5106,6 +7296,26 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsL
     """
     minEndpointsInZoneThreshold?: int
 
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsLoadBalancerZoneAwareWeightedZonesItems0:
+    r"""
+    WeightedZoneConfig defines the weight for a specific locality zone.
+
+    Attributes
+    ----------
+    weight : int, default is Undefined, required
+        Weight defines the weight for this locality.
+        Higher values receive more traffic. The actual traffic distribution
+        is proportional to this value relative to other localities.
+    zone : str, default is Undefined, required
+        Zone specifies the topology zone this weight applies to.
+        The value should match the topology.kubernetes.io/zone label
+        of the nodes where endpoints are running.
+        Zones not listed in the configuration receive a default weight of 1.
+    """
+    weight: int
+
+    zone: str
+
 protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsProxyProtocol:
     r"""
     ProxyProtocol enables the Proxy Protocol when communicating with the backend.
@@ -5113,7 +7323,7 @@ protocol GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSetting
     Attributes
     ----------
     version : str, default is Undefined, required
-        Version of ProxyProtol
+        Version of ProxyProtocol
         Valid ProxyProtocolVersion values are
         "V1"
         "V2"
@@ -5266,17 +7476,22 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsT
         When set to "0s", no max duration is applied and streams can run indefinitely.
     requestTimeout : str, default is Undefined, optional
         RequestTimeout is the time until which entire response is received from the upstream.
+    streamIdleTimeout : str, default is Undefined, optional
+         The stream idle timeout defines the amount of time a stream can exist without any upstream or downstream activity.
+         If not specified, StreamIdleTimeout is inherited from the listener-level setting, which can be configured via ClientTrafficPolicy.
     """
     connectionIdleTimeout?: str
     maxConnectionDuration?: str
     maxStreamDuration?: str
     requestTimeout?: str
+    streamIdleTimeout?: str
 
     check:
         _regex_match(str(connectionIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if connectionIdleTimeout
         _regex_match(str(maxConnectionDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxConnectionDuration
         _regex_match(str(maxStreamDuration), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if maxStreamDuration
         _regex_match(str(requestTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if requestTimeout
+        _regex_match(str(streamIdleTimeout), r"^([0-9]{1,5}(h|m|s|ms)){1,4}$") if streamIdleTimeout
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecOidcProviderBackendSettingsTimeoutTCP:
     r"""
@@ -5299,7 +7514,7 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetRef:
     This policy and the TargetRef MUST be in the same namespace for this
     Policy to have effect
 
-    Deprecated: use targetRefs/targetSelectors instead
+    Deprecated: use targetRefs/targetSelectors instead. This field will be removed in v1.11.
 
     Attributes
     ----------
@@ -5408,13 +7623,16 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0:
     matchExpressions : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0MatchExpressionsItems0], default is Undefined, optional
         MatchExpressions is a list of label selector requirements. The requirements are ANDed.
     matchLabels : {str:str}, default is Undefined, optional
-        MatchLabels are the set of label selectors for identifying the targeted resource
+        MatchLabels are the set of label selectors for identifying the targeted resource.
+    namespaces : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0Namespaces, default is Undefined, optional
+        namespaces
     """
     group?: str = "gateway.networking.k8s.io"
     kind: str
 
     matchExpressions?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0MatchExpressionsItems0]
     matchLabels?: {str:str}
+    namespaces?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0Namespaces
 
     check:
         len(group) <= 253 if group
@@ -5424,6 +7642,73 @@ schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0:
         _regex_match(str(kind), r"^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$")
 
 schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: str
+
+    values?: [str]
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0Namespaces:
+    r"""
+    Namespaces determines which namespaces are considered for target selection.
+
+    If unspecified, only targets in the same namespace as this policy are considered.
+
+    When specified, the effective set of namespaces is always constrained to the
+    namespaces watched by Envoy Gateway.
+
+    Selecting targets across namespaces requires a ReferenceGrant in the target
+    namespace that allows this policy kind to reference the selected target kind.
+    Cross-namespace targets without a matching ReferenceGrant are ignored.
+
+    Attributes
+    ----------
+    from : str, default is "Same", required
+        From indicates how namespaces are selected for this target selector.
+
+        All means all namespaces watched by Envoy Gateway.
+        Selector means namespaces watched by Envoy Gateway that match Selector.
+    selector : GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0NamespacesSelector, default is Undefined, optional
+        selector
+    """
+    from: "Same" | "All" | "Selector" = "Same"
+
+    selector?: GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0NamespacesSelector
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0NamespacesSelector:
+    r"""
+    Selector selects namespaces when From is set to Selector.
+
+    Attributes
+    ----------
+    matchExpressions : [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+schema GatewayEnvoyproxyIoV1alpha1SecurityPolicySpecTargetSelectorsItems0NamespacesSelectorMatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
