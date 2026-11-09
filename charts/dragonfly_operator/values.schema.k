@@ -29,6 +29,11 @@ schema Values:
     nameOverride : str, optional, default is ""
     namespaceOverride : str, optional, default is ""
     podAnnotations : ValuesPodAnnotations, optional
+    podDisruptionBudget : ValuesPodDisruptionBudget, optional
+        A [PodDisruptionBudget] for the operator pod, useful when running more
+        than one replica (replicaCount > 1) so voluntary disruptions (e.g. node
+        drains) keep at least one operator pod available.
+        # Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
     podLabels : ValuesPodLabels, optional
     podSecurityContext : ValuesPodSecurityContext, optional
     rbacProxy : ValuesRbacProxy, optional
@@ -37,6 +42,12 @@ schema Values:
     serviceAccount : ValuesServiceAccount, optional
     serviceMonitor : ValuesServiceMonitor, optional
     terminationGracePeriodSeconds : int, optional, default is 10
+    watchNamespaces : str, optional, default is ""
+        Restrict the operator to specific namespaces (comma-separated, e.g. "ns1,ns2").
+        When set, namespace-scoped Roles are created in each watched namespace instead of a
+        cluster-wide ClusterRole, allowing deployment without ClusterRole permissions.
+        Leave empty to watch all namespaces (default; requires ClusterRole).
+        To fully avoid ClusterRoles, also set rbacProxy.enabled=false and createAggregateRoles=false.
     """
     [...str]: any
     additionalLabels?: ValuesAdditionalLabels
@@ -52,6 +63,7 @@ schema Values:
     nameOverride?: str
     namespaceOverride?: str
     podAnnotations?: ValuesPodAnnotations
+    podDisruptionBudget?: ValuesPodDisruptionBudget
     podLabels?: ValuesPodLabels
     podSecurityContext?: ValuesPodSecurityContext
     rbacProxy?: ValuesRbacProxy
@@ -60,6 +72,7 @@ schema Values:
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
     terminationGracePeriodSeconds?: int
+    watchNamespaces?: str
 
 schema ValuesAdditionalLabels:
     r"""
@@ -151,13 +164,8 @@ schema ValuesGrafanaDashboardGrafanaOperator:
 schema ValuesGrafanaDashboardGrafanaOperatorMatchLabels:
     r"""
     Selected labels for Grafana instance
-
-    Attributes
-    ----------
-    dashboards : str, optional, default is "grafana"
     """
     [...str]: any
-    dashboards?: str
 
 schema ValuesGrafanaDashboardLabels:
     r"""
@@ -341,6 +349,31 @@ schema ValuesPodAnnotations:
     [...str]: any
     "kubectl.kubernetes.io/default-container"?: str
 
+schema ValuesPodDisruptionBudget:
+    r"""
+    A [PodDisruptionBudget] for the operator pod, useful when running more
+    than one replica (replicaCount > 1) so voluntary disruptions (e.g. node
+    drains) keep at least one operator pod available.
+    # Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        When set true a PodDisruptionBudget is created for the operator pod
+    maxUnavailable : str, optional, default is ""
+    minAvailable : int, optional, default is 1
+        minAvailable and maxUnavailable are mutually exclusive; minAvailable takes
+        precedence when both are set. Each may be an integer or a percentage string.
+    unhealthyPodEvictionPolicy : str, optional, default is ""
+        unhealthyPodEvictionPolicy controls how unhealthy pods are counted (requires
+        Kubernetes 1.27+). Leave empty to use the cluster default (IfHealthyBudget).
+    """
+    [...str]: any
+    enabled?: bool
+    maxUnavailable?: str
+    minAvailable?: int
+    unhealthyPodEvictionPolicy?: str
+
 schema ValuesPodLabels:
     r"""
     ValuesPodLabels
@@ -468,11 +501,14 @@ schema ValuesService:
 
     Attributes
     ----------
+    annotations : ValuesServiceAnnotations, optional
+        Annotations to add to the operator Service
     metricsPort : int, optional, default is 8080
     port : int, optional, default is 8443
     $type : str, optional, default is "ClusterIP"
     """
     [...str]: any
+    annotations?: ValuesServiceAnnotations
     metricsPort?: int
     port?: int
     $type?: str
@@ -502,6 +538,12 @@ schema ValuesServiceAccount:
 schema ValuesServiceAccountAnnotations:
     r"""
     Annotations to add to the service account
+    """
+    [...str]: any
+
+schema ValuesServiceAnnotations:
+    r"""
+    Annotations to add to the operator Service
     """
     [...str]: any
 
