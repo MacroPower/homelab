@@ -121,14 +121,6 @@
             "matchLabels": {
               "additionalProperties": true,
               "description": "Selected labels for Grafana instance",
-              "properties": {
-                "dashboards": {
-                  "default": "grafana",
-                  "required": [],
-                  "title": "dashboards",
-                  "type": "string"
-                }
-              },
               "required": [],
               "title": "matchLabels",
               "type": "object"
@@ -379,6 +371,42 @@
       "title": "podAnnotations",
       "type": "object"
     },
+    "podDisruptionBudget": {
+      "additionalProperties": true,
+      "description": "A [PodDisruptionBudget] for the operator pod, useful when running more\nthan one replica (replicaCount \u003e 1) so voluntary disruptions (e.g. node\ndrains) keep at least one operator pod available.\n# Ref: https://kubernetes.io/docs/tasks/run-application/configure-pdb/",
+      "properties": {
+        "enabled": {
+          "default": false,
+          "description": "When set true a PodDisruptionBudget is created for the operator pod",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxUnavailable": {
+          "default": "",
+          "required": [],
+          "title": "maxUnavailable",
+          "type": "string"
+        },
+        "minAvailable": {
+          "default": 1,
+          "description": "minAvailable and maxUnavailable are mutually exclusive; minAvailable takes\nprecedence when both are set. Each may be an integer or a percentage string.",
+          "required": [],
+          "title": "minAvailable",
+          "type": "integer"
+        },
+        "unhealthyPodEvictionPolicy": {
+          "default": "",
+          "description": "unhealthyPodEvictionPolicy controls how unhealthy pods are counted (requires\nKubernetes 1.27+). Leave empty to use the cluster default (IfHealthyBudget).",
+          "required": [],
+          "title": "unhealthyPodEvictionPolicy",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "podDisruptionBudget",
+      "type": "object"
+    },
     "podLabels": {
       "additionalProperties": true,
       "required": [],
@@ -534,6 +562,13 @@
     "service": {
       "additionalProperties": true,
       "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "Annotations to add to the operator Service",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
         "metricsPort": {
           "default": 8080,
           "required": [],
@@ -689,6 +724,13 @@
       "required": [],
       "title": "terminationGracePeriodSeconds",
       "type": "integer"
+    },
+    "watchNamespaces": {
+      "default": "",
+      "description": "Restrict the operator to specific namespaces (comma-separated, e.g. \"ns1,ns2\").\nWhen set, namespace-scoped Roles are created in each watched namespace instead of a\ncluster-wide ClusterRole, allowing deployment without ClusterRole permissions.\nLeave empty to watch all namespaces (default; requires ClusterRole).\nTo fully avoid ClusterRoles, also set rbacProxy.enabled=false and createAggregateRoles=false.",
+      "required": [],
+      "title": "watchNamespaces",
+      "type": "string"
     }
   },
   "required": [],
