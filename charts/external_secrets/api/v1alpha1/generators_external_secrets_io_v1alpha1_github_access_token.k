@@ -36,12 +36,16 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
 
     Attributes
     ----------
-    appID : str, default is Undefined, required
-        app ID
+    appID : str, default is Undefined, optional
+        AppID is the GitHub App ID. Exactly one of AppID or AppIDRef must be set.
+    appIDRef : GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAppIDRef, default is Undefined, optional
+        app ID ref
     auth : GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth, default is Undefined, required
         auth
-    installID : str, default is Undefined, required
-        install ID
+    installID : str, default is Undefined, optional
+        InstallID is the GitHub App installation ID. Exactly one of InstallID or InstallIDRef must be set.
+    installIDRef : GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecInstallIDRef, default is Undefined, optional
+        install ID ref
     permissions : {str:str}, default is Undefined, optional
         Map of permissions the token will have. If omitted, defaults to all permissions the GitHub App has.
     repositories : [str], default is Undefined, optional
@@ -50,15 +54,45 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpec:
     url : str, default is Undefined, optional
         URL configures the GitHub instance URL. Defaults to https://github.com/.
     """
-    appID: str
-
+    appID?: str
+    appIDRef?: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAppIDRef
     auth: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth
 
-    installID: str
-
+    installID?: str
+    installIDRef?: GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecInstallIDRef
     permissions?: {str:str}
     repositories?: [str]
     url?: str
+
+schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAppIDRef:
+    r"""
+    AppIDRef references a secret key containing the GitHub App ID. Exactly one of AppID or AppIDRef must be set.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
 
 schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuth:
     r"""
@@ -86,6 +120,37 @@ schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecAuthPrivateKeySec
     r"""
     SecretKeySelector is a reference to a specific 'key' within a Secret resource.
     In some instances, `key` is a required field.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, optional
+        A key in the referenced Secret.
+        Some instances of this field may be defaulted, in others it may be required.
+    name : str, default is Undefined, optional
+        The name of the Secret resource being referred to.
+    namespace : str, default is Undefined, optional
+        The namespace of the Secret resource being referred to.
+        Ignored if referent is not cluster-scoped, otherwise defaults to the namespace of the referent.
+    """
+    key?: str
+    name?: str
+    namespace?: str
+
+    check:
+        len(key) <= 253 if key
+        len(key) >= 1 if key
+        _regex_match(str(key), r"^[-._a-zA-Z0-9]+$") if key
+        len(name) <= 253 if name
+        len(name) >= 1 if name
+        _regex_match(str(name), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$") if name
+        len(namespace) <= 63 if namespace
+        len(namespace) >= 1 if namespace
+        _regex_match(str(namespace), r"^[a-z0-9]([-a-z0-9]*[a-z0-9])?$") if namespace
+
+schema GeneratorsExternalSecretsIoV1alpha1GithubAccessTokenSpecInstallIDRef:
+    r"""
+    InstallIDRef references a secret key containing the GitHub App installation ID. Exactly one of InstallID or
+    InstallIDRef must be set.
 
     Attributes
     ----------
