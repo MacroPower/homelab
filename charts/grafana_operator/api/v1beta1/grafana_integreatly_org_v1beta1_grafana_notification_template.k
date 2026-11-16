@@ -48,7 +48,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec:
         instance selector
     name : str, default is Undefined, required
         Template name
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -61,7 +61,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateSpec:
 
     name: str
 
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     suspend?: bool
     template?: str
 
@@ -115,7 +115,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateStatus:
     Attributes
     ----------
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaNotificationTemplateStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     lastResync : str, default is Undefined, optional
         Last time the resource was synchronized with Grafana instances
     """

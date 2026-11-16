@@ -48,7 +48,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
         instance selector
     plugins : [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0], default is Undefined, optional
         plugins
-    resyncPeriod : str, default is "10m0s", optional
+    resyncPeriod : str, default is Undefined, optional
         How often the resource is synced, defaults to 10m0s if not set
     suspend : bool, default is Undefined, optional
         Suspend pauses synchronizing attempts and tells the operator to ignore changes
@@ -65,7 +65,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpec:
     instanceSelector: GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecInstanceSelector
 
     plugins?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecPluginsItems0]
-    resyncPeriod?: str = "10m0s"
+    resyncPeriod?: str
     suspend?: bool
     uid?: str
     valuesFrom?: [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0]
@@ -221,7 +221,8 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceSpecValuesFromItems0ValueFro
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -267,7 +268,7 @@ schema GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatus:
     NoMatchingInstances : bool, default is Undefined, optional
         The datasource instanceSelector can't find matching grafana instances
     conditions : [GrafanaIntegreatlyOrgV1beta1GrafanaDatasourceStatusConditionsItems0], default is Undefined, optional
-        Results when synchonizing resource with Grafana instances
+        Results when synchronizing resource with Grafana instances
     hash : str, default is Undefined, optional
         hash
     lastMessage : str, default is Undefined, optional
