@@ -455,6 +455,11 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "token": {
+          "required": [],
+          "title": "token",
+          "type": "string"
+        },
         "url": {
           "default": "https://api.dagger.cloud/magicache",
           "required": [],
@@ -471,6 +476,35 @@
       "required": [],
       "title": "nameOverride",
       "type": "string"
+    },
+    "service": {
+      "additionalProperties": true,
+      "properties": {
+        "annotations": {
+          "additionalProperties": true,
+          "description": "## Additional service annotations",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "labels": {
+          "additionalProperties": true,
+          "description": "## Additional service labels",
+          "required": [],
+          "title": "labels",
+          "type": "object"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "description": "## Kubernetes Service is created automatically when engine.port is defined\n\n## Service type (ClusterIP, NodePort, LoadBalancer)",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [],
+      "title": "service",
+      "type": "object"
     }
   },
   "required": [],
