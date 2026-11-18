@@ -641,7 +641,7 @@ hass_state = hstate.State {
         # Options not imported, because they can hold secrets or free text: ssh_keys
         core_configurator = {
             # renovate: datasource=custom.ha-app depName=core_configurator packageName=home-assistant/apps/master/configurator
-            version = "6.3.0"
+            version = "6.3.1"
             options = {dirsfirst = False, enforce_basepath = True, git = True, ignore_pattern = ["__pycache__", ".cloud", ".storage", "deps"], log_level = "info"}
             boot = "auto"
             autoUpdate = False
