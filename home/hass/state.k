@@ -667,7 +667,7 @@ hass_state = hstate.State {
         # Options not imported, because they can hold secrets or free text: lr_s2_access_control_key, lr_s2_authenticated_key, network_key, s0_legacy_key, s2_access_control_key, s2_authenticated_key, s2_unauthenticated_key
         core_zwave_js = {
             # renovate: datasource=custom.ha-app depName=core_zwave_js packageName=home-assistant/apps/master/zwave_js
-            version = "1.10.0"
+            version = "1.11.0"
             options = {log_level = "info", log_to_file = False, log_max_files = 7, rf_region = "Automatic", soft_reset = "Automatic", device = "/dev/serial/by-id/usb-Nabu_Casa_ZWA-2_1CDBD4AEB8B4-if00"}
             boot = "auto"
             autoUpdate = False
