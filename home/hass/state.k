@@ -680,7 +680,7 @@ hass_state = hstate.State {
         # Options not imported, because they can hold secrets or free text: authorized_keys, password
         core_ssh = {
             # renovate: datasource=custom.ha-app depName=core_ssh packageName=home-assistant/apps/master/ssh
-            version = "10.5.0"
+            version = "10.6.0"
             options = {apks = [], server = {tcp_forwarding = True}}
             boot = "auto"
             autoUpdate = False
