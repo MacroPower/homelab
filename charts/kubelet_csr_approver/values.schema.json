@@ -156,6 +156,12 @@
           "title": "enable",
           "type": "boolean"
         },
+        "nodePort": {
+          "default": "",
+          "required": [],
+          "title": "nodePort",
+          "type": "string"
+        },
         "port": {
           "default": 8080,
           "required": [],
