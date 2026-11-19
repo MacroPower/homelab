@@ -137,6 +137,7 @@ schema ValuesMetrics:
     ----------
     annotations : ValuesMetricsAnnotations, optional
     enable : bool, optional, default is True
+    nodePort : str, optional, default is ""
     port : int, optional, default is 8080
     serviceMonitor : ValuesMetricsServiceMonitor, optional
     serviceType : str, optional, default is "ClusterIP"
@@ -144,6 +145,7 @@ schema ValuesMetrics:
     [...str]: any
     annotations?: ValuesMetricsAnnotations
     enable?: bool
+    nodePort?: str
     port?: int
     serviceMonitor?: ValuesMetricsServiceMonitor
     serviceType?: str
