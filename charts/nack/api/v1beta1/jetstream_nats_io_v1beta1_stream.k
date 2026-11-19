@@ -50,7 +50,7 @@ schema JetstreamNatsIoV1beta1StreamSpec:
     maxBytes : int, default is -1, optional
         How big the Stream may be, when the combined stream size exceeds this old messages are removed. -1 for unlimited.
     maxConsumers : int, default is -1, optional
-        How many Consumers can be defined for a given Stream. -1 for unlimited.
+        How many Consumers can be defined for a given Stream. -1 for unlimited. From nats-server 2.15, -1 falls back to the account limit or server default (1000).
     maxMsgSize : int, default is -1, optional
         The largest message that will be accepted by the Stream. -1 for unlimited.
     maxMsgs : int, default is -1, optional

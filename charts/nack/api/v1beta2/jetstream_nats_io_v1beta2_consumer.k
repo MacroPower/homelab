@@ -125,7 +125,7 @@ schema JetstreamNatsIoV1beta2ConsumerSpec:
         When true, the KV Store will initiate TLS before server INFO.
     """
     account?: str
-    ackPolicy?: "none" | "all" | "explicit" = "none"
+    ackPolicy?: "none" | "all" | "explicit" | "flow_control" = "none"
     ackWait?: str = "1ns"
     backoff?: [str]
     creds?: str = ""

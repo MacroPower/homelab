@@ -82,6 +82,13 @@
           "title": "enabled",
           "type": "boolean"
         },
+        "env": {
+          "additionalProperties": true,
+          "description": "Environment variables to add to the controller container\nref: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/\n\nenv:\n  GOMEMLIMIT: 7GiB\n  MY_SECRET:\n    valueFrom:\n      secretKeyRef:\n        name: my-secret\n        key: token",
+          "required": [],
+          "title": "env",
+          "type": "object"
+        },
         "image": {
           "additionalProperties": true,
           "properties": {
@@ -98,7 +105,7 @@
               "type": "string"
             },
             "tag": {
-              "default": "0.22.2",
+              "default": "0.25.0",
               "required": [],
               "title": "tag",
               "type": "string"
