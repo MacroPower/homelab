@@ -29,10 +29,14 @@ schema Values:
         [DNS policy](https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-dns-policy) for the pod, if not set the default will be used.
     domainFilters : any, optional
         Limit possible target zones by domain suffixes.
+    enableGatewayListenerSets : bool, optional
+        if `true`, the Gateway API ListenerSet flag will be enabled.
     enabled : bool, optional
         No effect - reserved for use in sub-charting
     env : any, optional
         [Environment variables](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/) for the `external-dns` container.
+    eventsEmit : ["RecordReady" | "RecordDeleted" | "RecordError"], optional
+        _Kubernetes_ events to emit; valid values are `RecordReady`, `RecordDeleted` & `RecordError`. Setting this also grants the RBAC permission to create `events.k8s.io` events.
     excludeDomains : any, optional
         Intentionally exclude domains from being managed.
     extraArgs : [any] | any | str, optional
@@ -43,11 +47,17 @@ schema Values:
         Extra [volume mounts](https://kubernetes.io/docs/concepts/storage/volumes/) for the `external-dns` container.
     extraVolumes : any, optional
         Extra [volumes](https://kubernetes.io/docs/concepts/storage/volumes/) for the `Pod`.
+    fqdnTemplates : [any] | str, optional
+        [FQDN templates](https://kubernetes-sigs.github.io/external-dns/latest/docs/advanced/fqdn-templating) to use for generating DNS records.
     fullnameOverride : str, optional
         Override the full name of the chart.
     gatewayNamespace : str, optional
-        _Gateway API_ gateway namespace to watch.
+        _Gateway API_ gateway namespace to watch. When `namespaced=true`, setting this value avoids creating any cluster-scoped RBAC (no ClusterRole/ClusterRoleBinding) for Gateway sources.
     global : ValuesGlobal, optional
+    hostAliases : any, optional
+        [Host aliases](https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/) to add to the `Pod` definition, injected into the pod's `/etc/hosts`.
+    hostUsers : bool, optional
+        Whether the `Pod` shares the host's [user namespace](https://kubernetes.io/docs/concepts/workloads/pods/user-namespaces/). Set to `false` to run the `Pod` in its own user namespace, if not set the Kubernetes default will be used.
     image : ValuesImage, optional
     imagePullSecrets : [ValuesImagePullSecretsItems0], optional
         Image pull secrets.
@@ -67,6 +77,8 @@ schema Values:
         Record types to manage (default: A, AAAA, CNAME)
     nameOverride : str, optional
         Override the name of the chart.
+    namespaceOverride : str, optional
+        Override the namespace that chart resources are rendered into. Defaults to the release namespace. Useful when installing the chart as a subchart that should live in its own namespace, separate from the umbrella release namespace.
     namespaced : bool, optional
         if `true`, _ExternalDNS_ will run in a namespaced scope (`Role`` and `Rolebinding`` will be namespaced too).
     nodeSelector : ValuesNodeSelector, optional
@@ -77,16 +89,18 @@ schema Values:
         Labels to add to the `Pod`.
     podSecurityContext : ValuesPodSecurityContext, optional
         [Pod security context](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.22/#podsecuritycontext-v1-core), this supports full customisation.
-    policy : "create-only" | "sync" | "upsert-only", optional, default is "upsert-only"
-        How DNS records are synchronized between sources and providers; available values are `create-only`, `sync`, & `upsert-only`.
+    policy : "create-only" | "sync" | "upsert-only", optional
+        How DNS records are synchronized between sources and providers; must be set explicitly to one of `create-only`, `sync`, or `upsert-only`.
     priorityClassName : str, optional
         Priority class name for the `Pod`.
     provider : any | str | ValuesProvider, optional
     rbac : ValuesRbac, optional
     readinessProbe : ValuesReadinessProbe, optional
         [Readiness probe](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) configuration for the `external-dns` container.
-    registry : "txt" | "aws-sd" | "dynamodb" | "noop", optional, default is "txt"
-        Specify the registry for storing ownership and labels. Valid values are `txt`, `aws-sd`, `dynamodb` & `noop`.
+    registry : "txt" | "aws-sd" | "crd" | "dynamodb" | "noop", optional, default is "txt"
+        Specify the registry for storing ownership and labels. Valid values are `txt`, `aws-sd`, `crd`, `dynamodb` & `noop`.
+    replicaCount : int, optional
+        Number of replicas of the `external-dns` `Deployment`. external-dns does not support leader election, so this must be `0` or `1` to avoid duplicate or conflicting DNS record updates. Set to `0` to scale the `Deployment` down.
     resources : ValuesResources, optional
         [Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the `external-dns` container.
     revisionHistoryLimit : int, optional
@@ -99,6 +113,8 @@ schema Values:
     serviceMonitor : ValuesServiceMonitor, optional
     shareProcessNamespace : bool, optional
         If `true`, the `Pod` will have [process namespace sharing](https://kubernetes.io/docs/tasks/configure-pod-container/share-process-namespace/) enabled.
+    sourceNamespace : str, optional
+        Source namespace to watch for Kubernetes resources other than Gateway API gateways. Used only when `namespaced=true`. Defaults to Release.Namespace
     sources : [str], optional
         _Kubernetes_ resources to monitor for DNS entries.
     terminationGracePeriodSeconds : int, optional
@@ -116,7 +132,7 @@ schema Values:
     txtSuffix : str, optional
         Specify a suffix for the domain names of TXT records created for the `txt` registry. Mutually exclusive with `txtPrefix`.
     """
-    [...str]: any
+
     affinity?: ValuesAffinity
     annotationFilter?: str
     annotationPrefix?: str
@@ -127,16 +143,21 @@ schema Values:
     dnsConfig?: any
     dnsPolicy?: str
     domainFilters?: any
+    enableGatewayListenerSets?: bool
     enabled?: bool
     env?: any
+    eventsEmit?: ["RecordReady" | "RecordDeleted" | "RecordError"]
     excludeDomains?: any
     extraArgs?: [any] | any | str
     extraContainers?: any
     extraVolumeMounts?: any
     extraVolumes?: any
+    fqdnTemplates?: [any] | str
     fullnameOverride?: str
     gatewayNamespace?: str
     global?: ValuesGlobal
+    hostAliases?: any
+    hostUsers?: bool
     image?: ValuesImage
     imagePullSecrets?: [ValuesImagePullSecretsItems0]
     initContainers?: any
@@ -147,6 +168,7 @@ schema Values:
     logLevel?: "panic" | "debug" | "info" | "warning" | "error" | "fatal"
     managedRecordTypes?: [any] | str
     nameOverride?: str
+    namespaceOverride?: str
     namespaced?: bool
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
@@ -157,7 +179,8 @@ schema Values:
     provider?: any | str | ValuesProvider
     rbac?: ValuesRbac
     readinessProbe?: ValuesReadinessProbe
-    registry?: "txt" | "aws-sd" | "dynamodb" | "noop"
+    registry?: "txt" | "aws-sd" | "crd" | "dynamodb" | "noop"
+    replicaCount?: int
     resources?: ValuesResources
     revisionHistoryLimit?: int
     secretConfiguration?: ValuesSecretConfiguration
@@ -166,6 +189,7 @@ schema Values:
     serviceAccount?: ValuesServiceAccount
     serviceMonitor?: ValuesServiceMonitor
     shareProcessNamespace?: bool
+    sourceNamespace?: str
     sources?: [str]
     terminationGracePeriodSeconds?: int
     tolerations?: any
@@ -174,26 +198,32 @@ schema Values:
     txtOwnerId?: str
     txtPrefix?: str
     txtSuffix?: str
+    [...str]: any
 
     check:
+        replicaCount <= 1 if replicaCount
+        replicaCount >= 0 if replicaCount
         revisionHistoryLimit >= 0 if revisionHistoryLimit
 
 schema ValuesAffinity:
     r"""
     Affinity settings for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/). If an explicit label selector is not provided for pod affinity or pod anti-affinity one will be created from the pod selector labels.
     """
+
     [...str]: any
 
 schema ValuesCommonLabels:
     r"""
     Labels to add to all chart resources.
     """
+
     [...str]: any
 
 schema ValuesDeploymentAnnotations:
     r"""
     Annotations to add to the `Deployment`.
     """
+
     [...str]: any
 
 schema ValuesDeploymentStrategy:
@@ -204,8 +234,9 @@ schema ValuesDeploymentStrategy:
     ----------
     $type : "Recreate" | "RollingUpdate", optional, default is "Recreate"
     """
-    [...str]: any
+
     $type?: "Recreate" | "RollingUpdate"
+    [...str]: any
 
 schema ValuesGlobal:
     r"""
@@ -216,12 +247,14 @@ schema ValuesGlobal:
     imagePullSecrets : [ValuesGlobalImagePullSecretsItems0], optional
         Global image pull secrets.
     """
+
     imagePullSecrets?: [ValuesGlobalImagePullSecretsItems0]
 
 schema ValuesGlobalImagePullSecretsItems0:
     r"""
     ValuesGlobalImagePullSecretsItems0
     """
+
     [...str]: any
 
 schema ValuesImage:
@@ -237,6 +270,7 @@ schema ValuesImage:
     tag : str, optional
         Image tag for the `external-dns` container, this will default to `.Chart.AppVersion` if not set.
     """
+
     pullPolicy?: "IfNotPresent" | "Always"
     repository?: str
     tag?: str
@@ -245,6 +279,7 @@ schema ValuesImagePullSecretsItems0:
     r"""
     ValuesImagePullSecretsItems0
     """
+
     [...str]: any
 
 schema ValuesLivenessProbe:
@@ -260,6 +295,7 @@ schema ValuesLivenessProbe:
     successThreshold : int, optional
     timeoutSeconds : int, optional
     """
+
     failureThreshold?: int
     httpGet?: ValuesLivenessProbeHttpGet
     initialDelaySeconds?: int
@@ -276,6 +312,7 @@ schema ValuesLivenessProbeHttpGet:
     path : str, optional
     port : str, optional
     """
+
     path?: str
     port?: str
 
@@ -283,18 +320,21 @@ schema ValuesNodeSelector:
     r"""
     Node labels to match for `Pod` [scheduling](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
     """
+
     [...str]: any
 
 schema ValuesPodAnnotations:
     r"""
     Annotations to add to the `Pod`.
     """
+
     [...str]: any
 
 schema ValuesPodLabels:
     r"""
     Labels to add to the `Pod`.
     """
+
     [...str]: any
 
 schema ValuesPodSecurityContext:
@@ -307,6 +347,7 @@ schema ValuesPodSecurityContext:
     runAsNonRoot : bool, optional
     seccompProfile : ValuesPodSecurityContextSeccompProfile, optional
     """
+
     fsGroup?: int
     runAsNonRoot?: bool
     seccompProfile?: ValuesPodSecurityContextSeccompProfile
@@ -319,6 +360,7 @@ schema ValuesPodSecurityContextSeccompProfile:
     ----------
     $type : str, optional
     """
+
     $type?: str
 
 schema ValuesProvider:
@@ -331,6 +373,7 @@ schema ValuesProvider:
         _ExternalDNS_ provider name; for the available providers and how to configure them see [README](https://github.com/kubernetes-sigs/external-dns/blob/master/charts/external-dns/README.md#providers).
     webhook : ValuesProviderWebhook, optional
     """
+
     name?: str
     webhook?: ValuesProviderWebhook
 
@@ -356,11 +399,12 @@ schema ValuesProviderWebhook:
     resources : ValuesProviderWebhookResources, optional
         [Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the `webhook` container.
     securityContext : ValuesProviderWebhookSecurityContext, optional
-        [Pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) for the `webhook` container.
+        [Security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) for the `webhook` container.
     service : ValuesProviderWebhookService, optional
     serviceMonitor : ValuesProviderWebhookServiceMonitor, optional
         Optional [Service Monitor](https://prometheus-operator.dev/docs/operator/design/#servicemonitor) configuration for the `webhook` container.
     """
+
     args?: any
     env?: any
     extraVolumeMounts?: any
@@ -387,6 +431,7 @@ schema ValuesProviderWebhookImage:
     tag : str, optional
         Image tag for the `webhook` container.
     """
+
     pullPolicy?: str
     repository?: str
     tag?: str
@@ -400,6 +445,7 @@ schema ValuesProviderWebhookLimits:
     cpu : str, optional
     memory : str, optional
     """
+
     cpu?: str
     memory?: str
 
@@ -416,6 +462,7 @@ schema ValuesProviderWebhookLivenessProbe:
     successThreshold : int, optional
     timeoutSeconds : int, optional
     """
+
     failureThreshold?: int
     httpGet?: ValuesProviderWebhookLivenessProbeHttpGet
     initialDelaySeconds?: int
@@ -432,6 +479,7 @@ schema ValuesProviderWebhookLivenessProbeHttpGet:
     path : str, optional
     port : int | str, optional, default is "string"
     """
+
     path?: str
     port?: int | str
 
@@ -448,6 +496,7 @@ schema ValuesProviderWebhookReadinessProbe:
     successThreshold : int, optional
     timeoutSeconds : int, optional
     """
+
     failureThreshold?: int
     httpGet?: ValuesProviderWebhookReadinessProbeHttpGet
     initialDelaySeconds?: int
@@ -464,6 +513,7 @@ schema ValuesProviderWebhookReadinessProbeHttpGet:
     path : str, optional
     port : int | str, optional, default is "string"
     """
+
     path?: str
     port?: int | str
 
@@ -476,6 +526,7 @@ schema ValuesProviderWebhookRequests:
     cpu : str, optional
     memory : str, optional
     """
+
     cpu?: str
     memory?: str
 
@@ -483,13 +534,36 @@ schema ValuesProviderWebhookResources:
     r"""
     [Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/) for the `webhook` container.
     """
+
     [...str]: any
 
 schema ValuesProviderWebhookSecurityContext:
     r"""
-    [Pod security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) for the `webhook` container.
+    [Security context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) for the `webhook` container.
+
+    Attributes
+    ----------
+    allowPrivilegeEscalation : bool, optional
+    capabilities : ValuesProviderWebhookSecurityContextCapabilities, optional
+    privileged : bool, optional
+    readOnlyRootFilesystem : bool, optional
     """
-    [...str]: any
+
+    allowPrivilegeEscalation?: bool
+    capabilities?: ValuesProviderWebhookSecurityContextCapabilities
+    privileged?: bool
+    readOnlyRootFilesystem?: bool
+
+schema ValuesProviderWebhookSecurityContextCapabilities:
+    r"""
+    ValuesProviderWebhookSecurityContextCapabilities
+
+    Attributes
+    ----------
+    drop : [str], optional
+    """
+
+    drop?: [str]
 
 schema ValuesProviderWebhookService:
     r"""
@@ -500,6 +574,7 @@ schema ValuesProviderWebhookService:
     port : int, optional
         Webhook exposed HTTP port for the service.
     """
+
     port?: int
 
 schema ValuesProviderWebhookServiceMonitor:
@@ -516,6 +591,7 @@ schema ValuesProviderWebhookServiceMonitor:
     scrapeTimeout : str, optional
     tlsConfig : ValuesProviderWebhookServiceMonitorTlsConfig, optional
     """
+
     bearerTokenFile?: str
     interval?: str
     metricRelabelings?: any
@@ -528,6 +604,7 @@ schema ValuesProviderWebhookServiceMonitorTlsConfig:
     r"""
     ValuesProviderWebhookServiceMonitorTlsConfig
     """
+
     [...str]: any
 
 schema ValuesRbac:
@@ -541,9 +618,10 @@ schema ValuesRbac:
     create : bool, optional
         If `true`, create a `ClusterRole` & `ClusterRoleBinding` with access to the Kubernetes API.
     """
-    [...str]: any
+
     additionalPermissions?: any
     create?: bool
+    [...str]: any
 
 schema ValuesReadinessProbe:
     r"""
@@ -558,6 +636,7 @@ schema ValuesReadinessProbe:
     successThreshold : int, optional
     timeoutSeconds : int, optional
     """
+
     failureThreshold?: int
     httpGet?: ValuesReadinessProbeHttpGet
     initialDelaySeconds?: int
@@ -574,6 +653,7 @@ schema ValuesReadinessProbeHttpGet:
     path : str, optional
     port : str, optional
     """
+
     path?: str
     port?: str
 
@@ -586,6 +666,7 @@ schema ValuesResources:
     limits : ValuesResourcesLimits, optional
     requests : ValuesResourcesRequests, optional
     """
+
     limits?: ValuesResourcesLimits
     requests?: ValuesResourcesRequests
 
@@ -598,6 +679,7 @@ schema ValuesResourcesLimits:
     cpu : str, optional
     memory : str, optional
     """
+
     cpu?: str
     memory?: str
 
@@ -610,6 +692,7 @@ schema ValuesResourcesRequests:
     cpu : str, optional
     memory : str, optional
     """
+
     cpu?: str
     memory?: str
 
@@ -628,6 +711,7 @@ schema ValuesSecretConfiguration:
     subPath : str, optional
         Sub-path for mounting the `Secret`, this can be templated.
     """
+
     data?: ValuesSecretConfigurationData
     enabled?: bool
     mountPath?: str
@@ -637,6 +721,7 @@ schema ValuesSecretConfigurationData:
     r"""
     `Secret` data.
     """
+
     [...str]: any
 
 schema ValuesSecurityContext:
@@ -653,6 +738,7 @@ schema ValuesSecurityContext:
     runAsNonRoot : bool, optional
     runAsUser : int, optional
     """
+
     allowPrivilegeEscalation?: bool
     capabilities?: ValuesSecurityContextCapabilities
     privileged?: bool
@@ -669,6 +755,7 @@ schema ValuesSecurityContextCapabilities:
     ----------
     drop : [str], optional
     """
+
     drop?: [str]
 
 schema ValuesService:
@@ -679,6 +766,8 @@ schema ValuesService:
     ----------
     annotations : ValuesServiceAnnotations, optional
         Service annotations.
+    enabled : bool, optional
+        If `true`, create a `Service` Kubernetes.
     ipFamilies : [any] | "IPv4" | "IPv6", optional
         Service IP families (e.g. IPv4 and/or IPv6).
     ipFamilyPolicy : "SingleStack" | "PreferDualStack" | "RequireDualStack", optional
@@ -686,7 +775,9 @@ schema ValuesService:
     port : int, optional, default is 7979
         Service HTTP port.
     """
+
     annotations?: ValuesServiceAnnotations
+    enabled?: bool
     ipFamilies?: [any] | "IPv4" | "IPv6"
     ipFamilyPolicy?: "SingleStack" | "PreferDualStack" | "RequireDualStack"
     port?: int
@@ -713,6 +804,7 @@ schema ValuesServiceAccount:
     name : str, optional
         If this is set and `serviceAccount.create` is `true` this will be used for the created `ServiceAccount` name, if set and `serviceAccount.create` is `false` then this will define an existing `ServiceAccount` to use.
     """
+
     annotations?: ValuesServiceAccountAnnotations
     automountServiceAccountToken?: bool
     create?: bool
@@ -723,18 +815,21 @@ schema ValuesServiceAccountAnnotations:
     r"""
     Annotations to add to the service account. Templates are allowed in both the key and the value. Example: `example.com/annotation/{{ .Values.nameOverride }}: {{ .Values.nameOverride }}`
     """
+
     [...str]: any
 
 schema ValuesServiceAccountLabels:
     r"""
     Labels to add to the service account.
     """
+
     [...str]: any
 
 schema ValuesServiceAnnotations:
     r"""
     Service annotations.
     """
+
     [...str]: any
 
 schema ValuesServiceMonitor:
@@ -768,6 +863,7 @@ schema ValuesServiceMonitor:
     tlsConfig : ValuesServiceMonitorTlsConfig, optional
         Configure the `ServiceMonitor` [TLS config](https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#tlsconfig).
     """
+
     additionalLabels?: ValuesServiceMonitorAdditionalLabels
     annotations?: ValuesServiceMonitorAnnotations
     bearerTokenFile?: str
@@ -785,17 +881,20 @@ schema ValuesServiceMonitorAdditionalLabels:
     r"""
     Additional labels for the `ServiceMonitor`.
     """
+
     [...str]: any
 
 schema ValuesServiceMonitorAnnotations:
     r"""
     Annotations to add to the `ServiceMonitor`.
     """
+
     [...str]: any
 
 schema ValuesServiceMonitorTlsConfig:
     r"""
     Configure the `ServiceMonitor` [TLS config](https://github.com/coreos/prometheus-operator/blob/master/Documentation/api.md#tlsconfig).
     """
+
     [...str]: any
 
