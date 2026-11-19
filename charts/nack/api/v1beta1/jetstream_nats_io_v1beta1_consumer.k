@@ -76,7 +76,7 @@ schema JetstreamNatsIoV1beta1ConsumerSpec:
     streamName : str, default is Undefined, optional
         The name of the Stream to create the Consumer in.
     """
-    ackPolicy?: "none" | "all" | "explicit" = "none"
+    ackPolicy?: "none" | "all" | "explicit" | "flow_control" = "none"
     ackWait?: str = "1ns"
     deliverGroup?: str
     deliverPolicy?: "all" | "last" | "new" | "byStartSequence" | "byStartTime" = "all"

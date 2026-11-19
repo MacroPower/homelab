@@ -121,6 +121,17 @@ schema ValuesJetstream:
         Enable controller-runtime backend
         See https://github.com/nats-io/nack/blob/50d1f5/README.md#controller-modes
     enabled : bool, optional, default is True
+    env : ValuesJetstreamEnv, optional
+        Environment variables to add to the controller container
+        ref: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
+
+        env:
+          GOMEMLIMIT: 7GiB
+          MY_SECRET:
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: token
     image : ValuesJetstreamImage, optional
     nats : ValuesJetstreamNats, optional
         NATS URL
@@ -132,9 +143,25 @@ schema ValuesJetstream:
     additionalArgs?: [any]
     controlLoop?: bool
     enabled?: bool
+    env?: ValuesJetstreamEnv
     image?: ValuesJetstreamImage
     nats?: ValuesJetstreamNats
     tls?: ValuesJetstreamTls
+
+schema ValuesJetstreamEnv:
+    r"""
+    Environment variables to add to the controller container
+    ref: https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/
+
+    env:
+      GOMEMLIMIT: 7GiB
+      MY_SECRET:
+        valueFrom:
+          secretKeyRef:
+            name: my-secret
+            key: token
+    """
+    [...str]: any
 
 schema ValuesJetstreamImage:
     r"""
@@ -144,7 +171,7 @@ schema ValuesJetstreamImage:
     ----------
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "natsio/jetstream-controller"
-    tag : str, optional, default is "0.22.2"
+    tag : str, optional, default is "0.25.0"
     """
     [...str]: any
     pullPolicy?: str
