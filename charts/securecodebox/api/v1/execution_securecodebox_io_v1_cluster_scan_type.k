@@ -149,6 +149,8 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpec:
         Possible values are:
         - TerminatingOrFailed means that we recreate pods
           when they are terminating (has a metadata.deletionTimestamp) or failed.
+    scheduling : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecScheduling, default is Undefined, optional
+        scheduling
     selector : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSelector, default is Undefined, optional
         selector
     successPolicy : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSuccessPolicy, default is Undefined, optional
@@ -176,6 +178,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpec:
     parallelism?: int
     podFailurePolicy?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecPodFailurePolicy
     podReplacementPolicy?: str
+    scheduling?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecScheduling
     selector?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSelector
     successPolicy?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSuccessPolicy
     suspend?: bool
@@ -255,7 +258,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecPodFailurePol
 
     Attributes
     ----------
-    status : str, default is Undefined, required
+    status : str, default is Undefined, optional
         Specifies the required Pod condition status. To match a pod condition
         it is required that the specified status equals the pod condition status.
         Defaults to True.
@@ -263,9 +266,136 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecPodFailurePol
         Specifies the required Pod condition type. To match a pod condition
         it is required that specified type equals the pod condition type.
     """
-    status: str
-
+    status?: str
     $type: str
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecScheduling:
+    r"""
+    scheduling defines the Workload-aware Scheduling configuration for this Job.
+    When set, it specifies the scheduling policy (basic or gang), topology
+    constraints, disruption mode, and shared resource claims.
+
+    Attributes
+    ----------
+    disruptionMode : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingDisruptionMode, default is Undefined, optional
+        disruption mode
+    resourceClaims : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingResourceClaimsItems0], default is Undefined, optional
+        ResourceClaims defines which ResourceClaims may be shared among Pods in
+        the Job. Pods consume the devices allocated to a PodGroup's claim by
+        defining a claim in its own Spec.ResourceClaims that matches the
+        PodGroup's claim exactly.
+    schedulingConstraints : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingConstraints, default is Undefined, optional
+        scheduling constraints
+    schedulingPolicy : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingPolicy, default is Undefined, optional
+        scheduling policy
+    """
+    disruptionMode?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingDisruptionMode
+    resourceClaims?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingResourceClaimsItems0]
+    schedulingConstraints?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingConstraints
+    schedulingPolicy?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingPolicy
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingDisruptionMode:
+    r"""
+    DisruptionMode defines the mode in which the Job's pods can be disrupted.
+    One of Single, All.
+    This field is immutable after creation: it may not be added or removed,
+    and the selected mode may not be changed.
+
+    Attributes
+    ----------
+    $all : any, default is Undefined, optional
+        all specifies that all pods in the group must be disrupted together.
+    single : any, default is Undefined, optional
+        single specifies that pods can be disrupted independently from each other.
+    """
+    $all?: any
+    single?: any
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingResourceClaimsItems0:
+    r"""
+    WorkloadPodGroupResourceClaim references a dynamic resource claim
+    that is shared across pods in the group.
+
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        name uniquely identifies this resource claim inside the group.
+        This field is required. It must be a DNS_LABEL.
+    resourceClaimName : str, default is Undefined, optional
+        resourceClaimName is the name of a ResourceClaim object in the same
+        namespace.
+        This field is optional. If it is not specified, no resource claim
+        is used. If set, it must be a DNS subdomain.
+    resourceClaimTemplateName : str, default is Undefined, optional
+        resourceClaimTemplateName is the name of a ResourceClaimTemplate
+        object in the same namespace.
+        This field is optional. If it is not specified, no resource claim
+        template is used. If set, it must be a DNS subdomain.
+    """
+    name: str
+
+    resourceClaimName?: str
+    resourceClaimTemplateName?: str
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingConstraints:
+    r"""
+    SchedulingConstraints defines scheduling constraints (e.g. topology)
+    for the Job's pods.
+    This field is immutable after creation.
+
+    Attributes
+    ----------
+    topology : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingConstraintsTopologyItems0], default is Undefined, optional
+        topology specifies desired topological placements for all pods
+        within the pod group.
+        If unset, no topology placement is requested.
+    """
+    topology?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingConstraintsTopologyItems0]
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingConstraintsTopologyItems0:
+    r"""
+    TopologyConstraint defines a topology constraint for a PodGroup.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key specifies the key of the node label representing the topology domain.
+        All pods within the PodGroup must be colocated within the same domain instance.
+    """
+    key: str
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingPolicy:
+    r"""
+    SchedulingPolicy defines the scheduling policy for this Job.
+    Exactly one of Basic or Gang must be set.
+    This field is immutable after creation: the policy may not be added or
+    removed.
+
+    Attributes
+    ----------
+    basic : any, default is Undefined, optional
+        basic specifies that standard, pod-by-pod Kubernetes scheduling
+        behavior should be used.
+    gang : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingPolicyGang, default is Undefined, optional
+        gang
+    """
+    basic?: any
+    gang?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingPolicyGang
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSchedulingSchedulingPolicyGang:
+    r"""
+    gang specifies all-or-nothing scheduling semantics.
+
+    Attributes
+    ----------
+    minCount : int, default is Undefined, optional
+        minCount is the minimum number of pods that must be scheduled
+        at the same time for the scheduler to admit the entire group.
+        This field is optional. If it is not specified, the controller
+        should inject a context-specific sane default (e.g.
+    """
+    minCount?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecSelector:
     r"""
@@ -396,6 +526,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpec:
         List of ephemeral containers run in this pod. Ephemeral containers may be run in an existing
         pod to perform user-initiated actions such as debugging. This list cannot be specified when
         creating a pod, and it cannot be modified by updating the pod spec.
+    evictionResponders : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEvictionRespondersItems0], default is Undefined, optional
+        evictionResponders reference responders that react to Evictions based on EvictionRequests.
+        Responders should observe and communicate through the Eviction Resource API to help with
+        the graceful termination of a pod.
     hostAliases : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecHostAliasesItems0], default is Undefined, optional
         HostAliases is an optional list of hosts and IPs that will be injected into the pod's hosts
         file if specified.
@@ -441,7 +575,8 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpec:
     preemptionPolicy : str, default is Undefined, optional
         PreemptionPolicy is the Policy for preempting pods with lower priority.
         One of Never, PreemptLowerPriority.
-        Defaults to PreemptLowerPriority if unset.
+        When Priority Admission Controller is enabled, it prevents users from setting
+        this field.
     priority : int, default is Undefined, optional
         The priority value. Various system components use this field to find the
         priority of the pod. When Priority Admission Controller is enabled, it
@@ -478,6 +613,8 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpec:
         SchedulingGates is an opaque list of values that if specified will block scheduling the pod.
         If schedulingGates is not empty, the pod will stay in the SchedulingGated state and the
         scheduler will not attempt to schedule the pod.
+    schedulingGroup : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSchedulingGroup, default is Undefined, optional
+        scheduling group
     securityContext : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSecurityContext, default is Undefined, optional
         security context
     serviceAccount : str, default is Undefined, optional
@@ -519,6 +656,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpec:
     dnsPolicy?: str
     enableServiceLinks?: bool
     ephemeralContainers?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEphemeralContainersItems0]
+    evictionResponders?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEvictionRespondersItems0]
     hostAliases?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecHostAliasesItems0]
     hostIPC?: bool
     hostNetwork?: bool
@@ -542,6 +680,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpec:
     runtimeClassName?: str
     schedulerName?: str
     schedulingGates?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSchedulingGatesItems0]
+    schedulingGroup?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSchedulingGroup
     securityContext?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSecurityContext
     serviceAccount?: str
     serviceAccountName?: str
@@ -1328,6 +1467,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         readiness probe
     resizePolicy : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -1505,7 +1645,8 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -1678,6 +1819,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1687,6 +1831,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -1786,6 +1931,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1795,6 +1943,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -1907,6 +2056,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -1915,6 +2068,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -1936,6 +2090,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -1945,6 +2102,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -2075,6 +2233,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2083,6 +2245,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2104,6 +2267,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2113,6 +2279,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -2276,7 +2443,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
+        Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
         Default is false.
@@ -2490,6 +2657,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -2498,6 +2669,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -2519,6 +2691,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -2528,6 +2703,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -2583,9 +2759,13 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -2609,6 +2789,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecC
         Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
         Defaults to "" (volume's root).
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -2884,7 +3065,8 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -3056,6 +3238,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3065,6 +3250,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEphemeralContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -3164,6 +3350,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3173,6 +3362,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEphemeralContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -3282,6 +3472,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -3290,6 +3484,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -3311,6 +3506,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3320,6 +3518,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEphemeralContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -3447,6 +3646,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -3455,6 +3658,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -3476,6 +3680,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3485,6 +3692,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEphemeralContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -3646,7 +3854,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
+        Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
         Default is false.
@@ -3858,6 +4066,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -3866,6 +4078,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -3887,6 +4100,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -3896,6 +4112,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEphemeralContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -3951,9 +4168,13 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -3977,6 +4198,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
         Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
         Defaults to "" (volume's root).
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -3986,6 +4208,29 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecE
     recursiveReadOnly?: str
     subPath?: str
     subPathExpr?: str
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecEvictionRespondersItems0:
+    r"""
+    EvictionResponder allows you to specify the responder reacting to an Eviction.
+    Responders should observe and communicate through the Eviction Resource API to help with
+    the graceful eviction of a target (e.g. termination of a pod).
+
+    Attributes
+    ----------
+    name : str, default is Undefined, required
+        name allows you to identify the responder responding to the Eviction.
+
+        It must be a valid domain-prefixed key (such as "acme.io/foo").
+        Domain names *.k8s.io and *.kubernetes.io are reserved.
+        This field must be unique for each responder.
+    priority : int, default is Undefined, required
+        priority for this responder. Higher priorities are selected first by the evictionrequest-controller.
+        If there are responders with the same priority, the responder whose domain name comes first in the
+        alphabetical higher domain order, will be picked.
+    """
+    name: str
+
+    priority: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecHostAliasesItems0:
     r"""
@@ -4067,6 +4312,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         readiness probe
     resizePolicy : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0ResizePolicyItems0], default is Undefined, optional
         Resources resize policy for the container.
+        This field cannot be set on ephemeral containers.
     resources : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0Resources, default is Undefined, optional
         resources
     restartPolicy : str, default is Undefined, optional
@@ -4244,7 +4490,8 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -4417,6 +4664,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4426,6 +4676,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0LifecyclePostStartHTTPGetHTTPHeadersItems0:
@@ -4525,6 +4776,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4534,6 +4788,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0LifecyclePreStopHTTPGetHTTPHeadersItems0:
@@ -4646,6 +4901,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -4654,6 +4913,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -4675,6 +4935,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4684,6 +4947,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0LivenessProbeHTTPGetHTTPHeadersItems0:
@@ -4814,6 +5078,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -4822,6 +5090,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -4843,6 +5112,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -4852,6 +5124,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0ReadinessProbeHTTPGetHTTPHeadersItems0:
@@ -5015,7 +5288,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         procMount denotes the type of proc mount to use for the containers.
         The default value is Default which uses the container runtime defaults for
         readonly paths and masked paths.
-        This requires the ProcMountType feature flag to be enabled.
+        Note that this field cannot be set when spec.os.name is windows.
     readOnlyRootFilesystem : bool, default is Undefined, optional
         Whether this container has a read-only root filesystem.
         Default is false.
@@ -5229,6 +5502,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
     Attributes
     ----------
+    mode : str, default is Undefined, optional
+        mode specifies the connection mode for the gRPC health probe.
+        Set to "TLS" to use TLS without certificate verification.
+        Set to "Plaintext" to use a plaintext (insecure) connection explicitly.
     port : int, default is Undefined, required
         Port number of the gRPC service. Number must be in the range 1 to 65535.
     service : str, default is Undefined, optional
@@ -5237,6 +5514,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
         If this is not specified, the default behavior is defined by gRPC.
     """
+    mode?: str
     port: int
 
     service?: str = ""
@@ -5258,6 +5536,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         Name or number of the port to access on the container.
         Number must be in the range 1 to 65535.
         Name must be an IANA_SVC_NAME.
+    $protocol : str, default is Undefined, optional
+        Protocol selects the wire protocol for the probe connection.
+        Nil defaults to HTTP/1.1.
     scheme : str, default is Undefined, optional
         Scheme to use for connecting to the host.
         Defaults to HTTP.
@@ -5267,6 +5548,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
     path?: str
     port: int | str
 
+    $protocol?: str
     scheme?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecInitContainersItems0StartupProbeHTTPGetHTTPHeadersItems0:
@@ -5322,9 +5604,13 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -5348,6 +5634,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecI
         Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
         Defaults to "" (volume's root).
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -5479,6 +5766,22 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecS
         Each scheduling gate must have a unique name field.
     """
     name: str
+
+schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSchedulingGroup:
+    r"""
+    SchedulingGroup provides a reference to the immediate scheduling runtime
+    grouping object that this Pod belongs to.
+    This field is used by the scheduler to identify the group and apply the
+    correct group scheduling policies.
+
+    Attributes
+    ----------
+    podGroupName : str, default is Undefined, optional
+        PodGroupName specifies the name of the standalone PodGroup object
+        that represents the runtime instance of this group.
+        Must be a DNS subdomain.
+    """
+    podGroupName?: str
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecSecurityContext:
     r"""
@@ -5672,7 +5975,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecT
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
@@ -6069,6 +6372,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
     defaultMode : int, default is Undefined, optional
         defaultMode is optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ConfigMapItemsItems0], default is Undefined, optional
         items if unspecified, each key-value pair in the Data field of the referenced
         ConfigMap will be projected into the volume as a file whose name is the
@@ -6083,6 +6390,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         optional specify whether the ConfigMap or its keys must be defined
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ConfigMapItemsItems0]
     name?: str = ""
     optional?: bool
@@ -6104,11 +6412,17 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0Csi:
     r"""
@@ -6167,10 +6481,15 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         Optional: mode bits to use on created files by default. Must be a
         Optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of downward API volume file
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0]
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0:
@@ -6189,12 +6508,17 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -6243,11 +6567,16 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         The default is "" which means to use the node's default medium.
         Must be an empty string (default) or Memory.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    mode : int, default is Undefined, optional
+        mode specifies the permission bits for the emptyDir directory, in numeric
+        notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+        If not specified, defaults to 0777.
     sizeLimit : int | str, default is Undefined, optional
         sizeLimit is the total amount of local storage required for this EmptyDir volume.
         The size limit is also applicable for memory medium.
     """
     medium?: str
+    mode?: int
     sizeLimit?: int | str
 
     check:
@@ -6379,6 +6708,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
+    Users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
 
     Attributes
     ----------
@@ -6773,7 +7105,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -6801,11 +7133,16 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         defaultMode are the mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
         YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     sources : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0], default is Undefined, optional
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
     defaultMode?: int
+    defaultUser?: int
     sources?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0]
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0:
@@ -6859,6 +7196,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         Select all ClusterTrustBundles that match this signer name.
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     labelSelector?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -6866,6 +7207,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
     path: str
 
     signerName?: str
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -6950,11 +7292,17 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
@@ -6983,12 +7331,17 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -7064,6 +7417,16 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         If omitted, kube-apiserver will set it to 86400(24 hours).
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -7072,6 +7435,9 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
 
     maxExpirationSeconds?: int
     signerName: str
+
+    user?: int
+    userAnnotations?: {str:str}
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -7113,11 +7479,17 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
@@ -7137,10 +7509,16 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
     path : str, default is Undefined, required
         path is the path relative to the mount point of the file to project the
         token into.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     audience?: str
     expirationSeconds?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0Quobyte:
     r"""
@@ -7315,6 +7693,10 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
     defaultMode : int, default is Undefined, optional
         defaultMode is Optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0SecretItemsItems0], default is Undefined, optional
         items If unspecified, each key-value pair in the Data field of the referenced
         Secret will be projected into the volume as a file whose name is the
@@ -7326,6 +7708,7 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0SecretItemsItems0]
     optional?: bool
     secretName?: str
@@ -7347,11 +7730,17 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecV
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateSpecTemplateSpecVolumesItems0Storageos:
     r"""
@@ -7469,9 +7858,6 @@ schema ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateStatus:
     terminating : int, default is Undefined, optional
         The number of pods which are terminating (in phase Pending or Running
         and have a deletionTimestamp).
-
-        This field is beta-level. The job controller populates the field when
-        the feature gate JobPodReplacementPolicy is enabled (enabled by default).
     uncountedTerminatedPods : ExecutionSecurecodeboxIoV1ClusterScanTypeSpecJobTemplateStatusUncountedTerminatedPods, default is Undefined, optional
         uncounted terminated pods
     """

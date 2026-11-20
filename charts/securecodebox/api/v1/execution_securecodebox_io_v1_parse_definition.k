@@ -858,7 +858,8 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecEnvItems0ValueFromConfigMapK
     Attributes
     ----------
     key : str, default is Undefined, required
-        The key to select.
+        The key to select from the ConfigMap's Data field.
+        Keys in the BinaryData field are not currently propagated to container env vars.
     name : str, default is Undefined, optional
         Name of the referent.
         This field is effectively required, but due to backwards compatibility is
@@ -1039,7 +1040,7 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecTolerationsItems0:
         If the key is empty, operator must be Exists; this combination means to match all values and all keys.
     operator : str, default is Undefined, optional
         Operator represents a key's relationship to the value.
-        Valid operators are Exists and Equal. Defaults to Equal.
+        Valid operators are Exists, Equal, Lt, and Gt. Defaults to Equal.
         Exists is equivalent to wildcard for value, so that a pod can
         tolerate all taints of a particular category.
     tolerationSeconds : int, default is Undefined, optional
@@ -1062,9 +1063,13 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumeMountsItems0:
 
     Attributes
     ----------
+    bindMountOptions : [str], default is Undefined, optional
+        bindMountOptions is the list of additional bind mount options to apply when
+        mounting this volume into the container. Allowed values are noexec,
+        nodev, and nosuid. These are Linux mount options and have no effect on
+        Windows nodes.
     mountPath : str, default is Undefined, required
-        Path within the container at which the volume should be mounted.  Must
-        not contain ':'.
+        Path within the container at which the volume should be mounted.
     mountPropagation : str, default is Undefined, optional
         mountPropagation determines how mounts are propagated from the host
         to container and the other way around.
@@ -1088,6 +1093,7 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumeMountsItems0:
         Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment.
         Defaults to "" (volume's root).
     """
+    bindMountOptions?: [str]
     mountPath: str
 
     mountPropagation?: str
@@ -1387,6 +1393,10 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ConfigMap:
     defaultMode : int, default is Undefined, optional
         defaultMode is optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ConfigMapItemsItems0], default is Undefined, optional
         items if unspecified, each key-value pair in the Data field of the referenced
         ConfigMap will be projected into the volume as a file whose name is the
@@ -1401,6 +1411,7 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ConfigMap:
         optional specify whether the ConfigMap or its keys must be defined
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ConfigMapItemsItems0]
     name?: str = ""
     optional?: bool
@@ -1422,11 +1433,17 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ConfigMapItemsI
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0Csi:
     r"""
@@ -1485,10 +1502,15 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPI:
         Optional: mode bits to use on created files by default. Must be a
         Optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0], default is Undefined, optional
         Items is a list of downward API volume file
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0]
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0:
@@ -1507,12 +1529,17 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItem
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -1561,11 +1588,16 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0EmptyDir:
         The default is "" which means to use the node's default medium.
         Must be an empty string (default) or Memory.
         More info: https://kubernetes.io/docs/concepts/storage/volumes#emptydir
+    mode : int, default is Undefined, optional
+        mode specifies the permission bits for the emptyDir directory, in numeric
+        notation (e.g., 0755, 01777). Must be a value between 0000 and 01777.
+        If not specified, defaults to 0777.
     sizeLimit : int | str, default is Undefined, optional
         sizeLimit is the total amount of local storage required for this EmptyDir volume.
         The size limit is also applicable for memory medium.
     """
     medium?: str
+    mode?: int
     sizeLimit?: int | str
 
     check:
@@ -1697,6 +1729,9 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0EphemeralVolume
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0EphemeralVolumeClaimTemplateSpecResources:
     r"""
     resources represents the minimum resources the volume should have.
+    Users are allowed to specify resource requirements
+    that are lower than previous value but must still be higher than capacity recorded in the
+    status field of the claim.
 
     Attributes
     ----------
@@ -2091,7 +2126,7 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0PortworxVolume:
     r"""
     portworxVolume represents a portworx volume attached and mounted on kubelets host machine.
     Deprecated: PortworxVolume is deprecated. All operations for the in-tree portworxVolume type
-    are redirected to the pxd.portworx.
+    are redirected to the pxd.portworx.com CSI driver.
 
     Attributes
     ----------
@@ -2119,11 +2154,16 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0Projected:
         defaultMode are the mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
         YAML accepts both octal and decimal values, JSON requires decimal values for mode bits.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     sources : [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0], default is Undefined, optional
         sources is the list of volume projections. Each entry in this list
         handles one source.
     """
     defaultMode?: int
+    defaultUser?: int
     sources?: [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0]
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0:
@@ -2177,6 +2217,10 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
         Select all ClusterTrustBundles that match this signer name.
         Mutually-exclusive with name.  The contents of all selected
         ClusterTrustBundles will be unified and deduplicated.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     labelSelector?: ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector
     name?: str
@@ -2184,6 +2228,7 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
     path: str
 
     signerName?: str
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0ClusterTrustBundleLabelSelector:
     r"""
@@ -2268,11 +2313,17 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0DownwardAPI:
     r"""
@@ -2301,12 +2352,17 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
         Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..'
     resourceFieldRef : ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef, default is Undefined, optional
         resource field ref
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     fieldRef?: ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef
     mode?: int
     path: str
 
     resourceFieldRef?: ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0ResourceFieldRef
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0DownwardAPIItemsItems0FieldRef:
     r"""
@@ -2382,6 +2438,16 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
         If omitted, kube-apiserver will set it to 86400(24 hours).
     signerName : str, default is Undefined, required
         Kubelet's generated CSRs will be addressed to this signer.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
+    userAnnotations : {str:str}, default is Undefined, optional
+        userAnnotations allow pod authors to pass additional information to
+        the signer implementation.  Kubernetes does not restrict or validate this
+        metadata in any way.
+
+        These values are copied verbatim into the `spec.
     """
     certificateChainPath?: str
     credentialBundlePath?: str
@@ -2390,6 +2456,9 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
 
     maxExpirationSeconds?: int
     signerName: str
+
+    user?: int
+    userAnnotations?: {str:str}
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0Secret:
     r"""
@@ -2431,11 +2500,17 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSourcesItems0ServiceAccountToken:
     r"""
@@ -2455,10 +2530,16 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0ProjectedSource
     path : str, default is Undefined, required
         path is the path relative to the mount point of the file to project the
         token into.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     audience?: str
     expirationSeconds?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0Quobyte:
     r"""
@@ -2633,6 +2714,10 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0Secret:
     defaultMode : int, default is Undefined, optional
         defaultMode is Optional: mode bits used to set permissions on created files by default.
         Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511.
+    defaultUser : int, default is Undefined, optional
+        defaultUser is Optional: The owner UID of the created files by default.
+        The defaultUser field is only used as a fallback when the item-level user field is unset.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     items : [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0SecretItemsItems0], default is Undefined, optional
         items If unspecified, each key-value pair in the Data field of the referenced
         Secret will be projected into the volume as a file whose name is the
@@ -2644,6 +2729,7 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0Secret:
         More info: https://kubernetes.io/docs/concepts/storage/volumes#secret
     """
     defaultMode?: int
+    defaultUser?: int
     items?: [ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0SecretItemsItems0]
     optional?: bool
     secretName?: str
@@ -2665,11 +2751,17 @@ schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0SecretItemsItem
         May not be an absolute path.
         May not contain the path element '..'.
         May not start with the string '..'.
+    user : int, default is Undefined, optional
+        user is Optional: The owner UID of the created file.
+        If specified, the item-level user field takes precedence over defaultUser.
+        (Alpha) This field requires the AtomicWriteVolumeUserFields feature gate to be enabled.
     """
     key: str
 
     mode?: int
     path: str
+
+    user?: int
 
 schema ExecutionSecurecodeboxIoV1ParseDefinitionSpecVolumesItems0Storageos:
     r"""
