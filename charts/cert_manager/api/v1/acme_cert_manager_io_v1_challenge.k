@@ -127,10 +127,27 @@ schema AcmeCertManagerIoV1ChallengeSpecSolver:
         http01
     selector : AcmeCertManagerIoV1ChallengeSpecSolverSelector, default is Undefined, optional
         selector
+    waitInsteadOfSelfCheck : str, default is Undefined, optional
+        WaitInsteadOfSelfCheck, if set, skips cert-manager's self-check and
+        instead waits this long after presentation before asking the ACME server
+        to validate the challenge.
+
+        This is an advanced escape hatch for environments where cert-manager's
+        self-check cannot succeed from its own network or DNS viewpoint even
+        though the ACME server can still validate successfully, for example due
+        to split-horizon DNS or NAT hairpinning.
+
+        A value of 0 skips the self-check and asks the ACME server to validate
+        immediately after presentation, relying on the ACME server's own
+        validation retries (RFC 8555 section 8.2) to succeed once the challenge
+        has propagated. A negative duration is rejected.
+        Value must be in units accepted by Go time.ParseDuration https://golang.org/pkg/time/#ParseDuration,
+        for example `30s` or `2m`.
     """
     dns01?: AcmeCertManagerIoV1ChallengeSpecSolverDns01
     http01?: AcmeCertManagerIoV1ChallengeSpecSolverHttp01
     selector?: AcmeCertManagerIoV1ChallengeSpecSolverSelector
+    waitInsteadOfSelfCheck?: str
 
 schema AcmeCertManagerIoV1ChallengeSpecSolverDns01:
     r"""
@@ -3226,12 +3243,17 @@ schema AcmeCertManagerIoV1ChallengeStatus:
     Attributes
     ----------
     presented : bool, default is Undefined, optional
-        presented will be set to true if the challenge values for this challenge
-        are currently 'presented'.
-        This *does not* imply the self check is passing. Only that the values
-        have been 'submitted' for the appropriate challenge mechanism (i.e. the
-        DNS01 TXT record has been presented, or the HTTP01 configuration has been
-        configured).
+        Presented is true once cert-manager has configured the solver resources
+        needed to expose this challenge's validation material.
+        For example, the DNS01 TXT record has been created, or the HTTP01 solver
+        has been configured to serve the challenge token.
+        This does not imply the self check is passing, that the ACME server has
+        validated the challenge, or that cert-manager has already accepted the
+        challenge with the ACME server.
+    presentedAt : str, default is Undefined, optional
+        PresentedAt records when cert-manager first configured the solver
+        resources for this challenge. This is used by the optional delay-based
+        readiness logic.
     processing : bool, default is Undefined, optional
         Used to denote whether this challenge should be processed or not.
         This field will only be set to true by the 'scheduling' component.
@@ -3247,6 +3269,7 @@ schema AcmeCertManagerIoV1ChallengeStatus:
         If not set, the state of the challenge is unknown.
     """
     presented?: bool
+    presentedAt?: str
     processing?: bool
     reason?: str
     state?: "valid" | "ready" | "pending" | "processing" | "invalid" | "expired" | "errored"
