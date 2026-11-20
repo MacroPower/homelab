@@ -99,7 +99,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0:
         member will have no effect on the rule.
 
       - If multiple members of the structure are specified, then all members
-        must match in order for the rule to take effect.
+        must match in order for the rule to take effect. The exception to this
+        rule is the ToRequires member; the effects of any Requires field in any
+        rule will apply to all other rules as well.
 
       - ToEndpoints, ToCIDR, ToCIDRSet, ToEntities, ToServices and ToGroups are
         mutually exclusive. Only one of these members may be present within an
@@ -146,11 +148,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0:
         Example:
         Any endpoint with the label "role=frontend" can communicate with any
         endpoint carrying the label "role=backend".
-
-        Note that while an empty non-nil ToEndpoints does not select anything,
-        nil ToEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
@@ -177,8 +174,16 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0:
         Example:
         Any endpoint with the label "role=frontend" is not allowed to initiate
         connections to destination port 8080/tcp
-    toRequires : [str], default is Undefined, optional
-        Deprecated.
+    toRequires : [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToRequiresItems0], default is Undefined, optional
+        ToRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be able to connect to other
+        endpoints. These additional constraints do no by itself grant access
+        privileges and must always be accompanied with at least one matching
+        ToEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires any endpoint to which it
+        communicates to also carry the label "team=A".
     toServices : [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToServicesItems0], default is Undefined, optional
         ToServices is a list of services to which the endpoint subject
         to the rule is allowed to initiate connections.
@@ -192,11 +197,8 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0:
     toGroups?: [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToGroupsItems0]
     toNodes?: [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToNodesItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToPortsItems0]
-    toRequires?: [str]
+    toRequires?: [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToRequiresItems0]
     toServices?: [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToServicesItems0]
-
-    check:
-        len(toRequires) <= 0 if toRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0IcmpsItems0:
     r"""
@@ -464,14 +466,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToPortsItems0PortsItems0
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -479,13 +479,58 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToPortsItems0PortsItems0
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
+
+schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToRequiresItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
 
 schema CiliumIoV2CiliumNetworkPolicySpecEgressDenyItems0ToServicesItems0:
     r"""
@@ -586,7 +631,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0:
         member will have no effect on the rule.
 
       - If multiple members of the structure are specified, then all members
-        must match in order for the rule to take effect.
+        must match in order for the rule to take effect. The exception to this
+        rule is the ToRequires member; the effects of any Requires field in any
+        rule will apply to all other rules as well.
 
       - ToEndpoints, ToCIDR, ToCIDRSet, ToEntities, ToServices and ToGroups are
         mutually exclusive. Only one of these members may be present within an
@@ -635,11 +682,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0:
         Example:
         Any endpoint with the label "role=frontend" can communicate with any
         endpoint carrying the label "role=backend".
-
-        Note that while an empty non-nil ToEndpoints does not select anything,
-        nil ToEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
@@ -680,8 +722,16 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0:
         Example:
         Any endpoint with the label "role=frontend" is allowed to initiate
         connections to destination port 8080/tcp
-    toRequires : [str], default is Undefined, optional
-        Deprecated.
+    toRequires : [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToRequiresItems0], default is Undefined, optional
+        ToRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be able to connect to other
+        endpoints. These additional constraints do no by itself grant access
+        privileges and must always be accompanied with at least one matching
+        ToEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires any endpoint to which it
+        communicates to also carry the label "team=A".
     toServices : [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToServicesItems0], default is Undefined, optional
         ToServices is a list of services to which the endpoint subject
         to the rule is allowed to initiate connections.
@@ -697,11 +747,8 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0:
     toGroups?: [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToGroupsItems0]
     toNodes?: [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToNodesItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0]
-    toRequires?: [str]
+    toRequires?: [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToRequiresItems0]
     toServices?: [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToServicesItems0]
-
-    check:
-        len(toRequires) <= 0 if toRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0Authentication:
     r"""
@@ -899,19 +946,17 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToFQDNsItems0:
         the pattern. As a special case a "*" as the leftmost character, without a
         following "." matches all subdomains as well as the name to the right.
         A trailing "." is automatically added when missing.
-        - "**." is a special prefix which matches all multilevel subdomains in the prefix.
 
         Examples:
-        1. `*.cilium.io` matches subdomains of cilium at that level
+        `*.cilium.io` matches subdomains of cilium at that level
           www.cilium.io and blog.cilium.io match, cilium.io and google.com do not
-        2. `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
+        `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
           except those containing "." separator, subcilium.io and sub-cilium.io match,
           www.cilium.io and blog.cilium.io does not
-        3. `sub*.cilium.io` matches subdomains of cilium where the subdomain component
-          begins with "sub". sub.cilium.io and subdomain.cilium.io match while www.cilium.io,
+        sub*.cilium.io matches subdomains of cilium where the subdomain component
+        begins with "sub"
+          sub.cilium.io and subdomain.cilium.io match, www.cilium.io,
           blog.cilium.io, cilium.io and google.com do not
-        4. `**.cilium.io` matches all multilevel subdomains of cilium.io.
-          "app.cilium.io" and "test.app.cilium.io" match but not "cilium.io"
     """
     matchName?: str
     matchPattern?: str
@@ -1144,14 +1189,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0PortsItems0:
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -1159,13 +1202,14 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0PortsItems0:
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
 
 schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0Rules:
     r"""
@@ -1181,7 +1225,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0Rules:
         HTTP specific rules.
     kafka : [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
         Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
     l7 : [{str:str}], default is Undefined, optional
         Key-value pair rules.
     l7proto : str, default is Undefined, optional
@@ -1209,19 +1252,17 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0RulesDNSItems0:
         the pattern. As a special case a "*" as the leftmost character, without a
         following "." matches all subdomains as well as the name to the right.
         A trailing "." is automatically added when missing.
-        - "**." is a special prefix which matches all multilevel subdomains in the prefix.
 
         Examples:
-        1. `*.cilium.io` matches subdomains of cilium at that level
+        `*.cilium.io` matches subdomains of cilium at that level
           www.cilium.io and blog.cilium.io match, cilium.io and google.com do not
-        2. `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
+        `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
           except those containing "." separator, subcilium.io and sub-cilium.io match,
           www.cilium.io and blog.cilium.io does not
-        3. `sub*.cilium.io` matches subdomains of cilium where the subdomain component
-          begins with "sub". sub.cilium.io and subdomain.cilium.io match while www.cilium.io,
+        sub*.cilium.io matches subdomains of cilium where the subdomain component
+        begins with "sub"
+          sub.cilium.io and subdomain.cilium.io match, www.cilium.io,
           blog.cilium.io, cilium.io and google.com do not
-        4. `**.cilium.io` matches all multilevel subdomains of cilium.io.
-          "app.cilium.io" and "test.app.cilium.io" match but not "cilium.io"
     """
     matchName?: str
     matchPattern?: str
@@ -1456,6 +1497,50 @@ schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToPortsItems0TerminatingTLSS
 
     namespace?: str
 
+schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToRequiresItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
+
 schema CiliumIoV2CiliumNetworkPolicySpecEgressItems0ToServicesItems0:
     r"""
     Service selects policy targets that are bundled as part of a
@@ -1631,7 +1716,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0:
         member will have no effect on the rule.
 
       - If multiple members are set, all of them need to match in order for
-        the rule to take effect.
+        the rule to take effect. The exception to this rule is FromRequires field;
+        the effects of any Requires field in any rule will apply to all other
+        rules as well.
 
       - FromEndpoints, FromCIDR, FromCIDRSet, FromGroups and FromEntities are mutually
         exclusive. Only one of these members may be present within an individual
@@ -1672,11 +1759,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0:
         Example:
         Any endpoint with the label "role=backend" can be consumed by any
         endpoint carrying the label "role=frontend".
-
-        Note that while an empty non-nil FromEndpoints does not select anything,
-        nil FromEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
@@ -1696,8 +1778,15 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0:
         FromNodes is a list of nodes identified by an
         EndpointSelector which are allowed to communicate with the endpoint
         subject to the rule.
-    fromRequires : [str], default is Undefined, optional
-        Deprecated.
+    fromRequires : [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromRequiresItems0], default is Undefined, optional
+        FromRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be reachable. These
+        additional constraints do no by itself grant access privileges and
+        must always be accompanied with at least one matching FromEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires consuming endpoint
+        to also carry the label "team=A".
     icmps : [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0IcmpsItems0], default is Undefined, optional
         ICMPs is a list of ICMP rule identified by type number
         which the endpoint subject to the rule is not allowed to
@@ -1721,12 +1810,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0:
     fromEntities?: [str]
     fromGroups?: [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromGroupsItems0]
     fromNodes?: [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromNodesItems0]
-    fromRequires?: [str]
+    fromRequires?: [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromRequiresItems0]
     icmps?: [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0IcmpsItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0ToPortsItems0]
-
-    check:
-        len(fromRequires) <= 0 if fromRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromCIDRSetItems0:
     r"""
@@ -1927,6 +2013,50 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromNodesItems0MatchExp
 
     values?: [str]
 
+schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0FromRequiresItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
+
 schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0IcmpsItems0:
     r"""
     ICMPRule is a list of ICMP fields.
@@ -1994,14 +2124,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0ToPortsItems0PortsItems
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -2009,13 +2137,14 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressDenyItems0ToPortsItems0PortsItems
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
 
 schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0:
     r"""
@@ -2027,7 +2156,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0:
         member will have no effect on the rule.
 
       - If multiple members are set, all of them need to match in order for
-        the rule to take effect.
+        the rule to take effect. The exception to this rule is FromRequires field;
+        the effects of any Requires field in any rule will apply to all other
+        rules as well.
 
       - FromEndpoints, FromCIDR, FromCIDRSet and FromEntities are mutually
         exclusive. Only one of these members may be present within an individual
@@ -2070,11 +2201,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0:
         Example:
         Any endpoint with the label "role=backend" can be consumed by any
         endpoint carrying the label "role=frontend".
-
-        Note that while an empty non-nil FromEndpoints does not select anything,
-        nil FromEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
@@ -2094,8 +2220,15 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0:
         FromNodes is a list of nodes identified by an
         EndpointSelector which are allowed to communicate with the endpoint
         subject to the rule.
-    fromRequires : [str], default is Undefined, optional
-        Deprecated.
+    fromRequires : [CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromRequiresItems0], default is Undefined, optional
+        FromRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be reachable. These
+        additional constraints do no by itself grant access privileges and
+        must always be accompanied with at least one matching FromEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires consuming endpoint
+        to also carry the label "team=A".
     icmps : [CiliumIoV2CiliumNetworkPolicySpecIngressItems0IcmpsItems0], default is Undefined, optional
         ICMPs is a list of ICMP rule identified by type number
         which the endpoint subject to the rule is allowed to
@@ -2120,12 +2253,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0:
     fromEntities?: [str]
     fromGroups?: [CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromGroupsItems0]
     fromNodes?: [CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromNodesItems0]
-    fromRequires?: [str]
+    fromRequires?: [CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromRequiresItems0]
     icmps?: [CiliumIoV2CiliumNetworkPolicySpecIngressItems0IcmpsItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0]
-
-    check:
-        len(fromRequires) <= 0 if fromRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0Authentication:
     r"""
@@ -2314,6 +2444,50 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromNodesItems0:
         all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
 
 schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromNodesItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
+
+schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0FromRequiresItems0MatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -2529,14 +2703,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0PortsItems0:
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -2544,13 +2716,14 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0PortsItems0:
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
 
 schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0Rules:
     r"""
@@ -2566,7 +2739,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0Rules:
         HTTP specific rules.
     kafka : [CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
         Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
     l7 : [{str:str}], default is Undefined, optional
         Key-value pair rules.
     l7proto : str, default is Undefined, optional
@@ -2594,19 +2766,17 @@ schema CiliumIoV2CiliumNetworkPolicySpecIngressItems0ToPortsItems0RulesDNSItems0
         the pattern. As a special case a "*" as the leftmost character, without a
         following "." matches all subdomains as well as the name to the right.
         A trailing "." is automatically added when missing.
-        - "**." is a special prefix which matches all multilevel subdomains in the prefix.
 
         Examples:
-        1. `*.cilium.io` matches subdomains of cilium at that level
+        `*.cilium.io` matches subdomains of cilium at that level
           www.cilium.io and blog.cilium.io match, cilium.io and google.com do not
-        2. `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
+        `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
           except those containing "." separator, subcilium.io and sub-cilium.io match,
           www.cilium.io and blog.cilium.io does not
-        3. `sub*.cilium.io` matches subdomains of cilium where the subdomain component
-          begins with "sub". sub.cilium.io and subdomain.cilium.io match while www.cilium.io,
+        sub*.cilium.io matches subdomains of cilium where the subdomain component
+        begins with "sub"
+          sub.cilium.io and subdomain.cilium.io match, www.cilium.io,
           blog.cilium.io, cilium.io and google.com do not
-        4. `**.cilium.io` matches all multilevel subdomains of cilium.io.
-          "app.cilium.io" and "test.app.cilium.io" match but not "cilium.io"
     """
     matchName?: str
     matchPattern?: str
@@ -2992,7 +3162,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0:
         member will have no effect on the rule.
 
       - If multiple members of the structure are specified, then all members
-        must match in order for the rule to take effect.
+        must match in order for the rule to take effect. The exception to this
+        rule is the ToRequires member; the effects of any Requires field in any
+        rule will apply to all other rules as well.
 
       - ToEndpoints, ToCIDR, ToCIDRSet, ToEntities, ToServices and ToGroups are
         mutually exclusive. Only one of these members may be present within an
@@ -3039,11 +3211,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0:
         Example:
         Any endpoint with the label "role=frontend" can communicate with any
         endpoint carrying the label "role=backend".
-
-        Note that while an empty non-nil ToEndpoints does not select anything,
-        nil ToEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
@@ -3070,8 +3237,16 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0:
         Example:
         Any endpoint with the label "role=frontend" is not allowed to initiate
         connections to destination port 8080/tcp
-    toRequires : [str], default is Undefined, optional
-        Deprecated.
+    toRequires : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToRequiresItems0], default is Undefined, optional
+        ToRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be able to connect to other
+        endpoints. These additional constraints do no by itself grant access
+        privileges and must always be accompanied with at least one matching
+        ToEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires any endpoint to which it
+        communicates to also carry the label "team=A".
     toServices : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToServicesItems0], default is Undefined, optional
         ToServices is a list of services to which the endpoint subject
         to the rule is allowed to initiate connections.
@@ -3085,11 +3260,8 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0:
     toGroups?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToGroupsItems0]
     toNodes?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToNodesItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToPortsItems0]
-    toRequires?: [str]
+    toRequires?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToRequiresItems0]
     toServices?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToServicesItems0]
-
-    check:
-        len(toRequires) <= 0 if toRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0IcmpsItems0:
     r"""
@@ -3357,14 +3529,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToPortsItems0Port
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -3372,13 +3542,58 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToPortsItems0Port
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
+
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToRequiresItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressDenyItems0ToServicesItems0:
     r"""
@@ -3479,7 +3694,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0:
         member will have no effect on the rule.
 
       - If multiple members of the structure are specified, then all members
-        must match in order for the rule to take effect.
+        must match in order for the rule to take effect. The exception to this
+        rule is the ToRequires member; the effects of any Requires field in any
+        rule will apply to all other rules as well.
 
       - ToEndpoints, ToCIDR, ToCIDRSet, ToEntities, ToServices and ToGroups are
         mutually exclusive. Only one of these members may be present within an
@@ -3528,11 +3745,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0:
         Example:
         Any endpoint with the label "role=frontend" can communicate with any
         endpoint carrying the label "role=backend".
-
-        Note that while an empty non-nil ToEndpoints does not select anything,
-        nil ToEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     toEntities : [str], default is Undefined, optional
         ToEntities is a list of special entities to which the endpoint subject
         to the rule is allowed to initiate connections. Supported entities are
@@ -3573,8 +3785,16 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0:
         Example:
         Any endpoint with the label "role=frontend" is allowed to initiate
         connections to destination port 8080/tcp
-    toRequires : [str], default is Undefined, optional
-        Deprecated.
+    toRequires : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToRequiresItems0], default is Undefined, optional
+        ToRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be able to connect to other
+        endpoints. These additional constraints do no by itself grant access
+        privileges and must always be accompanied with at least one matching
+        ToEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires any endpoint to which it
+        communicates to also carry the label "team=A".
     toServices : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToServicesItems0], default is Undefined, optional
         ToServices is a list of services to which the endpoint subject
         to the rule is allowed to initiate connections.
@@ -3590,11 +3810,8 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0:
     toGroups?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToGroupsItems0]
     toNodes?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToNodesItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0]
-    toRequires?: [str]
+    toRequires?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToRequiresItems0]
     toServices?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToServicesItems0]
-
-    check:
-        len(toRequires) <= 0 if toRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0Authentication:
     r"""
@@ -3792,19 +4009,17 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToFQDNsItems0:
         the pattern. As a special case a "*" as the leftmost character, without a
         following "." matches all subdomains as well as the name to the right.
         A trailing "." is automatically added when missing.
-        - "**." is a special prefix which matches all multilevel subdomains in the prefix.
 
         Examples:
-        1. `*.cilium.io` matches subdomains of cilium at that level
+        `*.cilium.io` matches subdomains of cilium at that level
           www.cilium.io and blog.cilium.io match, cilium.io and google.com do not
-        2. `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
+        `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
           except those containing "." separator, subcilium.io and sub-cilium.io match,
           www.cilium.io and blog.cilium.io does not
-        3. `sub*.cilium.io` matches subdomains of cilium where the subdomain component
-          begins with "sub". sub.cilium.io and subdomain.cilium.io match while www.cilium.io,
+        sub*.cilium.io matches subdomains of cilium where the subdomain component
+        begins with "sub"
+          sub.cilium.io and subdomain.cilium.io match, www.cilium.io,
           blog.cilium.io, cilium.io and google.com do not
-        4. `**.cilium.io` matches all multilevel subdomains of cilium.io.
-          "app.cilium.io" and "test.app.cilium.io" match but not "cilium.io"
     """
     matchName?: str
     matchPattern?: str
@@ -4037,14 +4252,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0PortsIte
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -4052,13 +4265,14 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0PortsIte
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0Rules:
     r"""
@@ -4074,7 +4288,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0Rules:
         HTTP specific rules.
     kafka : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
         Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
     l7 : [{str:str}], default is Undefined, optional
         Key-value pair rules.
     l7proto : str, default is Undefined, optional
@@ -4102,19 +4315,17 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0RulesDNS
         the pattern. As a special case a "*" as the leftmost character, without a
         following "." matches all subdomains as well as the name to the right.
         A trailing "." is automatically added when missing.
-        - "**." is a special prefix which matches all multilevel subdomains in the prefix.
 
         Examples:
-        1. `*.cilium.io` matches subdomains of cilium at that level
+        `*.cilium.io` matches subdomains of cilium at that level
           www.cilium.io and blog.cilium.io match, cilium.io and google.com do not
-        2. `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
+        `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
           except those containing "." separator, subcilium.io and sub-cilium.io match,
           www.cilium.io and blog.cilium.io does not
-        3. `sub*.cilium.io` matches subdomains of cilium where the subdomain component
-          begins with "sub". sub.cilium.io and subdomain.cilium.io match while www.cilium.io,
+        sub*.cilium.io matches subdomains of cilium where the subdomain component
+        begins with "sub"
+          sub.cilium.io and subdomain.cilium.io match, www.cilium.io,
           blog.cilium.io, cilium.io and google.com do not
-        4. `**.cilium.io` matches all multilevel subdomains of cilium.io.
-          "app.cilium.io" and "test.app.cilium.io" match but not "cilium.io"
     """
     matchName?: str
     matchPattern?: str
@@ -4349,6 +4560,50 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToPortsItems0Terminat
 
     namespace?: str
 
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToRequiresItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
+
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0EgressItems0ToServicesItems0:
     r"""
     Service selects policy targets that are bundled as part of a
@@ -4524,7 +4779,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0:
         member will have no effect on the rule.
 
       - If multiple members are set, all of them need to match in order for
-        the rule to take effect.
+        the rule to take effect. The exception to this rule is FromRequires field;
+        the effects of any Requires field in any rule will apply to all other
+        rules as well.
 
       - FromEndpoints, FromCIDR, FromCIDRSet, FromGroups and FromEntities are mutually
         exclusive. Only one of these members may be present within an individual
@@ -4565,11 +4822,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0:
         Example:
         Any endpoint with the label "role=backend" can be consumed by any
         endpoint carrying the label "role=frontend".
-
-        Note that while an empty non-nil FromEndpoints does not select anything,
-        nil FromEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
@@ -4589,8 +4841,15 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0:
         FromNodes is a list of nodes identified by an
         EndpointSelector which are allowed to communicate with the endpoint
         subject to the rule.
-    fromRequires : [str], default is Undefined, optional
-        Deprecated.
+    fromRequires : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromRequiresItems0], default is Undefined, optional
+        FromRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be reachable. These
+        additional constraints do no by itself grant access privileges and
+        must always be accompanied with at least one matching FromEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires consuming endpoint
+        to also carry the label "team=A".
     icmps : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0IcmpsItems0], default is Undefined, optional
         ICMPs is a list of ICMP rule identified by type number
         which the endpoint subject to the rule is not allowed to
@@ -4614,12 +4873,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0:
     fromEntities?: [str]
     fromGroups?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromGroupsItems0]
     fromNodes?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromNodesItems0]
-    fromRequires?: [str]
+    fromRequires?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromRequiresItems0]
     icmps?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0IcmpsItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0ToPortsItems0]
-
-    check:
-        len(fromRequires) <= 0 if fromRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromCIDRSetItems0:
     r"""
@@ -4820,6 +5076,50 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromNodesItems0M
 
     values?: [str]
 
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0FromRequiresItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
+
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0IcmpsItems0:
     r"""
     ICMPRule is a list of ICMP fields.
@@ -4887,14 +5187,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0ToPortsItems0Por
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -4902,13 +5200,14 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressDenyItems0ToPortsItems0Por
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0:
     r"""
@@ -4920,7 +5219,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0:
         member will have no effect on the rule.
 
       - If multiple members are set, all of them need to match in order for
-        the rule to take effect.
+        the rule to take effect. The exception to this rule is FromRequires field;
+        the effects of any Requires field in any rule will apply to all other
+        rules as well.
 
       - FromEndpoints, FromCIDR, FromCIDRSet and FromEntities are mutually
         exclusive. Only one of these members may be present within an individual
@@ -4963,11 +5264,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0:
         Example:
         Any endpoint with the label "role=backend" can be consumed by any
         endpoint carrying the label "role=frontend".
-
-        Note that while an empty non-nil FromEndpoints does not select anything,
-        nil FromEndpoints is implicitly treated as a wildcard selector if ToPorts
-        are also specified.
-        To select everything, use one EndpointSelector without any match requirements.
     fromEntities : [str], default is Undefined, optional
         FromEntities is a list of special entities which the endpoint subject
         to the rule is allowed to receive connections from. Supported entities are
@@ -4987,8 +5283,15 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0:
         FromNodes is a list of nodes identified by an
         EndpointSelector which are allowed to communicate with the endpoint
         subject to the rule.
-    fromRequires : [str], default is Undefined, optional
-        Deprecated.
+    fromRequires : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromRequiresItems0], default is Undefined, optional
+        FromRequires is a list of additional constraints which must be met
+        in order for the selected endpoints to be reachable. These
+        additional constraints do no by itself grant access privileges and
+        must always be accompanied with at least one matching FromEndpoints.
+
+        Example:
+        Any Endpoint with the label "team=A" requires consuming endpoint
+        to also carry the label "team=A".
     icmps : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0IcmpsItems0], default is Undefined, optional
         ICMPs is a list of ICMP rule identified by type number
         which the endpoint subject to the rule is allowed to
@@ -5013,12 +5316,9 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0:
     fromEntities?: [str]
     fromGroups?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromGroupsItems0]
     fromNodes?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromNodesItems0]
-    fromRequires?: [str]
+    fromRequires?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromRequiresItems0]
     icmps?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0IcmpsItems0]
     toPorts?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0]
-
-    check:
-        len(fromRequires) <= 0 if fromRequires
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0Authentication:
     r"""
@@ -5207,6 +5507,50 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromNodesItems0:
         all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromNodesItems0MatchExpressionsItems0:
+    r"""
+    A label selector requirement is a selector that contains values, a key, and an operator that
+    relates the key and values.
+
+    Attributes
+    ----------
+    key : str, default is Undefined, required
+        key is the label key that the selector applies to.
+    operator : str, default is Undefined, required
+        operator represents a key's relationship to a set of values.
+        Valid operators are In, NotIn, Exists and DoesNotExist.
+    values : [str], default is Undefined, optional
+        values is an array of string values. If the operator is In or NotIn,
+        the values array must be non-empty. If the operator is Exists or DoesNotExist,
+        the values array must be empty. This array is replaced during a strategic
+        merge patch.
+    """
+    key: str
+
+    operator: "In" | "NotIn" | "Exists" | "DoesNotExist"
+
+    values?: [str]
+
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromRequiresItems0:
+    r"""
+    EndpointSelector is a wrapper for k8s LabelSelector.
+
+    Attributes
+    ----------
+    matchExpressions : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromRequiresItems0MatchExpressionsItems0], default is Undefined, optional
+        matchExpressions is a list of label selector requirements. The requirements are ANDed.
+    matchLabels : {str:str}, default is Undefined, optional
+        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+        map is equivalent to an element of matchExpressions, whose key field is "key", the
+        operator is "In", and the values array contains only "value". The requirements are ANDed.
+    """
+    matchExpressions?: [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromRequiresItems0MatchExpressionsItems0]
+    matchLabels?: {str:str}
+
+    check:
+        all _, matchLabels in matchLabels {len(matchLabels) <= 63 if matchLabels not in [None, Undefined]} if matchLabels
+        all _, matchLabels in matchLabels {_regex_match(str(matchLabels), r"^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$") if matchLabels} if matchLabels
+
+schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0FromRequiresItems0MatchExpressionsItems0:
     r"""
     A label selector requirement is a selector that contains values, a key, and an operator that
     relates the key and values.
@@ -5422,14 +5766,12 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0PortsIt
     ----------
     endPort : int, default is Undefined, optional
         EndPort can only be an L4 port number.
-    port : str, default is Undefined, optional
+    port : str, default is Undefined, required
         Port can be an L4 port number, or a name in the form of "http"
         or "http-8080".
     $protocol : str, default is Undefined, optional
-        Protocol is the L4 protocol. If "ANY", omitted or empty, any protocols
-        with transport ports (TCP, UDP, SCTP) match.
-
-        Accepted values: "TCP", "UDP", "SCTP", "VRRP", "IGMP", "ANY"
+        Protocol is the L4 protocol. If omitted or empty, any protocol
+        matches. Accepted values: "TCP", "UDP", "SCTP", "ANY"
 
         Matching on ICMP is not supported.
 
@@ -5437,13 +5779,14 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0PortsIt
         contradict this.
     """
     endPort?: int
-    port?: str
-    $protocol?: "TCP" | "UDP" | "SCTP" | "VRRP" | "IGMP" | "ANY"
+    port: str
+
+    $protocol?: "TCP" | "UDP" | "SCTP" | "ANY"
 
     check:
         endPort <= 65535 if endPort not in [None, Undefined]
         endPort >= 0 if endPort not in [None, Undefined]
-        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$") if port
+        _regex_match(str(port), r"^(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{4}|[0-9]{1,4})|([a-zA-Z0-9]-?)*[a-zA-Z](-?[a-zA-Z0-9])*$")
 
 schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0Rules:
     r"""
@@ -5459,7 +5802,6 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0Rules:
         HTTP specific rules.
     kafka : [CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesKafkaItems0], default is Undefined, optional
         Kafka-specific rules.
-        Deprecated: This beta feature is deprecated and will be removed in a future release.
     l7 : [{str:str}], default is Undefined, optional
         Key-value pair rules.
     l7proto : str, default is Undefined, optional
@@ -5487,19 +5829,17 @@ schema CiliumIoV2CiliumNetworkPolicySpecsItems0IngressItems0ToPortsItems0RulesDN
         the pattern. As a special case a "*" as the leftmost character, without a
         following "." matches all subdomains as well as the name to the right.
         A trailing "." is automatically added when missing.
-        - "**." is a special prefix which matches all multilevel subdomains in the prefix.
 
         Examples:
-        1. `*.cilium.io` matches subdomains of cilium at that level
+        `*.cilium.io` matches subdomains of cilium at that level
           www.cilium.io and blog.cilium.io match, cilium.io and google.com do not
-        2. `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
+        `*cilium.io` matches cilium.io and all subdomains ends with "cilium.io"
           except those containing "." separator, subcilium.io and sub-cilium.io match,
           www.cilium.io and blog.cilium.io does not
-        3. `sub*.cilium.io` matches subdomains of cilium where the subdomain component
-          begins with "sub". sub.cilium.io and subdomain.cilium.io match while www.cilium.io,
+        sub*.cilium.io matches subdomains of cilium where the subdomain component
+        begins with "sub"
+          sub.cilium.io and subdomain.cilium.io match, www.cilium.io,
           blog.cilium.io, cilium.io and google.com do not
-        4. `**.cilium.io` matches all multilevel subdomains of cilium.io.
-          "app.cilium.io" and "test.app.cilium.io" match but not "cilium.io"
     """
     matchName?: str
     matchPattern?: str
