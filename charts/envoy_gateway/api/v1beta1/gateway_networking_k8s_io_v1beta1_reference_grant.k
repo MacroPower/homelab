@@ -35,7 +35,7 @@ schema ReferenceGrant:
         Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
     metadata : v1.ObjectMeta, default is Undefined, optional
         metadata
-    spec : GatewayNetworkingK8sIoV1beta1ReferenceGrantSpec, default is Undefined, optional
+    spec : GatewayNetworkingK8sIoV1beta1ReferenceGrantSpec, default is Undefined, required
         spec
     """
     apiVersion: "gateway.networking.k8s.io/v1beta1" = "gateway.networking.k8s.io/v1beta1"
@@ -43,7 +43,7 @@ schema ReferenceGrant:
     kind: "ReferenceGrant" = "ReferenceGrant"
 
     metadata?: v1.ObjectMeta
-    spec?: GatewayNetworkingK8sIoV1beta1ReferenceGrantSpec
+    spec: GatewayNetworkingK8sIoV1beta1ReferenceGrantSpec
 
 schema GatewayNetworkingK8sIoV1beta1ReferenceGrantSpec:
     r"""
