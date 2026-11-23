@@ -163,7 +163,7 @@ charts: helm.Charts = {
         repoURL = "https://prometheus-community.github.io/helm-charts"
         # appVersion v0.86.2 -- pinned to match the CRDs on the clusters.
         # k8s-monitoring v4 does not bundle these; this chart owns them in GitOps.
-        targetRevision = "24.0.2"
+        targetRevision = "30.0.1"
         schemaGenerator = "AUTO"
         crdGenerator = "NONE"
         values: {
