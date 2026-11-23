@@ -10,6 +10,10 @@ schema Values:
     Attributes
     ----------
     affinity : ValuesAffinity, optional
+    certgen : ValuesCertgen, optional
+        cilium-certgen settings used by tetragon.grpc.tls.auto.method=cronJob.
+        Mirrors the same block in cilium/cilium so operators familiar with the
+        hubble TLS workflow find consistent knobs.
     crds : ValuesCrds, optional
     daemonSetAnnotations : ValuesDaemonSetAnnotations, optional
     daemonSetLabelsOverride : ValuesDaemonSetLabelsOverride, optional
@@ -21,7 +25,7 @@ schema Values:
         Global settings
     export : ValuesExport, optional
         Tetragon events export settings
-    exportDirectory : str, optional, default is "/var/run/cilium/tetragon"
+    exportDirectory : str, optional, default is "/var/log/tetragon"
         Directory to put Tetragon JSON export files.
     extraConfigmapMounts : [any], optional
     extraHostPathMounts : [any], optional
@@ -48,6 +52,8 @@ schema Values:
         See: https://tetragon.io/docs/concepts/runtime-hooks
     selectorLabelsOverride : ValuesSelectorLabelsOverride, optional
     serviceAccount : ValuesServiceAccount, optional
+    serviceAnnotations : ValuesServiceAnnotations, optional
+    serviceLabels : ValuesServiceLabels, optional
     serviceLabelsOverride : ValuesServiceLabelsOverride, optional
     tetragon : ValuesTetragon, optional
     tetragonOperator : ValuesTetragonOperator, optional
@@ -57,6 +63,7 @@ schema Values:
     """
     [...str]: any
     affinity?: ValuesAffinity
+    certgen?: ValuesCertgen
     crds?: ValuesCrds
     daemonSetAnnotations?: ValuesDaemonSetAnnotations
     daemonSetLabelsOverride?: ValuesDaemonSetLabelsOverride
@@ -80,6 +87,8 @@ schema Values:
     rthooks?: ValuesRthooks
     selectorLabelsOverride?: ValuesSelectorLabelsOverride
     serviceAccount?: ValuesServiceAccount
+    serviceAnnotations?: ValuesServiceAnnotations
+    serviceLabels?: ValuesServiceLabels
     serviceLabelsOverride?: ValuesServiceLabelsOverride
     tetragon?: ValuesTetragon
     tetragonOperator?: ValuesTetragonOperator
@@ -89,6 +98,133 @@ schema Values:
 schema ValuesAffinity:
     r"""
     ValuesAffinity
+    """
+    [...str]: any
+
+schema ValuesCertgen:
+    r"""
+    cilium-certgen settings used by tetragon.grpc.tls.auto.method=cronJob.
+    Mirrors the same block in cilium/cilium so operators familiar with the
+    hubble TLS workflow find consistent knobs.
+
+    Attributes
+    ----------
+    affinity : ValuesCertgenAffinity, optional
+        Affinity for certgen pods.
+    annotations : ValuesCertgenAnnotations, optional
+        Annotations applied to certgen Job/CronJob objects.
+    cronJob : ValuesCertgenCronJob, optional
+    generateCA : bool, optional, default is True
+        Whether the certgen invocation should generate a CA when one isn't
+        found in the configured CA Secret.
+    hostUsers : bool, optional, default is True
+        Run the certgen pods in the host user namespace. certgen needs no host
+        access, set to false to run it in a user namespace. Requires Kubernetes
+        1.33 or later.
+    image : ValuesCertgenImage, optional
+    nodeSelector : ValuesCertgenNodeSelector, optional
+        Node selector for certgen pods.
+    podLabels : ValuesCertgenPodLabels, optional
+        Pod labels added to certgen pods.
+    resources : ValuesCertgenResources, optional
+        Resource requests/limits for the certgen container.
+    tolerations : [any], optional
+        Tolerations for certgen pods.
+    ttlSecondsAfterFinished : int, optional, default is 1800
+        TTL applied to the bootstrap Job once it completes.
+    """
+    [...str]: any
+    affinity?: ValuesCertgenAffinity
+    annotations?: ValuesCertgenAnnotations
+    cronJob?: ValuesCertgenCronJob
+    generateCA?: bool
+    hostUsers?: bool
+    image?: ValuesCertgenImage
+    nodeSelector?: ValuesCertgenNodeSelector
+    podLabels?: ValuesCertgenPodLabels
+    resources?: ValuesCertgenResources
+    tolerations?: [any]
+    ttlSecondsAfterFinished?: int
+
+schema ValuesCertgenAffinity:
+    r"""
+    Affinity for certgen pods.
+    """
+    [...str]: any
+
+schema ValuesCertgenAnnotations:
+    r"""
+    Annotations applied to certgen Job/CronJob objects.
+
+    Attributes
+    ----------
+    cronJob : ValuesCertgenAnnotationsCronJob, optional
+    job : ValuesCertgenAnnotationsJob, optional
+    """
+    [...str]: any
+    cronJob?: ValuesCertgenAnnotationsCronJob
+    job?: ValuesCertgenAnnotationsJob
+
+schema ValuesCertgenAnnotationsCronJob:
+    r"""
+    ValuesCertgenAnnotationsCronJob
+    """
+    [...str]: any
+
+schema ValuesCertgenAnnotationsJob:
+    r"""
+    ValuesCertgenAnnotationsJob
+    """
+    [...str]: any
+
+schema ValuesCertgenCronJob:
+    r"""
+    ValuesCertgenCronJob
+
+    Attributes
+    ----------
+    failedJobsHistoryLimit : int, optional, default is 1
+        Number of failed CronJob runs to retain.
+    successfulJobsHistoryLimit : int, optional, default is 1
+        Number of successful CronJob runs to retain.
+    """
+    [...str]: any
+    failedJobsHistoryLimit?: int
+    successfulJobsHistoryLimit?: int
+
+schema ValuesCertgenImage:
+    r"""
+    ValuesCertgenImage
+
+    Attributes
+    ----------
+    override : any, optional, default is "~"
+    pullPolicy : str, optional, default is "IfNotPresent"
+    repository : str, optional, default is "quay.io/cilium/certgen"
+    tag : str, optional, default is "v0.4.13"
+        renovate: datasource=docker depName=quay.io/cilium/certgen
+    """
+    [...str]: any
+    override?: any
+    pullPolicy?: str
+    repository?: str
+    tag?: str
+
+schema ValuesCertgenNodeSelector:
+    r"""
+    Node selector for certgen pods.
+    """
+    [...str]: any
+
+schema ValuesCertgenPodLabels:
+    r"""
+    Pod labels added to certgen pods.
+    """
+    [...str]: any
+
+schema ValuesCertgenResources:
+    r"""
+    Resource requests/limits for the certgen container.
     """
     [...str]: any
 
@@ -226,7 +362,7 @@ schema ValuesExportStdoutImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/hubble-export-stdout"
-    tag : str, optional, default is "v1.1.0"
+    tag : str, optional, default is "v1.1.1"
     """
     [...str]: any
     override?: any
@@ -278,9 +414,16 @@ schema ValuesRthooks:
     Attributes
     ----------
     annotations : ValuesRthooksAnnotations, optional
+        Affinity for the Tetragon rthooks pod. If this key is omitted, the chart
+        falls back to the top-level `affinity` value. Set it explicitly (including
+        to `{}`) to override the top-level affinity for the rthooks DaemonSet only.
+        affinity: {}
         Annotations for the Tetragon rthooks daemonset
     enabled : bool, optional, default is False
         Enable the Tetragon rthooks daemonset
+    exportLogs : ValuesRthooksExportLogs, optional
+        exportLogs sidecar: tail the hook log file and stream it to stdout.
+        Uses the same image as the rthooks container.
     extraHookArgs : ValuesRthooksExtraHookArgs, optional
         extra args to pass to tetragon-oci-hook
     extraLabels : ValuesRthooksExtraLabels, optional
@@ -290,6 +433,12 @@ schema ValuesRthooks:
     failAllowNamespaces : str, optional, default is ""
         Comma-separated list of namespaces to allow Pod creation for, in case tetragon-oci-hook fails to reach Tetragon agent.
         The namespace Tetragon is deployed in is always added as an exception and must not be added again.
+    failAllowNamespacesRegex : [any], optional
+        List of RE2 regex patterns for namespaces to allow Pod creation for, in case tetragon-oci-hook fails
+        to reach Tetragon agent. Patterns perform substring matching by default; use ^ and $ anchors for
+        full-string matching (e.g. '^kube-.*$' matches only namespaces starting with 'kube-').
+        Can be combined with failAllowNamespaces. Ignored if extraHookArgs sets fail-cel-expr.
+        Example: ["^acme-.*$", "^dev-.*$"]
     image : ValuesRthooksImage, optional
         image for the Tetragon rthooks pod
     installDir : str, optional, default is "/opt/tetragon"
@@ -328,10 +477,12 @@ schema ValuesRthooks:
     [...str]: any
     annotations?: ValuesRthooksAnnotations
     enabled?: bool
+    exportLogs?: ValuesRthooksExportLogs
     extraHookArgs?: ValuesRthooksExtraHookArgs
     extraLabels?: ValuesRthooksExtraLabels
     extraVolumeMounts?: [any]
     failAllowNamespaces?: str
+    failAllowNamespacesRegex?: [any]
     image?: ValuesRthooksImage
     installDir?: str
     interface?: str
@@ -346,7 +497,33 @@ schema ValuesRthooks:
 
 schema ValuesRthooksAnnotations:
     r"""
+    Affinity for the Tetragon rthooks pod. If this key is omitted, the chart
+    falls back to the top-level `affinity` value. Set it explicitly (including
+    to `{}`) to override the top-level affinity for the rthooks DaemonSet only.
+    affinity: {}
     Annotations for the Tetragon rthooks daemonset
+    """
+    [...str]: any
+
+schema ValuesRthooksExportLogs:
+    r"""
+    exportLogs sidecar: tail the hook log file and stream it to stdout.
+    Uses the same image as the rthooks container.
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable the exportLogs sidecar container.
+    resources : ValuesRthooksExportLogsResources, optional
+        resources for the exportLogs sidecar.
+    """
+    [...str]: any
+    enabled?: bool
+    resources?: ValuesRthooksExportLogsResources
+
+schema ValuesRthooksExportLogsResources:
+    r"""
+    resources for the exportLogs sidecar.
     """
     [...str]: any
 
@@ -370,7 +547,7 @@ schema ValuesRthooksImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/tetragon-rthooks"
-    tag : str, optional, default is "v0.8"
+    tag : str, optional, default is "v0.9"
     """
     [...str]: any
     override?: any
@@ -457,6 +634,18 @@ schema ValuesServiceAccountAnnotations:
     """
     [...str]: any
 
+schema ValuesServiceAnnotations:
+    r"""
+    ValuesServiceAnnotations
+    """
+    [...str]: any
+
+schema ValuesServiceLabels:
+    r"""
+    ValuesServiceLabels
+    """
+    [...str]: any
+
 schema ValuesServiceLabelsOverride:
     r"""
     ValuesServiceLabelsOverride
@@ -485,6 +674,9 @@ schema ValuesTetragon:
         Configure tetragon pod so that it can contact the CRI running on the host
     debug : bool, optional, default is False
         If you want to run Tetragon in debug mode change this value to true
+    deletedPodCacheSize : int, optional, default is 1024
+        Tetragon keeps recently deleted pod/container mappings in an LRU cache to
+        resolve pod metadata for late-arriving events.
     enableK8sAPI : bool, optional, default is True
         Access Kubernetes API to associate Tetragon events with Kubernetes pods.
     enableKeepSensorsOnExit : bool, optional, default is False
@@ -532,7 +724,10 @@ schema ValuesTetragon:
     exportFilename : str, optional, default is "tetragon.log"
         JSON export filename. Set it to an empty string to disable JSON export altogether.
     exportRateLimit : int, optional, default is -1
-        Rate-limit event export (events per minute), Set to -1 to export all events.
+        Rate-limit event export (events per minute). Must be a plain integer: -1 disables rate
+        limiting and exports all events (default), 0 disables JSON export entirely, and a positive
+        integer limits export to that many events per minute. Invalid (non-integer) values fall back
+        to -1 and log a warning.
     extraArgs : ValuesTetragonExtraArgs, optional
     extraEnv : [any], optional
     extraVolumeMounts : [any], optional
@@ -606,8 +801,19 @@ schema ValuesTetragon:
 
         With both of the above redaction filters in place, we are now redacting all
         password arguments.
+
+        Optionally, you can specify a custom replacement string using the `redact_str`
+        field. If not specified, it defaults to "*****".
+        This is useful for distinguishing different redaction rules:
+
+          {"redact": ["--password(?:\\\\s+|=)(\\\\S*)"], "redact_str": "<redacted:password>"}
+
     resources : ValuesTetragonResources, optional
     securityContext : ValuesTetragonSecurityContext, optional
+    startupProbe : ValuesTetragonStartupProbe, optional
+         grpc:
+           port: 54321
+        Overrides the default startupProbe for the tetragon container.
     usePerfRingBuffer : bool, optional, default is False
     """
     [...str]: any
@@ -618,6 +824,7 @@ schema ValuesTetragon:
     commandOverride?: [any]
     cri?: ValuesTetragonCri
     debug?: bool
+    deletedPodCacheSize?: int
     enableK8sAPI?: bool
     enableKeepSensorsOnExit?: bool
     enableMsgHandlingLatency?: bool
@@ -657,6 +864,7 @@ schema ValuesTetragon:
     redactionFilters?: str
     resources?: ValuesTetragonResources
     securityContext?: ValuesTetragonSecurityContext
+    startupProbe?: ValuesTetragonStartupProbe
     usePerfRingBuffer?: bool
 
 schema ValuesTetragonCgidmap:
@@ -700,7 +908,7 @@ schema ValuesTetragonGops:
     ----------
     address : str, optional, default is "localhost"
         The address at which to expose gops.
-    enabled : bool, optional, default is True
+    enabled : bool, optional, default is False
         Whether to enable exposing gops server.
     port : int, optional, default is 8118
         The port at which to expose gops.
@@ -716,14 +924,152 @@ schema ValuesTetragonGrpc:
 
     Attributes
     ----------
-    address : str, optional, default is "localhost:54321"
-        The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/cilum/tetragon/tetragon.sock
+    address : str, optional, default is "unix:///var/run/tetragon/tetragon.sock"
+        The address at which to expose gRPC. Examples: localhost:54321, unix:///var/run/tetragon/tetragon.sock
+        WARNING: Exposing gRPC on a TCP socket without TLS client verification
+        exposes Tetragon to unprivileged users on the host or with network access.
     enabled : bool, optional, default is True
         Whether to enable exposing Tetragon gRPC.
+    tls : ValuesTetragonGrpcTls, optional
+        gRPC TLS / mTLS configuration for the optional TCP listener
+        (tetragon.grpc.address); the always-on unix-domain listener at
+        /var/run/tetragon/tetragon.sock is unaffected.
+
+        The auto-provisioned server cert uses a wildcard SAN over a synthetic
+        DNS domain (*.tetragon-grpc.cilium.io) so a single Secret covers every
+        DaemonSet pod. Clients must override SNI to <any>.tetragon-grpc.cilium.io
+        to validate. See _helpers.tpl `tetragon.grpcTls.domain` for details;
+        add Service-style or per-node identities via server.extraDnsNames /
+        server.extraIpAddresses below.
     """
     [...str]: any
     address?: str
     enabled?: bool
+    tls?: ValuesTetragonGrpcTls
+
+schema ValuesTetragonGrpcTls:
+    r"""
+    gRPC TLS / mTLS configuration for the optional TCP listener
+    (tetragon.grpc.address); the always-on unix-domain listener at
+    /var/run/tetragon/tetragon.sock is unaffected.
+
+    The auto-provisioned server cert uses a wildcard SAN over a synthetic
+    DNS domain (*.tetragon-grpc.cilium.io) so a single Secret covers every
+    DaemonSet pod. Clients must override SNI to <any>.tetragon-grpc.cilium.io
+    to validate. See _helpers.tpl `tetragon.grpcTls.domain` for details;
+    add Service-style or per-node identities via server.extraDnsNames /
+    server.extraIpAddresses below.
+
+    Attributes
+    ----------
+    auto : ValuesTetragonGrpcTlsAuto, optional
+        Configure automatic TLS certificate generation.
+    ca : ValuesTetragonGrpcTlsCa, optional
+        In-cluster CA used by the helm and cronJob methods.
+    enabled : bool, optional, default is False
+        Enable TLS on the TCP gRPC listener. When false, the listener (if
+        any) is plaintext.
+    requireClientCert : bool, optional, default is False
+        Require and verify client certificates (mTLS). When true, the
+        agent rejects TCP gRPC connections that don't present a valid client
+        cert signed by one of the bundled CAs.
+    server : ValuesTetragonGrpcTlsServer, optional
+        Server cert configuration.
+    """
+    [...str]: any
+    auto?: ValuesTetragonGrpcTlsAuto
+    ca?: ValuesTetragonGrpcTlsCa
+    enabled?: bool
+    requireClientCert?: bool
+    server?: ValuesTetragonGrpcTlsServer
+
+schema ValuesTetragonGrpcTlsAuto:
+    r"""
+    Configure automatic TLS certificate generation.
+
+    Attributes
+    ----------
+    certManagerIssuerRef : ValuesTetragonGrpcTlsAutoCertManagerIssuerRef, optional
+        cert-manager IssuerRef used when method=certmanager.
+        [Example]
+        certManagerIssuerRef:
+          group: cert-manager.io
+          kind: ClusterIssuer
+          name: ca-issuer
+    certValidityDuration : int, optional, default is 365
+        Generated certificate validity duration in days.
+        Defaults to 365 (1 year).
+    enabled : bool, optional, default is True
+        Auto-generate certificates. When false, you must provide a
+        Secret yourself (see server.existingSecret).
+    method : str, optional, default is "helm"
+        Method used to auto-generate certificates. Supported values:
+        - helm:        Helm renders the cert/key Secret directly.
+        - cronJob:     A Kubernetes CronJob runs cilium-certgen to (re)issue
+                       the cert; a one-shot Job seeds it on install.
+        - certmanager: cert-manager issues and rotates the cert.
+    schedule : str, optional, default is "0 0 1 */4 *"
+        Schedule for certificate regeneration; only honored when
+        method=cronJob. Empty disables the recurring CronJob, leaving only
+        the one-shot bootstrap Job.
+    """
+    [...str]: any
+    certManagerIssuerRef?: ValuesTetragonGrpcTlsAutoCertManagerIssuerRef
+    certValidityDuration?: int
+    enabled?: bool
+    method?: str
+    schedule?: str
+
+schema ValuesTetragonGrpcTlsAutoCertManagerIssuerRef:
+    r"""
+    cert-manager IssuerRef used when method=certmanager.
+    [Example]
+    certManagerIssuerRef:
+      group: cert-manager.io
+      kind: ClusterIssuer
+      name: ca-issuer
+    """
+    [...str]: any
+
+schema ValuesTetragonGrpcTlsCa:
+    r"""
+    In-cluster CA used by the helm and cronJob methods.
+
+    Attributes
+    ----------
+    cert : str, optional, default is ""
+        base64-encoded PEM CA certificate. When both cert and key are
+        set, helm/cronJob reuse this CA instead of generating a fresh one.
+    certValidityDuration : int, optional, default is 1095
+        Validity duration in days for an auto-generated CA. Only used
+        when ca.cert/key are unset.
+    key : str, optional, default is ""
+        base64-encoded PEM CA private key. Required when ca.cert is set.
+    """
+    [...str]: any
+    cert?: str
+    certValidityDuration?: int
+    key?: str
+
+schema ValuesTetragonGrpcTlsServer:
+    r"""
+    Server cert configuration.
+
+    Attributes
+    ----------
+    existingSecret : str, optional, default is ""
+        Use an existing Secret (must contain tls.crt + tls.key, plus
+        ca.crt when requireClientCert is true) instead of provisioning
+        one. Disables all auto-* methods when set.
+    extraDnsNames : [any], optional
+        Extra DNS SANs added to auto-generated certificates.
+    extraIpAddresses : [any], optional
+        Extra IP SANs added to auto-generated certificates.
+    """
+    [...str]: any
+    existingSecret?: str
+    extraDnsNames?: [any]
+    extraIpAddresses?: [any]
 
 schema ValuesTetragonHealthGrpc:
     r"""
@@ -751,7 +1097,7 @@ schema ValuesTetragonImage:
     ----------
     override : any, optional, default is "~"
     repository : str, optional, default is "quay.io/cilium/tetragon"
-    tag : str, optional, default is "v1.6.1"
+    tag : str, optional, default is "v1.8.0"
     """
     [...str]: any
     override?: any
@@ -787,6 +1133,10 @@ schema ValuesTetragonOperator:
     failoverLease : ValuesTetragonOperatorFailoverLease, optional
         Lease handling for an automated failover when running multiple replicas
     forceUpdateCRDs : bool, optional, default is False
+    hostUsers : bool, optional, default is True
+        Run the Tetragon Operator Deployment Pods in the host user namespace.
+        The operator needs no host access, set to false to run it in a user
+        namespace. Requires Kubernetes 1.33 or later.
     image : ValuesTetragonOperatorImage, optional
         tetragon-operator image.
     nameOverride : str, optional, default is ""
@@ -825,6 +1175,7 @@ schema ValuesTetragonOperator:
     extraVolumes?: [any]
     failoverLease?: ValuesTetragonOperatorFailoverLease
     forceUpdateCRDs?: bool
+    hostUsers?: bool
     image?: ValuesTetragonOperatorImage
     nameOverride?: str
     nodeSelector?: ValuesTetragonOperatorNodeSelector
@@ -992,7 +1343,7 @@ schema ValuesTetragonOperatorImage:
     override : any, optional, default is "~"
     pullPolicy : str, optional, default is "IfNotPresent"
     repository : str, optional, default is "quay.io/cilium/tetragon-operator"
-    tag : str, optional, default is "v1.6.1"
+    tag : str, optional, default is "v1.8.0"
     """
     [...str]: any
     override?: any
@@ -1227,7 +1578,7 @@ schema ValuesTetragonProcessAncestors:
     ----------
     enabled : str, optional, default is ""
         Comma-separated list of process event types to enable ancestors for.
-        Supported event types are: base, kprobe, tracepoint, uprobe, lsm, usdt. Unknown event types will be ignored.
+        Supported event types are: base, kprobe, tracepoint, loader, uprobe, lsm, usdt. Unknown event types will be ignored.
         Type "base" is required by all other supported event types for correct reference counting.
         Set it to "" to disable ancestors completely.
     """
@@ -1304,10 +1655,51 @@ schema ValuesTetragonSecurityContext:
 
     Attributes
     ----------
-    privileged : bool, optional, default is True
+    allowPrivilegeEscalation : bool, optional, default is False
+        Dropped by the chart when privileged is true, as the API server rejects
+        that combination.
+    appArmorProfile : ValuesTetragonSecurityContextAppArmorProfile, optional
+        The runtime default profile denies mount and cross-profile ptrace.
+    capabilities : ValuesTetragonSecurityContextCapabilities, optional
+    privileged : bool, optional, default is False
     """
     [...str]: any
+    allowPrivilegeEscalation?: bool
+    appArmorProfile?: ValuesTetragonSecurityContextAppArmorProfile
+    capabilities?: ValuesTetragonSecurityContextCapabilities
     privileged?: bool
+
+schema ValuesTetragonSecurityContextAppArmorProfile:
+    r"""
+    The runtime default profile denies mount and cross-profile ptrace.
+
+    Attributes
+    ----------
+    $type : str, optional, default is "Unconfined"
+    """
+    [...str]: any
+    $type?: str
+
+schema ValuesTetragonSecurityContextCapabilities:
+    r"""
+    ValuesTetragonSecurityContextCapabilities
+
+    Attributes
+    ----------
+    add : [str], optional
+    drop : [str], optional
+    """
+    [...str]: any
+    add?: [str]
+    drop?: [str]
+
+schema ValuesTetragonStartupProbe:
+    r"""
+     grpc:
+       port: 54321
+    Overrides the default startupProbe for the tetragon container.
+    """
+    [...str]: any
 
 schema ValuesTolerationsItems0:
     r"""
