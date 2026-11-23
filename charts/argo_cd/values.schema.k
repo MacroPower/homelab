@@ -317,6 +317,13 @@ schema ValuesApplicationSet:
         List of extra mounts to add (normally used with extraVolumes)
     extraVolumes : [any], optional
         List of extra volumes to add
+    httproute : ValuesApplicationSetHttproute, optional
+        # Gateway API HTTPRoute for the Git Generator webhook
+        # Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration)
+        NOTE: Gateway API support is in EXPERIMENTAL status
+        Support depends on your Gateway controller implementation
+        Some controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)
+        Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
     image : ValuesApplicationSetImage, optional
         # ApplicationSet controller image
     imagePullSecrets : [any], optional
@@ -327,6 +334,13 @@ schema ValuesApplicationSet:
     initContainers : [any], optional
         Init containers to add to the ApplicationSet controller pod
         # Note: Supports use of custom Helm templates
+    listenerset : ValuesApplicationSetListenerset, optional
+        Gateway API ListenerSet configuration for the Git Generator webhook
+        # Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration
+        NOTE: Gateway API support is in EXPERIMENTAL status
+        ListenerSet allows attaching additional listeners to an existing Gateway
+        Requires Gateway API v1alpha2 and a controller that supports ListenerSet
+        Refer to https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1alpha2.ListenerSet
     livenessProbe : ValuesApplicationSetLivenessProbe, optional
     metrics : ValuesApplicationSetMetrics, optional
         # Metrics service configuration
@@ -357,6 +371,9 @@ schema ValuesApplicationSet:
     service : ValuesApplicationSetService, optional
         # ApplicationSet service configuration
     serviceAccount : ValuesApplicationSetServiceAccount, optional
+    startupProbe : ValuesApplicationSetStartupProbe, optional
+        # Startup probe for ApplicationSet controller (optional)
+        # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     terminationGracePeriodSeconds : int, optional, default is 30
         terminationGracePeriodSeconds for container lifecycle hook
     tolerations : [any], optional
@@ -365,6 +382,9 @@ schema ValuesApplicationSet:
         Assign custom [TopologySpreadConstraints] rules to the ApplicationSet controller
         # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
         # If labelSelector is left out, it will default to the labelSelector configuration of the deployment
+    vpa : ValuesApplicationSetVpa, optional
+        # ApplicationSet controller Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesApplicationSetAffinity
@@ -385,10 +405,12 @@ schema ValuesApplicationSet:
     extraEnvFrom?: [any]
     extraVolumeMounts?: [any]
     extraVolumes?: [any]
+    httproute?: ValuesApplicationSetHttproute
     image?: ValuesApplicationSetImage
     imagePullSecrets?: [any]
     ingress?: ValuesApplicationSetIngress
     initContainers?: [any]
+    listenerset?: ValuesApplicationSetListenerset
     livenessProbe?: ValuesApplicationSetLivenessProbe
     metrics?: ValuesApplicationSetMetrics
     name?: str
@@ -404,9 +426,11 @@ schema ValuesApplicationSet:
     runtimeClassName?: str
     service?: ValuesApplicationSetService
     serviceAccount?: ValuesApplicationSetServiceAccount
+    startupProbe?: ValuesApplicationSetStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    vpa?: ValuesApplicationSetVpa
 
 schema ValuesApplicationSetAffinity:
     r"""
@@ -592,6 +616,90 @@ schema ValuesApplicationSetEmptyDir:
     [...str]: any
     sizeLimit?: str
 
+schema ValuesApplicationSetHttproute:
+    r"""
+    # Gateway API HTTPRoute for the Git Generator webhook
+    # Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration)
+    NOTE: Gateway API support is in EXPERIMENTAL status
+    Support depends on your Gateway controller implementation
+    Some controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)
+    Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
+
+    Attributes
+    ----------
+    annotations : ValuesApplicationSetHttprouteAnnotations, optional
+        Additional HTTPRoute annotations
+    enabled : bool, optional, default is False
+        Enable HTTPRoute resource for Argo CD Applicationset Webhook (Gateway API)
+    hostnames : [any], optional
+        - name: example-gateway
+          namespace: example-gateway-namespace
+          sectionName: https
+        List of hostnames for the HTTPRoute
+    labels : ValuesApplicationSetHttprouteLabels, optional
+        Additional HTTPRoute labels
+    parentRefs : [any], optional
+        Gateway API parentRefs for the HTTPRoute
+        # Must reference an existing Gateway
+    rules : [ValuesApplicationSetHttprouteRulesItems0], optional
+        - argocd.example.com
+        HTTPRoute rules configuration
+    """
+    [...str]: any
+    annotations?: ValuesApplicationSetHttprouteAnnotations
+    enabled?: bool
+    hostnames?: [any]
+    labels?: ValuesApplicationSetHttprouteLabels
+    parentRefs?: [any]
+    rules?: [ValuesApplicationSetHttprouteRulesItems0]
+
+schema ValuesApplicationSetHttprouteAnnotations:
+    r"""
+    Additional HTTPRoute annotations
+    """
+    [...str]: any
+
+schema ValuesApplicationSetHttprouteLabels:
+    r"""
+    Additional HTTPRoute labels
+    """
+    [...str]: any
+
+schema ValuesApplicationSetHttprouteRulesItems0:
+    r"""
+    ValuesApplicationSetHttprouteRulesItems0
+
+    Attributes
+    ----------
+    matches : [ValuesApplicationSetHttprouteRulesItems0MatchesItems0], optional
+    """
+    [...str]: any
+    matches?: [ValuesApplicationSetHttprouteRulesItems0MatchesItems0]
+
+schema ValuesApplicationSetHttprouteRulesItems0MatchesItems0:
+    r"""
+    ValuesApplicationSetHttprouteRulesItems0MatchesItems0
+
+    Attributes
+    ----------
+    path : ValuesApplicationSetHttprouteRulesItems0MatchesItems0Path, optional
+    """
+    [...str]: any
+    path?: ValuesApplicationSetHttprouteRulesItems0MatchesItems0Path
+
+schema ValuesApplicationSetHttprouteRulesItems0MatchesItems0Path:
+    r"""
+    ValuesApplicationSetHttprouteRulesItems0MatchesItems0Path
+
+    Attributes
+    ----------
+    $type : str, optional, default is "PathPrefix"
+    value : str, optional, default is "/api/webhook"
+    """
+    [...str]: any
+    $type?: str
+    value?: str
+
 schema ValuesApplicationSetImage:
     r"""
     # ApplicationSet controller image
@@ -667,6 +775,59 @@ schema ValuesApplicationSetIngressAnnotations:
 schema ValuesApplicationSetIngressLabels:
     r"""
     Additional ingress labels
+    """
+    [...str]: any
+
+schema ValuesApplicationSetListenerset:
+    r"""
+    Gateway API ListenerSet configuration for the Git Generator webhook
+    # Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration
+    NOTE: Gateway API support is in EXPERIMENTAL status
+    ListenerSet allows attaching additional listeners to an existing Gateway
+    Requires Gateway API v1alpha2 and a controller that supports ListenerSet
+    Refer to https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1alpha2.ListenerSet
+
+    Attributes
+    ----------
+    annotations : ValuesApplicationSetListenersetAnnotations, optional
+        Additional ListenerSet annotations
+    enabled : bool, optional, default is False
+        Enable ListenerSet resource for Argo CD ApplicationSet webhook (Gateway API)
+    labels : ValuesApplicationSetListenersetLabels, optional
+        Additional ListenerSet labels
+    listeners : [any], optional
+        group: gateway.networking.k8s.io
+        kind: Gateway
+        name: example-gateway
+        namespace: example-gateway-namespace
+        Listeners to attach to the parent Gateway
+    parentRef : ValuesApplicationSetListenersetParentRef, optional
+        Gateway API parentRef for the ListenerSet
+        # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef.
+    """
+    [...str]: any
+    annotations?: ValuesApplicationSetListenersetAnnotations
+    enabled?: bool
+    labels?: ValuesApplicationSetListenersetLabels
+    listeners?: [any]
+    parentRef?: ValuesApplicationSetListenersetParentRef
+
+schema ValuesApplicationSetListenersetAnnotations:
+    r"""
+    Additional ListenerSet annotations
+    """
+    [...str]: any
+
+schema ValuesApplicationSetListenersetLabels:
+    r"""
+    Additional ListenerSet labels
+    """
+    [...str]: any
+
+schema ValuesApplicationSetListenersetParentRef:
+    r"""
+    Gateway API parentRef for the ListenerSet
+    # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef.
     """
     [...str]: any
 
@@ -995,6 +1156,81 @@ schema ValuesApplicationSetServiceLabels:
     """
     [...str]: any
 
+schema ValuesApplicationSetStartupProbe:
+    r"""
+    # Startup probe for ApplicationSet controller (optional)
+    # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for ApplicationSet controller
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the [probe] to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesApplicationSetVpa:
+    r"""
+    # ApplicationSet controller Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesApplicationSetVpaAnnotations, optional
+        Annotations to be added to ApplicationSet controller vpa
+    containerPolicy : ValuesApplicationSetVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for ApplicationSet controller container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller
+    labels : ValuesApplicationSetVpaLabels, optional
+        Labels to be added to ApplicationSet controller vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesApplicationSetVpaAnnotations
+    containerPolicy?: ValuesApplicationSetVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesApplicationSetVpaLabels
+    updateMode?: str
+
+schema ValuesApplicationSetVpaAnnotations:
+    r"""
+    Annotations to be added to ApplicationSet controller vpa
+    """
+    [...str]: any
+
+schema ValuesApplicationSetVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for ApplicationSet controller container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesApplicationSetVpaLabels:
+    r"""
+    Labels to be added to ApplicationSet controller vpa
+    """
+    [...str]: any
+
 schema ValuesAuthSecretAnnotations:
     r"""
     Annotations for auth secret
@@ -1061,6 +1297,9 @@ schema ValuesCommitServer:
     service : ValuesCommitServerService, optional
         # commit server service configuration
     serviceAccount : ValuesCommitServerServiceAccount, optional
+    startupProbe : ValuesCommitServerStartupProbe, optional
+        # Startup probe for commit server (optional)
+        # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     terminationGracePeriodSeconds : int, optional, default is 30
         terminationGracePeriodSeconds for container lifecycle hook
     tolerations : [any], optional
@@ -1069,6 +1308,9 @@ schema ValuesCommitServer:
         Assign custom [TopologySpreadConstraints] rules to the commit server
         # Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
         # If labelSelector is left out, it will default to the labelSelector configuration of the deployment
+    vpa : ValuesCommitServerVpa, optional
+        # Commit server Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesCommitServerAffinity
@@ -1099,9 +1341,11 @@ schema ValuesCommitServer:
     runtimeClassName?: str
     service?: ValuesCommitServerService
     serviceAccount?: ValuesCommitServerServiceAccount
+    startupProbe?: ValuesCommitServerStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    vpa?: ValuesCommitServerVpa
 
 schema ValuesCommitServerAffinity:
     r"""
@@ -1202,6 +1446,8 @@ schema ValuesCommitServerLivenessProbe:
         Enable Kubernetes liveness probe for commit server
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz?full=true"
+        Http path to use for the liveness probe
     initialDelaySeconds : int, optional, default is 30
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 30
@@ -1212,6 +1458,7 @@ schema ValuesCommitServerLivenessProbe:
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     timeoutSeconds?: int
@@ -1310,6 +1557,8 @@ schema ValuesCommitServerReadinessProbe:
         Enable Kubernetes liveness probe for commit server
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the readiness probe
     initialDelaySeconds : int, optional, default is 5
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 10
@@ -1320,6 +1569,7 @@ schema ValuesCommitServerReadinessProbe:
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     timeoutSeconds?: int
@@ -1396,6 +1646,81 @@ schema ValuesCommitServerServiceAnnotations:
 schema ValuesCommitServerServiceLabels:
     r"""
     commit server service labels
+    """
+    [...str]: any
+
+schema ValuesCommitServerStartupProbe:
+    r"""
+    # Startup probe for commit server (optional)
+    # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for commit server
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the startup probe
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpPath?: str
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    timeoutSeconds?: int
+
+schema ValuesCommitServerVpa:
+    r"""
+    # Commit server Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesCommitServerVpaAnnotations, optional
+        Annotations to be added to commit server vpa
+    containerPolicy : ValuesCommitServerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for commit server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server
+    labels : ValuesCommitServerVpaLabels, optional
+        Labels to be added to commit server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesCommitServerVpaAnnotations
+    containerPolicy?: ValuesCommitServerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesCommitServerVpaLabels
+    updateMode?: str
+
+schema ValuesCommitServerVpaAnnotations:
+    r"""
+    Annotations to be added to commit server vpa
+    """
+    [...str]: any
+
+schema ValuesCommitServerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for commit server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesCommitServerVpaLabels:
+    r"""
+    Labels to be added to commit server vpa
     """
     [...str]: any
 
@@ -2039,6 +2364,9 @@ schema ValuesController:
     runtimeClassName : str, optional, default is ""
         Runtime class name for the application controller
     serviceAccount : ValuesControllerServiceAccount, optional
+    startupProbe : ValuesControllerStartupProbe, optional
+        # Startup probe for application controller (optional)
+        # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     statefulsetAnnotations : ValuesControllerStatefulsetAnnotations, optional
         Annotations for the application controller StatefulSet
     statefulsetLabels : ValuesControllerStatefulsetLabels, optional
@@ -2095,6 +2423,7 @@ schema ValuesController:
     roleRules?: [any]
     runtimeClassName?: str
     serviceAccount?: ValuesControllerServiceAccount
+    startupProbe?: ValuesControllerStartupProbe
     statefulsetAnnotations?: ValuesControllerStatefulsetAnnotations
     statefulsetLabels?: ValuesControllerStatefulsetLabels
     terminationGracePeriodSeconds?: int
@@ -2492,6 +2821,8 @@ schema ValuesControllerReadinessProbe:
     ----------
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the readiness probe
     initialDelaySeconds : int, optional, default is 10
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 10
@@ -2503,6 +2834,7 @@ schema ValuesControllerReadinessProbe:
     """
     [...str]: any
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
@@ -2549,6 +2881,37 @@ schema ValuesControllerServiceAccountLabels:
     Labels applied to created service account
     """
     [...str]: any
+
+schema ValuesControllerStartupProbe:
+    r"""
+    # Startup probe for application controller (optional)
+    # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for application controller
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the startup probe
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the [probe] to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpPath?: str
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
 
 schema ValuesControllerStatefulsetAnnotations:
     r"""
@@ -2733,6 +3096,9 @@ schema ValuesDex:
         Service port name for HTTP access
     servicePortMetrics : int, optional, default is 5558
         Service port for metrics access
+    startupProbe : ValuesDexStartupProbe, optional
+        # Startup probe for Dex server (optional)
+        # Supported from Dex >= 2.28.0
     terminationGracePeriodSeconds : int, optional, default is 30
         terminationGracePeriodSeconds for container lifecycle hook
     tolerations : [any], optional
@@ -2745,6 +3111,9 @@ schema ValuesDex:
         Additional volumeMounts to the dex main container
     volumes : [any], optional
         Additional volumes to the dex pod
+    vpa : ValuesDexVpa, optional
+        # Dex Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesDexAffinity
@@ -2785,11 +3154,13 @@ schema ValuesDex:
     servicePortHttp?: int
     servicePortHttpName?: str
     servicePortMetrics?: int
+    startupProbe?: ValuesDexStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesDexVpa
 
 schema ValuesDexAffinity:
     r"""
@@ -3264,6 +3635,90 @@ schema ValuesDexServiceAccount:
 schema ValuesDexServiceAccountAnnotations:
     r"""
     Annotations applied to created service account
+    """
+    [...str]: any
+
+schema ValuesDexStartupProbe:
+    r"""
+    # Startup probe for Dex server (optional)
+    # Supported from Dex >= 2.28.0
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for Dex >= 2.28.0
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz/ready"
+        Http path to use for the startup probe
+    httpPort : str, optional, default is "metrics"
+        Http port to use for the startup probe
+    httpScheme : str, optional, default is "HTTP"
+        Scheme to use for the startup probe (can be HTTP or HTTPS)
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the [probe] to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpPath?: str
+    httpPort?: str
+    httpScheme?: str
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesDexVpa:
+    r"""
+    # Dex Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesDexVpaAnnotations, optional
+        Annotations to be added to Dex server vpa
+    containerPolicy : ValuesDexVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for Dex server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server
+    labels : ValuesDexVpaLabels, optional
+        Labels to be added to Dex server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesDexVpaAnnotations
+    containerPolicy?: ValuesDexVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesDexVpaLabels
+    updateMode?: str
+
+schema ValuesDexVpaAnnotations:
+    r"""
+    Annotations to be added to Dex server vpa
+    """
+    [...str]: any
+
+schema ValuesDexVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for Dex server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesDexVpaLabels:
+    r"""
+    Labels to be added to Dex server vpa
     """
     [...str]: any
 
@@ -4579,6 +5034,9 @@ schema ValuesNotifications:
         Runtime class name for the notifications controller
     secret : ValuesNotificationsSecret, optional
     serviceAccount : ValuesNotificationsServiceAccount, optional
+    startupProbe : ValuesNotificationsStartupProbe, optional
+        # Startup probe for notifications controller Pods (optional)
+        # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     subscriptions : [any], optional
         Contains centrally managed global application subscriptions
         # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/subscriptions/
@@ -4596,6 +5054,9 @@ schema ValuesNotifications:
     triggers : ValuesNotificationsTriggers, optional
         The trigger defines the condition when the notification should be sent
         # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/
+    vpa : ValuesNotificationsVpa, optional
+        # Notifications controller Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesNotificationsAffinity
@@ -4636,12 +5097,14 @@ schema ValuesNotifications:
     runtimeClassName?: str
     secret?: ValuesNotificationsSecret
     serviceAccount?: ValuesNotificationsServiceAccount
+    startupProbe?: ValuesNotificationsStartupProbe
     subscriptions?: [any]
     templates?: ValuesNotificationsTemplates
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     triggers?: ValuesNotificationsTriggers
+    vpa?: ValuesNotificationsVpa
 
 schema ValuesNotificationsAffinity:
     r"""
@@ -5120,6 +5583,34 @@ schema ValuesNotificationsServiceAccountLabels:
     """
     [...str]: any
 
+schema ValuesNotificationsStartupProbe:
+    r"""
+    # Startup probe for notifications controller Pods (optional)
+    # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for notifications controller Pods
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the [probe] to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
 schema ValuesNotificationsTemplates:
     r"""
     The notification template is used to generate the notification content
@@ -5131,6 +5622,53 @@ schema ValuesNotificationsTriggers:
     r"""
     The trigger defines the condition when the notification should be sent
     # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/
+    """
+    [...str]: any
+
+schema ValuesNotificationsVpa:
+    r"""
+    # Notifications controller Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesNotificationsVpaAnnotations, optional
+        Annotations to be added to notifications controller vpa
+    containerPolicy : ValuesNotificationsVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for notifications controller container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller
+    labels : ValuesNotificationsVpaLabels, optional
+        Labels to be added to notifications controller vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesNotificationsVpaAnnotations
+    containerPolicy?: ValuesNotificationsVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesNotificationsVpaLabels
+    updateMode?: str
+
+schema ValuesNotificationsVpaAnnotations:
+    r"""
+    Annotations to be added to notifications controller vpa
+    """
+    [...str]: any
+
+schema ValuesNotificationsVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for notifications controller container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesNotificationsVpaLabels:
+    r"""
+    Labels to be added to notifications controller vpa
     """
     [...str]: any
 
@@ -5363,6 +5901,9 @@ schema ValuesRedis:
         Additional volumeMounts to the redis container
     volumes : [any], optional
         Additional volumes to the redis pod
+    vpa : ValuesRedisVpa, optional
+        # Redis Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesRedisAffinity
@@ -5418,6 +5959,7 @@ schema ValuesRedis:
     updateStrategy?: ValuesRedisUpdateStrategy
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesRedisVpa
 
 schema ValuesRedisAffinity:
     r"""
@@ -5604,7 +6146,7 @@ schema ValuesRedisExporterImage:
         Image pull policy for the redis-exporter
     repository : str, optional, default is "ghcr.io/oliver006/redis_exporter"
         Repository to use for the redis-exporter
-    tag : str, optional, default is "v1.82.0"
+    tag : str, optional, default is "v1.86.0"
         Tag to use for the redis-exporter
     """
     [...str]: any
@@ -6533,6 +7075,53 @@ schema ValuesRedisUpdateStrategy:
     [...str]: any
     $type?: str
 
+schema ValuesRedisVpa:
+    r"""
+    # Redis Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesRedisVpaAnnotations, optional
+        Annotations to be added to Redis vpa
+    containerPolicy : ValuesRedisVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for Redis container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis
+    labels : ValuesRedisVpaLabels, optional
+        Labels to be added to Redis vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesRedisVpaAnnotations
+    containerPolicy?: ValuesRedisVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesRedisVpaLabels
+    updateMode?: str
+
+schema ValuesRedisVpaAnnotations:
+    r"""
+    Annotations to be added to Redis vpa
+    """
+    [...str]: any
+
+schema ValuesRedisVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for Redis container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesRedisVpaLabels:
+    r"""
+    Labels to be added to Redis vpa
+    """
+    [...str]: any
+
 schema ValuesRepoServer:
     r"""
     # Repo Server
@@ -6626,6 +7215,9 @@ schema ValuesRepoServer:
     serviceAccount : ValuesRepoServerServiceAccount, optional
         # Repo server service account
         # If create is set to true, make sure to uncomment the name and update the rbac section below
+    startupProbe : ValuesRepoServerStartupProbe, optional
+        # Startup probe for Repo Server (optional)
+        # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     terminationGracePeriodSeconds : int, optional, default is 30
         terminationGracePeriodSeconds for container lifecycle hook
     tolerations : [any], optional
@@ -6640,6 +7232,9 @@ schema ValuesRepoServer:
         Additional volumeMounts to the repo server main container
     volumes : [any], optional
         Additional volumes to the repo server pod
+    vpa : ValuesRepoServerVpa, optional
+        # Repo server Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesRepoServerAffinity
@@ -6682,12 +7277,14 @@ schema ValuesRepoServer:
     runtimeClassName?: str
     service?: ValuesRepoServerService
     serviceAccount?: ValuesRepoServerServiceAccount
+    startupProbe?: ValuesRepoServerStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     useEphemeralHelmWorkingDir?: bool
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesRepoServerVpa
 
 schema ValuesRepoServerAffinity:
     r"""
@@ -6864,10 +7461,13 @@ schema ValuesRepoServerCopyutil:
 
     Attributes
     ----------
+    extraArgs : str, optional, default is "--update=none"
+        Extra arguments for the cp command in the repo server copyutil initContainer
     resources : ValuesRepoServerCopyutilResources, optional
         Resource limits and requests for the repo server copyutil initContainer
     """
     [...str]: any
+    extraArgs?: str
     resources?: ValuesRepoServerCopyutilResources
 
 schema ValuesRepoServerCopyutilResources:
@@ -6952,6 +7552,8 @@ schema ValuesRepoServerLivenessProbe:
         Enable Kubernetes liveness probe for Repo Server
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz?full=true"
+        Http path to use for the liveness probe
     initialDelaySeconds : int, optional, default is 10
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 10
@@ -6964,6 +7566,7 @@ schema ValuesRepoServerLivenessProbe:
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
@@ -7172,6 +7775,8 @@ schema ValuesRepoServerReadinessProbe:
         Enable Kubernetes readiness probe for Repo Server
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the readiness probe
     initialDelaySeconds : int, optional, default is 10
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 10
@@ -7184,6 +7789,7 @@ schema ValuesRepoServerReadinessProbe:
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
@@ -7265,6 +7871,84 @@ schema ValuesRepoServerServiceAnnotations:
 schema ValuesRepoServerServiceLabels:
     r"""
     Repo server service labels
+    """
+    [...str]: any
+
+schema ValuesRepoServerStartupProbe:
+    r"""
+    # Startup probe for Repo Server (optional)
+    # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for Repo Server
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the startup probe
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the [probe] to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpPath?: str
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesRepoServerVpa:
+    r"""
+    # Repo server Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesRepoServerVpaAnnotations, optional
+        Annotations to be added to repo server vpa
+    containerPolicy : ValuesRepoServerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for repo server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server
+    labels : ValuesRepoServerVpaLabels, optional
+        Labels to be added to repo server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesRepoServerVpaAnnotations
+    containerPolicy?: ValuesRepoServerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesRepoServerVpaLabels
+    updateMode?: str
+
+schema ValuesRepoServerVpaAnnotations:
+    r"""
+    Annotations to be added to repo server vpa
+    """
+    [...str]: any
+
+schema ValuesRepoServerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for repo server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesRepoServerVpaLabels:
+    r"""
+    Labels to be added to repo server vpa
     """
     [...str]: any
 
@@ -7637,6 +8321,12 @@ schema ValuesServer:
         # Ref: https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins
     lifecycle : ValuesServerLifecycle, optional
         Specify postStart and preStop lifecycle hooks for your argo-cd-server container
+    listenerset : ValuesServerListenerset, optional
+        Gateway API ListenerSet configuration
+        NOTE: Gateway API support is in EXPERIMENTAL status
+        ListenerSet allows attaching additional listeners to an existing Gateway
+        Requires Gateway API v1alpha2 and a controller that supports ListenerSet
+        Refer to https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1alpha2.ListenerSet
     livenessProbe : ValuesServerLivenessProbe, optional
     metrics : ValuesServerMetrics, optional
         # Server metrics service configuration
@@ -7672,6 +8362,9 @@ schema ValuesServer:
     service : ValuesServerService, optional
         # Server service configuration
     serviceAccount : ValuesServerServiceAccount, optional
+    startupProbe : ValuesServerStartupProbe, optional
+        # Startup probe for Argo CD server (optional)
+        # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
     terminationGracePeriodSeconds : int, optional, default is 30
         terminationGracePeriodSeconds for container lifecycle hook
     tolerations : [any], optional
@@ -7684,6 +8377,9 @@ schema ValuesServer:
         Additional volumeMounts to the server main container
     volumes : [any], optional
         Additional volumes to the server pod
+    vpa : ValuesServerVpa, optional
+        # Argo CD server Vertical Pod Autoscaler
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
     """
     [...str]: any
     affinity?: ValuesServerAffinity
@@ -7715,6 +8411,7 @@ schema ValuesServer:
     ingressGrpc?: ValuesServerIngressGrpc
     initContainers?: [any]
     lifecycle?: ValuesServerLifecycle
+    listenerset?: ValuesServerListenerset
     livenessProbe?: ValuesServerLivenessProbe
     metrics?: ValuesServerMetrics
     name?: str
@@ -7731,11 +8428,13 @@ schema ValuesServer:
     runtimeClassName?: str
     service?: ValuesServerService
     serviceAccount?: ValuesServerServiceAccount
+    startupProbe?: ValuesServerStartupProbe
     terminationGracePeriodSeconds?: int
     tolerations?: [any]
     topologySpreadConstraints?: [any]
     volumeMounts?: [any]
     volumes?: [any]
+    vpa?: ValuesServerVpa
 
 schema ValuesServerAffinity:
     r"""
@@ -8168,7 +8867,7 @@ schema ValuesServerExtensionsImage:
         Image pull policy for extensions
     repository : str, optional, default is "quay.io/argoprojlabs/argocd-extension-installer"
         Repository to use for extension installer image
-    tag : str, optional, default is "v0.0.9"
+    tag : str, optional, default is "v1.0.1"
         Tag to use for extension installer image
     """
     [...str]: any
@@ -8592,6 +9291,58 @@ schema ValuesServerLifecycle:
     """
     [...str]: any
 
+schema ValuesServerListenerset:
+    r"""
+    Gateway API ListenerSet configuration
+    NOTE: Gateway API support is in EXPERIMENTAL status
+    ListenerSet allows attaching additional listeners to an existing Gateway
+    Requires Gateway API v1alpha2 and a controller that supports ListenerSet
+    Refer to https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1alpha2.ListenerSet
+
+    Attributes
+    ----------
+    annotations : ValuesServerListenersetAnnotations, optional
+        Additional ListenerSet annotations
+    enabled : bool, optional, default is False
+        Enable ListenerSet resource for Argo CD server (Gateway API)
+    labels : ValuesServerListenersetLabels, optional
+        Additional ListenerSet labels
+    listeners : [any], optional
+        group: gateway.networking.k8s.io
+        kind: Gateway
+        name: example-gateway
+        namespace: example-gateway-namespace
+        Listeners to attach to the parent Gateway
+    parentRef : ValuesServerListenersetParentRef, optional
+        Gateway API parentRef for the ListenerSet
+        # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef.
+    """
+    [...str]: any
+    annotations?: ValuesServerListenersetAnnotations
+    enabled?: bool
+    labels?: ValuesServerListenersetLabels
+    listeners?: [any]
+    parentRef?: ValuesServerListenersetParentRef
+
+schema ValuesServerListenersetAnnotations:
+    r"""
+    Additional ListenerSet annotations
+    """
+    [...str]: any
+
+schema ValuesServerListenersetLabels:
+    r"""
+    Additional ListenerSet labels
+    """
+    [...str]: any
+
+schema ValuesServerListenersetParentRef:
+    r"""
+    Gateway API parentRef for the ListenerSet
+    # Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef.
+    """
+    [...str]: any
+
 schema ValuesServerLivenessProbe:
     r"""
     ValuesServerLivenessProbe
@@ -8602,6 +9353,8 @@ schema ValuesServerLivenessProbe:
         Enable Kubernetes liveness probe for default backend
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz?full=true"
+        Http path to use for the liveness probe
     initialDelaySeconds : int, optional, default is 10
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 10
@@ -8614,6 +9367,7 @@ schema ValuesServerLivenessProbe:
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
@@ -8822,6 +9576,8 @@ schema ValuesServerReadinessProbe:
         Enable Kubernetes readiness probe for default backend
     failureThreshold : int, optional, default is 3
         Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the readiness probe
     initialDelaySeconds : int, optional, default is 10
         Number of seconds after the container has started before [probe] is initiated
     periodSeconds : int, optional, default is 10
@@ -8834,6 +9590,7 @@ schema ValuesServerReadinessProbe:
     [...str]: any
     enabled?: bool
     failureThreshold?: int
+    httpPath?: str
     initialDelaySeconds?: int
     periodSeconds?: int
     successThreshold?: int
@@ -8985,6 +9742,84 @@ schema ValuesServerServiceAnnotations:
 schema ValuesServerServiceLabels:
     r"""
     Server service labels
+    """
+    [...str]: any
+
+schema ValuesServerStartupProbe:
+    r"""
+    # Startup probe for Argo CD server (optional)
+    # Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is False
+        Enable Kubernetes startup probe for Argo CD server
+    failureThreshold : int, optional, default is 20
+        Minimum consecutive failures for the [probe] to be considered failed after having succeeded
+    httpPath : str, optional, default is "/healthz"
+        Http path to use for the startup probe
+    initialDelaySeconds : int, optional, default is 10
+        Number of seconds after the container has started before [probe] is initiated
+    periodSeconds : int, optional, default is 10
+        How often (in seconds) to perform the [probe]
+    successThreshold : int, optional, default is 1
+        Minimum consecutive successes for the [probe] to be considered successful after having failed
+    timeoutSeconds : int, optional, default is 1
+        Number of seconds after which the [probe] times out
+    """
+    [...str]: any
+    enabled?: bool
+    failureThreshold?: int
+    httpPath?: str
+    initialDelaySeconds?: int
+    periodSeconds?: int
+    successThreshold?: int
+    timeoutSeconds?: int
+
+schema ValuesServerVpa:
+    r"""
+    # Argo CD server Vertical Pod Autoscaler
+    # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/
+
+    Attributes
+    ----------
+    annotations : ValuesServerVpaAnnotations, optional
+        Annotations to be added to Argo CD server vpa
+    containerPolicy : ValuesServerVpaContainerPolicy, optional
+        Controls how VPA computes the recommended resources for Argo CD server container
+        # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    enabled : bool, optional, default is False
+        Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server
+    labels : ValuesServerVpaLabels, optional
+        Labels to be added to Argo CD server vpa
+    updateMode : str, optional, default is "Initial"
+        One of the VPA operation modes
+        # Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically
+        # Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden
+    """
+    [...str]: any
+    annotations?: ValuesServerVpaAnnotations
+    containerPolicy?: ValuesServerVpaContainerPolicy
+    enabled?: bool
+    labels?: ValuesServerVpaLabels
+    updateMode?: str
+
+schema ValuesServerVpaAnnotations:
+    r"""
+    Annotations to be added to Argo CD server vpa
+    """
+    [...str]: any
+
+schema ValuesServerVpaContainerPolicy:
+    r"""
+    Controls how VPA computes the recommended resources for Argo CD server container
+    # Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml
+    """
+    [...str]: any
+
+schema ValuesServerVpaLabels:
+    r"""
+    Labels to be added to Argo CD server vpa
     """
     [...str]: any
 

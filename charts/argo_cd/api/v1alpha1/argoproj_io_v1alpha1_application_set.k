@@ -37006,6 +37006,8 @@ schema ArgoprojIoV1alpha1ApplicationSetStatus:
         application status
     conditions : [ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0], default is Undefined, optional
         conditions
+    health : ArgoprojIoV1alpha1ApplicationSetStatusHealth, default is Undefined, optional
+        health
     resources : [ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0], default is Undefined, optional
         resources
     resourcesCount : int, default is Undefined, optional
@@ -37013,6 +37015,7 @@ schema ArgoprojIoV1alpha1ApplicationSetStatus:
     """
     applicationStatus?: [ArgoprojIoV1alpha1ApplicationSetStatusApplicationStatusItems0]
     conditions?: [ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0]
+    health?: ArgoprojIoV1alpha1ApplicationSetStatusHealth
     resources?: [ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0]
     resourcesCount?: int
 
@@ -37071,6 +37074,23 @@ schema ArgoprojIoV1alpha1ApplicationSetStatusConditionsItems0:
     status: str
 
     $type: str
+
+schema ArgoprojIoV1alpha1ApplicationSetStatusHealth:
+    r"""
+    argoproj io v1alpha1 application set status health
+
+    Attributes
+    ----------
+    lastTransitionTime : str, default is Undefined, optional
+        last transition time
+    message : str, default is Undefined, optional
+        message
+    status : str, default is Undefined, optional
+        status
+    """
+    lastTransitionTime?: str
+    message?: str
+    status?: str
 
 schema ArgoprojIoV1alpha1ApplicationSetStatusResourcesItems0:
     r"""

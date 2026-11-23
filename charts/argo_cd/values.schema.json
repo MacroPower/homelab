@@ -361,6 +361,99 @@
           "title": "extraVolumes",
           "type": "array"
         },
+        "httproute": {
+          "additionalProperties": true,
+          "description": "# Gateway API HTTPRoute for the Git Generator webhook\n# Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration)\nNOTE: Gateway API support is in EXPERIMENTAL status\nSupport depends on your Gateway controller implementation\nSome controllers may require additional configuration (e.g., BackendTLSPolicy for HTTPS backends)\nRefer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional HTTPRoute annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable HTTPRoute resource for Argo CD Applicationset Webhook (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "hostnames": {
+              "description": "- name: example-gateway\n  namespace: example-gateway-namespace\n  sectionName: https\nList of hostnames for the HTTPRoute",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "hostnames",
+              "type": "array"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional HTTPRoute labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "parentRefs": {
+              "description": "Gateway API parentRefs for the HTTPRoute\n# Must reference an existing Gateway",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "parentRefs",
+              "type": "array"
+            },
+            "rules": {
+              "description": "- argocd.example.com\nHTTPRoute rules configuration",
+              "items": {
+                "additionalProperties": true,
+                "properties": {
+                  "matches": {
+                    "items": {
+                      "additionalProperties": true,
+                      "properties": {
+                        "path": {
+                          "additionalProperties": true,
+                          "properties": {
+                            "type": {
+                              "default": "PathPrefix",
+                              "required": [],
+                              "title": "type",
+                              "type": "string"
+                            },
+                            "value": {
+                              "default": "/api/webhook",
+                              "required": [],
+                              "title": "value",
+                              "type": "string"
+                            }
+                          },
+                          "required": [],
+                          "title": "path",
+                          "type": "object"
+                        }
+                      },
+                      "required": [],
+                      "type": "object"
+                    },
+                    "required": [],
+                    "title": "matches",
+                    "type": "array"
+                  }
+                },
+                "required": [],
+                "type": "object"
+              },
+              "required": [],
+              "title": "rules",
+              "type": "array"
+            }
+          },
+          "required": [],
+          "title": "httproute",
+          "type": "object"
+        },
         "image": {
           "additionalProperties": true,
           "description": "# ApplicationSet controller image",
@@ -509,6 +602,52 @@
           "required": [],
           "title": "initContainers",
           "type": "array"
+        },
+        "listenerset": {
+          "additionalProperties": true,
+          "description": "Gateway API ListenerSet configuration for the Git Generator webhook\n# Ref: https://argocd-applicationset.readthedocs.io/en/master/Generators-Git/#webhook-configuration\nNOTE: Gateway API support is in EXPERIMENTAL status\nListenerSet allows attaching additional listeners to an existing Gateway\nRequires Gateway API v1alpha2 and a controller that supports ListenerSet\nRefer to https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1alpha2.ListenerSet",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional ListenerSet annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable ListenerSet resource for Argo CD ApplicationSet webhook (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional ListenerSet labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "listeners": {
+              "description": "group: gateway.networking.k8s.io\nkind: Gateway\nname: example-gateway\nnamespace: example-gateway-namespace\nListeners to attach to the parent Gateway",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "listeners",
+              "type": "array"
+            },
+            "parentRef": {
+              "additionalProperties": true,
+              "description": "Gateway API parentRef for the ListenerSet\n# Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef.",
+              "required": [],
+              "title": "parentRef",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "listenerset",
+          "type": "object"
         },
         "livenessProbe": {
           "additionalProperties": true,
@@ -976,6 +1115,57 @@
           "title": "serviceAccount",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for ApplicationSet controller (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for ApplicationSet controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Minimum consecutive successes for the [probe] to be considered successful after having failed",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "terminationGracePeriodSeconds for container lifecycle hook",
@@ -1000,6 +1190,50 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# ApplicationSet controller Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to ApplicationSet controller vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for ApplicationSet controller container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the ApplicationSet controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to ApplicationSet controller vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -1236,6 +1470,13 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "httpPath": {
+              "default": "/healthz?full=true",
+              "description": "Http path to use for the liveness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
             "initialDelaySeconds": {
               "default": 30,
               "description": "Number of seconds after the container has started before [probe] is initiated",
@@ -1396,6 +1637,13 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the readiness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
             "initialDelaySeconds": {
               "default": 5,
               "description": "Number of seconds after the container has started before [probe] is initiated",
@@ -1516,6 +1764,57 @@
           "title": "serviceAccount",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for commit server (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for commit server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the startup probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "terminationGracePeriodSeconds for container lifecycle hook",
@@ -1540,6 +1839,50 @@
           "required": [],
           "title": "topologySpreadConstraints",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Commit server Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to commit server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for commit server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the commit server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to commit server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -2765,6 +3108,13 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the readiness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
             "initialDelaySeconds": {
               "default": 10,
               "description": "Number of seconds after the container has started before [probe] is initiated",
@@ -2876,6 +3226,64 @@
           },
           "required": [],
           "title": "serviceAccount",
+          "type": "object"
+        },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for application controller (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for application controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the startup probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Minimum consecutive successes for the [probe] to be considered successful after having failed",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
           "type": "object"
         },
         "statefulsetAnnotations": {
@@ -3841,6 +4249,78 @@
           "title": "servicePortMetrics",
           "type": "integer"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for Dex server (optional)\n# Supported from Dex \u003e= 2.28.0",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for Dex \u003e= 2.28.0",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz/ready",
+              "description": "Http path to use for the startup probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
+            "httpPort": {
+              "default": "metrics",
+              "description": "Http port to use for the startup probe",
+              "required": [],
+              "title": "httpPort",
+              "type": "string"
+            },
+            "httpScheme": {
+              "default": "HTTP",
+              "description": "Scheme to use for the startup probe (can be HTTP or HTTPS)",
+              "required": [],
+              "title": "httpScheme",
+              "type": "string"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Minimum consecutive successes for the [probe] to be considered successful after having failed",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "terminationGracePeriodSeconds for container lifecycle hook",
@@ -3883,6 +4363,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Dex Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to Dex server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for Dex server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Dex server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to Dex server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -6274,6 +6798,57 @@
           "title": "serviceAccount",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for notifications controller Pods (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for notifications controller Pods",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Minimum consecutive successes for the [probe] to be considered successful after having failed",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "subscriptions": {
           "description": "Contains centrally managed global application subscriptions\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/subscriptions/",
           "items": {
@@ -6320,6 +6895,50 @@
           "description": "The trigger defines the condition when the notification should be sent\n# For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/triggers/",
           "required": [],
           "title": "triggers",
+          "type": "object"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Notifications controller Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to notifications controller vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for notifications controller container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the notifications controller",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to notifications controller vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
           "type": "object"
         }
       },
@@ -6819,7 +7438,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v1.82.0",
+                  "default": "v1.86.0",
                   "description": "Tag to use for the redis-exporter",
                   "required": [],
                   "title": "tag",
@@ -7654,6 +8273,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Redis Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to Redis vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for Redis container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Redis",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to Redis vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -8465,6 +9128,13 @@
         "copyutil": {
           "additionalProperties": true,
           "properties": {
+            "extraArgs": {
+              "default": "--update=none",
+              "description": "Extra arguments for the cp command in the repo server copyutil initContainer",
+              "required": [],
+              "title": "extraArgs",
+              "type": "string"
+            },
             "resources": {
               "additionalProperties": true,
               "description": "Resource limits and requests for the repo server copyutil initContainer",
@@ -8649,6 +9319,13 @@
               "required": [],
               "title": "failureThreshold",
               "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz?full=true",
+              "description": "Http path to use for the liveness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
             },
             "initialDelaySeconds": {
               "default": 10,
@@ -8967,6 +9644,13 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the readiness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
             "initialDelaySeconds": {
               "default": 10,
               "description": "Number of seconds after the container has started before [probe] is initiated",
@@ -9109,6 +9793,64 @@
           "title": "serviceAccount",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for Repo Server (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for Repo Server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the startup probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Minimum consecutive successes for the [probe] to be considered successful after having failed",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "terminationGracePeriodSeconds for container lifecycle hook",
@@ -9158,6 +9900,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Repo server Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to repo server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for repo server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the repo server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to repo server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
@@ -10186,7 +10972,7 @@
                   "type": "string"
                 },
                 "tag": {
-                  "default": "v0.0.9",
+                  "default": "v1.0.1",
                   "description": "Tag to use for extension installer image",
                   "required": [],
                   "title": "tag",
@@ -10756,6 +11542,52 @@
           "title": "lifecycle",
           "type": "object"
         },
+        "listenerset": {
+          "additionalProperties": true,
+          "description": "Gateway API ListenerSet configuration\nNOTE: Gateway API support is in EXPERIMENTAL status\nListenerSet allows attaching additional listeners to an existing Gateway\nRequires Gateway API v1alpha2 and a controller that supports ListenerSet\nRefer to https://gateway-api.sigs.k8s.io/reference/spec/#gateway.networking.k8s.io/v1alpha2.ListenerSet",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Additional ListenerSet annotations",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Enable ListenerSet resource for Argo CD server (Gateway API)",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Additional ListenerSet labels",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "listeners": {
+              "description": "group: gateway.networking.k8s.io\nkind: Gateway\nname: example-gateway\nnamespace: example-gateway-namespace\nListeners to attach to the parent Gateway",
+              "items": {
+                "required": []
+              },
+              "required": [],
+              "title": "listeners",
+              "type": "array"
+            },
+            "parentRef": {
+              "additionalProperties": true,
+              "description": "Gateway API parentRef for the ListenerSet\n# Must reference an existing Gateway. Unlike HTTPRoute, ListenerSet accepts exactly one parentRef.",
+              "required": [],
+              "title": "parentRef",
+              "type": "object"
+            }
+          },
+          "required": [],
+          "title": "listenerset",
+          "type": "object"
+        },
         "livenessProbe": {
           "additionalProperties": true,
           "properties": {
@@ -10772,6 +11604,13 @@
               "required": [],
               "title": "failureThreshold",
               "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz?full=true",
+              "description": "Http path to use for the liveness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
             },
             "initialDelaySeconds": {
               "default": 10,
@@ -11081,6 +11920,13 @@
               "title": "failureThreshold",
               "type": "integer"
             },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the readiness probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
             "initialDelaySeconds": {
               "default": 10,
               "description": "Number of seconds after the container has started before [probe] is initiated",
@@ -11347,6 +12193,64 @@
           "title": "serviceAccount",
           "type": "object"
         },
+        "startupProbe": {
+          "additionalProperties": true,
+          "description": "# Startup probe for Argo CD server (optional)\n# Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/",
+          "properties": {
+            "enabled": {
+              "default": false,
+              "description": "Enable Kubernetes startup probe for Argo CD server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "failureThreshold": {
+              "default": 20,
+              "description": "Minimum consecutive failures for the [probe] to be considered failed after having succeeded",
+              "required": [],
+              "title": "failureThreshold",
+              "type": "integer"
+            },
+            "httpPath": {
+              "default": "/healthz",
+              "description": "Http path to use for the startup probe",
+              "required": [],
+              "title": "httpPath",
+              "type": "string"
+            },
+            "initialDelaySeconds": {
+              "default": 10,
+              "description": "Number of seconds after the container has started before [probe] is initiated",
+              "required": [],
+              "title": "initialDelaySeconds",
+              "type": "integer"
+            },
+            "periodSeconds": {
+              "default": 10,
+              "description": "How often (in seconds) to perform the [probe]",
+              "required": [],
+              "title": "periodSeconds",
+              "type": "integer"
+            },
+            "successThreshold": {
+              "default": 1,
+              "description": "Minimum consecutive successes for the [probe] to be considered successful after having failed",
+              "required": [],
+              "title": "successThreshold",
+              "type": "integer"
+            },
+            "timeoutSeconds": {
+              "default": 1,
+              "description": "Number of seconds after which the [probe] times out",
+              "required": [],
+              "title": "timeoutSeconds",
+              "type": "integer"
+            }
+          },
+          "required": [],
+          "title": "startupProbe",
+          "type": "object"
+        },
         "terminationGracePeriodSeconds": {
           "default": 30,
           "description": "terminationGracePeriodSeconds for container lifecycle hook",
@@ -11389,6 +12293,50 @@
           "required": [],
           "title": "volumes",
           "type": "array"
+        },
+        "vpa": {
+          "additionalProperties": true,
+          "description": "# Argo CD server Vertical Pod Autoscaler\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/",
+          "properties": {
+            "annotations": {
+              "additionalProperties": true,
+              "description": "Annotations to be added to Argo CD server vpa",
+              "required": [],
+              "title": "annotations",
+              "type": "object"
+            },
+            "containerPolicy": {
+              "additionalProperties": true,
+              "description": "Controls how VPA computes the recommended resources for Argo CD server container\n# Ref: https://github.com/kubernetes/autoscaler/blob/master/vertical-pod-autoscaler/examples/hamster.yaml",
+              "required": [],
+              "title": "containerPolicy",
+              "type": "object"
+            },
+            "enabled": {
+              "default": false,
+              "description": "Deploy a [VerticalPodAutoscaler](https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically/) for the Argo CD server",
+              "required": [],
+              "title": "enabled",
+              "type": "boolean"
+            },
+            "labels": {
+              "additionalProperties": true,
+              "description": "Labels to be added to Argo CD server vpa",
+              "required": [],
+              "title": "labels",
+              "type": "object"
+            },
+            "updateMode": {
+              "default": "Initial",
+              "description": "One of the VPA operation modes\n# Ref: https://kubernetes.io/docs/concepts/workloads/autoscaling/#scaling-workloads-vertically\n# Note: Recreate update mode requires more than one replica unless the min-replicas VPA controller flag is overridden",
+              "required": [],
+              "title": "updateMode",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "vpa",
+          "type": "object"
         }
       },
       "required": [],
