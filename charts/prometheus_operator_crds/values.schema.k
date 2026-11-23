@@ -43,7 +43,7 @@ schema ValuesCrds:
     prometheusrules : ValuesCrdsPrometheusrules, optional
         # prometheusrules configures the PrometheusRule CRD
     scrapeconfigs : ValuesCrdsScrapeconfigs, optional
-        # prometheusrules configures the PrometheusRule CRD
+        # scrapeconfigs configures the ScrapeConfig CRD
     servicemonitors : ValuesCrdsServicemonitors, optional
         # servicemonitors configures the ServiceMonitor CRD
     thanosrulers : ValuesCrdsThanosrulers, optional
@@ -154,7 +154,7 @@ schema ValuesCrdsPrometheusrules:
 
 schema ValuesCrdsScrapeconfigs:
     r"""
-    # prometheusrules configures the PrometheusRule CRD
+    # scrapeconfigs configures the ScrapeConfig CRD
 
     Attributes
     ----------
