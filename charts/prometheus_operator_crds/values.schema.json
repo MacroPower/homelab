@@ -127,7 +127,7 @@
         },
         "scrapeconfigs": {
           "additionalProperties": true,
-          "description": "# prometheusrules configures the PrometheusRule CRD",
+          "description": "# scrapeconfigs configures the ScrapeConfig CRD",
           "properties": {
             "enabled": {
               "default": true,
