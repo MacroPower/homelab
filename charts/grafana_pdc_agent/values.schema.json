@@ -11,7 +11,7 @@
     },
     "annotations": {
       "additionalProperties": true,
-      "description": "custom deployment annotations",
+      "description": "Annotations to add the Deployment resource",
       "required": [],
       "title": "annotations",
       "type": "object"
@@ -21,6 +21,20 @@
       "description": "For these values, see https://grafana.com/docs/grafana-cloud/connect-externally-hosted/private-data-source-connect/configure-pdc/#pdc-connection-steps\nThe cluster where your Hosted Grafana stack is running",
       "required": [],
       "title": "cluster",
+      "type": "string"
+    },
+    "clusterSecretKey": {
+      "default": "cluster",
+      "description": "Defines the key used to lookup the cluster value in the secret defined by `clusterSecretName`.",
+      "required": [],
+      "title": "clusterSecretKey",
+      "type": "string"
+    },
+    "clusterSecretName": {
+      "default": "",
+      "description": "If set, CLUSTER is read from this secret instead of the cluster value above",
+      "required": [],
+      "title": "clusterSecretName",
       "type": "string"
     },
     "debug": {
@@ -37,6 +51,15 @@
       },
       "required": [],
       "title": "extraArgs",
+      "type": "array"
+    },
+    "extraEnv": {
+      "description": "Extra environment variables to set on the pdc-agent container.\nUseful for configuring HTTP/HTTPS proxies or other runtime settings.",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "extraEnv",
       "type": "array"
     },
     "fullnameOverride": {
@@ -57,6 +80,20 @@
       "description": "The numeric ID of your Hosted Grafana stack",
       "required": [],
       "title": "hostedGrafanaId",
+      "type": "string"
+    },
+    "hostedGrafanaIdSecretKey": {
+      "default": "hosted-grafana-id",
+      "description": "Defines the key used to lookup the hosted Grafana ID value in the secret defined by `hostedGrafanaIdSecretName`.",
+      "required": [],
+      "title": "hostedGrafanaIdSecretKey",
+      "type": "string"
+    },
+    "hostedGrafanaIdSecretName": {
+      "default": "",
+      "description": "If set, HOSTED_GRAFANA_ID is read from this secret instead of the hostedGrafanaId value above",
+      "required": [],
+      "title": "hostedGrafanaIdSecretName",
       "type": "string"
     },
     "image": {
@@ -104,6 +141,13 @@
       "title": "insecureTokenValue",
       "type": "string"
     },
+    "labels": {
+      "additionalProperties": true,
+      "description": "Labels to add to the Deployment resource",
+      "required": [],
+      "title": "labels",
+      "type": "object"
+    },
     "metricsPort": {
       "default": 8090,
       "description": "The port where metrics are served from the pdc agent",
@@ -125,9 +169,16 @@
       "title": "nodeSelector",
       "type": "object"
     },
+    "podAnnotations": {
+      "additionalProperties": true,
+      "description": "Annotations to add to the Pod resource\nFor more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
     "podLabels": {
       "additionalProperties": true,
-      "description": "This is for setting Kubernetes Labels to a Pod.\nFor more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
+      "description": "Labels to add to the Pod resource\nFor more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/",
       "required": [],
       "title": "podLabels",
       "type": "object"
@@ -288,9 +339,16 @@
       "title": "serviceAccount",
       "type": "object"
     },
+    "tokenSecretKey": {
+      "default": "token",
+      "description": "tokenSecretKey Defines the key that is used to lookup the token value in the secret defined by `tokenSecretName`.",
+      "required": [],
+      "title": "tokenSecretKey",
+      "type": "string"
+    },
     "tokenSecretName": {
       "default": "",
-      "description": "secretName Expects a secret with key `token` which contains the Access Policy token you generated",
+      "description": "tokenSecretName Expects a secret which contains the Access Policy token you generated. See `tokenSecretKey` for the key name under which the value is expected.",
       "required": [],
       "title": "tokenSecretName",
       "type": "string"
