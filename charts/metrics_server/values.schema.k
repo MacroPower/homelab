@@ -25,11 +25,13 @@ schema Values:
     global : ValuesGlobal, optional
         Global values are values that can be accessed from any chart or subchart by exactly the same name.
     hostNetwork : ValuesHostNetwork, optional
+    hostUsers : any, optional, default is ""
     image : ValuesImage, optional
     imagePullSecrets : [any], optional
     livenessProbe : ValuesLivenessProbe, optional
     metrics : ValuesMetrics, optional
     nameOverride : str, optional, default is ""
+    namespaceOverride : str, optional, default is ""
     nodeSelector : ValuesNodeSelector, optional
     podAnnotations : ValuesPodAnnotations, optional
     podDisruptionBudget : ValuesPodDisruptionBudget, optional
@@ -72,11 +74,13 @@ schema Values:
     fullnameOverride?: str
     global?: ValuesGlobal
     hostNetwork?: ValuesHostNetwork
+    hostUsers?: any
     image?: ValuesImage
     imagePullSecrets?: [any]
     livenessProbe?: ValuesLivenessProbe
     metrics?: ValuesMetrics
     nameOverride?: str
+    namespaceOverride?: str
     nodeSelector?: ValuesNodeSelector
     podAnnotations?: ValuesPodAnnotations
     podDisruptionBudget?: ValuesPodDisruptionBudget
