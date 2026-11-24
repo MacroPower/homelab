@@ -30,7 +30,7 @@ vars:
   # through the regex manager in .github/renovate.json5, which matches the
   # comment on the next line.
   # renovate: datasource=docker depName=ghcr.io/home-assistant/home-assistant
-  HASS_IMAGE: '{{.HASS_IMAGE | default "ghcr.io/home-assistant/home-assistant:2026.10.4"}}'
+  HASS_IMAGE: '{{.HASS_IMAGE | default "ghcr.io/home-assistant/home-assistant:2026.11.3"}}'
   # The SSH destination and config directory that hass:diff reads the live
   # config from and that hass:deploy writes to. hass:upgrade reads the deploy
   # lock there. The HAOS SSH apps mount the config at /homeassistant and link
