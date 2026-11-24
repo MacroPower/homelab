@@ -84,6 +84,7 @@ schema Values:
         Add `tolerations` to the Crossplane pod deployment.
     topologySpreadConstraints : [any], optional
         Add `topologySpreadConstraints` to the Crossplane pod deployment.
+    usages : ValuesUsages, optional
     webhooks : ValuesWebhooks, optional
     """
     [...str]: any
@@ -130,6 +131,7 @@ schema Values:
     sidecarsCrossplane?: [any]
     tolerations?: [any]
     topologySpreadConstraints?: [any]
+    usages?: ValuesUsages
     webhooks?: ValuesWebhooks
 
 schema ValuesAffinity:
@@ -587,6 +589,18 @@ schema ValuesServiceCustomAnnotations:
     """
     [...str]: any
 
+schema ValuesUsages:
+    r"""
+    ValuesUsages
+
+    Attributes
+    ----------
+    enabled : bool, optional, default is True
+        Enable support for deletion ordering and resource protection with Usages (beta, enabled by default). When disabled, the Usage deletion protection webhook is not installed.
+    """
+    [...str]: any
+    enabled?: bool
+
 schema ValuesWebhooks:
     r"""
     ValuesWebhooks
@@ -597,8 +611,22 @@ schema ValuesWebhooks:
         Enable webhooks for Crossplane and installed Provider packages.
     port : str, optional, default is ""
         The port the webhook server listens on.
+    usage : ValuesWebhooksUsage, optional
     """
     [...str]: any
     enabled?: bool
     port?: str
+    usage?: ValuesWebhooksUsage
+
+schema ValuesWebhooksUsage:
+    r"""
+    ValuesWebhooksUsage
+
+    Attributes
+    ----------
+    failurePolicy : str, optional, default is "Fail"
+        The `failurePolicy` of the Usage deletion protection webhook (`crossplane-no-usages`). One of `Fail` or `Ignore`. Set to `Ignore` for compatibility with managed Kubernetes operations that reject `Fail`-policy webhooks with wildcard rules, such as Azure AKS cluster stop.
+    """
+    [...str]: any
+    failurePolicy?: str
 

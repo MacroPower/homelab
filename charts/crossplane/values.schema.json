@@ -736,6 +736,21 @@
       "title": "topologySpreadConstraints",
       "type": "array"
     },
+    "usages": {
+      "additionalProperties": true,
+      "properties": {
+        "enabled": {
+          "default": true,
+          "description": "Enable support for deletion ordering and resource protection with Usages (beta, enabled by default). When disabled, the Usage deletion protection webhook is not installed.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "title": "usages",
+      "type": "object"
+    },
     "webhooks": {
       "additionalProperties": true,
       "properties": {
@@ -752,6 +767,21 @@
           "required": [],
           "title": "port",
           "type": "string"
+        },
+        "usage": {
+          "additionalProperties": true,
+          "properties": {
+            "failurePolicy": {
+              "default": "Fail",
+              "description": "The `failurePolicy` of the Usage deletion protection webhook (`crossplane-no-usages`). One of `Fail` or `Ignore`. Set to `Ignore` for compatibility with managed Kubernetes operations that reject `Fail`-policy webhooks with wildcard rules, such as Azure AKS cluster stop.",
+              "required": [],
+              "title": "failurePolicy",
+              "type": "string"
+            }
+          },
+          "required": [],
+          "title": "usage",
+          "type": "object"
         }
       },
       "required": [],
