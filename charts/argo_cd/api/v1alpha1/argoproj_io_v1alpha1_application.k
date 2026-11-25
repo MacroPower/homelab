@@ -212,6 +212,11 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSource:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -227,6 +232,7 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSource:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectory:
@@ -235,6 +241,12 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -244,6 +256,7 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationOperationSyncSourceDirectoryJsonnet
@@ -421,9 +434,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationOperationSyncSourceKustomizePatchesItems0], default is Undefined, optional
@@ -592,6 +605,11 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -607,6 +625,7 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Directory:
@@ -615,6 +634,12 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Directory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -624,6 +649,7 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0DirectoryJsonnet
@@ -801,9 +827,9 @@ schema ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationOperationSyncSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -1118,6 +1144,11 @@ schema ArgoprojIoV1alpha1ApplicationSpecSource:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -1133,6 +1164,7 @@ schema ArgoprojIoV1alpha1ApplicationSpecSource:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectory:
@@ -1141,6 +1173,12 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -1150,6 +1188,7 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationSpecSourceDirectoryJsonnet
@@ -1349,6 +1388,12 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -1358,6 +1403,7 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceDirectoryJsonnet
@@ -1535,9 +1581,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationSpecSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
@@ -1704,12 +1750,16 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceHydratorSyncSource:
         Path is a directory path within the git repository where hydrated manifests should be committed to and synced
         from. The Path should never point to the root of the repo. If hydrateTo is set, this is just the path from which
         hydrated manifests will be synced.
+    repoURL : str, default is Undefined, optional
+        RepoURL is the URL to the git repository that contains the hydrated manifests. If not set, defaults to
+        the DrySource.RepoURL.
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch from which hydrated manifests will be synced.
         If HydrateTo is not set, this is also the branch to which hydrated manifests are committed.
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -1749,9 +1799,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationSpecSourceKustomizePatchesItems0], default is Undefined, optional
@@ -1920,6 +1970,11 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -1935,6 +1990,7 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Directory:
@@ -1943,6 +1999,12 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Directory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -1952,6 +2014,7 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationSpecSourcesItems0DirectoryJsonnet
@@ -2129,9 +2192,9 @@ schema ArgoprojIoV1alpha1ApplicationSpecSourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationSpecSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -2380,6 +2443,7 @@ schema ArgoprojIoV1alpha1ApplicationStatus:
         History contains information about the application's sync history
     observedAt : str, default is Undefined, optional
         ObservedAt indicates when the application state was updated without querying latest git state
+
         Deprecated: controller no longer updates ObservedAt field
     operationState : ArgoprojIoV1alpha1ApplicationStatusOperationState, default is Undefined, optional
         operation state
@@ -2443,8 +2507,6 @@ schema ArgoprojIoV1alpha1ApplicationStatusHealth:
         LastTransitionTime is the time the HealthStatus was set or updated
     message : str, default is Undefined, optional
         Message is a human-readable informational message describing the health status
-
-        Deprecated: this field is not used and will be removed in a future release.
     status : str, default is Undefined, optional
         Status holds the status code of the application
     """
@@ -2524,6 +2586,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0Source:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -2539,6 +2606,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0Source:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectory:
@@ -2547,6 +2615,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -2556,6 +2630,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceDirectoryJsonnet
@@ -2733,9 +2808,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourceKustomizePatchesItems0], default is Undefined, optional
@@ -2904,6 +2979,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -2919,6 +2999,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Directory:
@@ -2927,6 +3008,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Directory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -2936,6 +3023,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0DirectoryJsonnet
@@ -3113,9 +3201,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusHistoryItems0SourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -3466,6 +3554,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSource:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -3481,6 +3574,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSource:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectory:
@@ -3489,6 +3583,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirec
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -3498,6 +3598,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirec
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceDirectoryJsonnet
@@ -3675,9 +3776,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKusto
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourceKustomizePatchesItems0], default is Undefined, optional
@@ -3846,6 +3947,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -3861,6 +3967,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0Directory:
@@ -3869,6 +3976,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -3878,6 +3991,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0DirectoryJsonnet
@@ -4055,9 +4169,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItem
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateOperationSyncSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -4353,6 +4467,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSource:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -4368,6 +4487,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSource:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectory:
@@ -4376,6 +4496,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirector
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -4385,6 +4511,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirector
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceDirectoryJsonnet
@@ -4562,9 +4689,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomiz
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourceKustomizePatchesItems0], default is Undefined, optional
@@ -4733,6 +4860,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -4748,6 +4880,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0Directory:
@@ -4756,6 +4889,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0D
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -4765,6 +4904,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0D
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0DirectoryJsonnet
@@ -4942,9 +5082,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0K
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusOperationStateSyncResultSourcesItems0KustomizePatchesItems0], default is Undefined, optional
@@ -5158,10 +5298,14 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydrator:
     ----------
     currentOperation : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperation, default is Undefined, optional
         current operation
+    lastComparedDryRevision : str, default is Undefined, optional
+        LastComparedDryRevision holds the resolved revision from the most recent dry source comparison.
+        This is updated on every evaluation, even when hydration is skipped due to no changes.
     lastSuccessfulOperation : ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperation, default is Undefined, optional
         last successful operation
     """
     currentOperation?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperation
+    lastComparedDryRevision?: str
     lastSuccessfulOperation?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperation
 
 schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperation:
@@ -5250,6 +5394,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -5259,6 +5409,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceDirectoryJsonnet
@@ -5436,9 +5587,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
@@ -5605,12 +5756,16 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorCurrentOperationSourceHy
         Path is a directory path within the git repository where hydrated manifests should be committed to and synced
         from. The Path should never point to the root of the repo. If hydrateTo is set, this is just the path from which
         hydrated manifests will be synced.
+    repoURL : str, default is Undefined, optional
+        RepoURL is the URL to the git repository that contains the hydrated manifests. If not set, defaults to
+        the DrySource.RepoURL.
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch from which hydrated manifests will be synced.
         If HydrateTo is not set, this is also the branch to which hydrated manifests are committed.
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -5689,6 +5844,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -5698,6 +5859,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceDirectoryJsonnet
@@ -5875,9 +6037,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationSourceHydratorDrySourceKustomizePatchesItems0], default is Undefined, optional
@@ -6044,12 +6206,16 @@ schema ArgoprojIoV1alpha1ApplicationStatusSourceHydratorLastSuccessfulOperationS
         Path is a directory path within the git repository where hydrated manifests should be committed to and synced
         from. The Path should never point to the root of the repo. If hydrateTo is set, this is just the path from which
         hydrated manifests will be synced.
+    repoURL : str, default is Undefined, optional
+        RepoURL is the URL to the git repository that contains the hydrated manifests. If not set, defaults to
+        the DrySource.RepoURL.
     targetBranch : str, default is Undefined, required
         TargetBranch is the branch from which hydrated manifests will be synced.
         If HydrateTo is not set, this is also the branch to which hydrated manifests are committed.
     """
     path: str
 
+    repoURL?: str
     targetBranch: str
 
     check:
@@ -6066,9 +6232,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusSummary:
         ExternalURLs holds all external URLs of application child resources.
     images : [str], default is Undefined, optional
         Images holds all images of application child resources.
+    isAppOfApps : bool, default is Undefined, optional
+        IsAppOfApps holds true if the application has any application for child resource.
     """
     externalURLs?: [str]
     images?: [str]
+    isAppOfApps?: bool
 
 schema ArgoprojIoV1alpha1ApplicationStatusSync:
     r"""
@@ -6184,6 +6353,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSource:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -6199,6 +6373,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSource:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectory:
@@ -6207,6 +6382,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -6216,6 +6397,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceDirectoryJsonnet
@@ -6393,9 +6575,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourceKustomizePatchesItems0], default is Undefined, optional
@@ -6564,6 +6746,11 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0:
         Ref is reference to another source within sources field. This field will not be used if used with a `source` tag.
     repoURL : str, default is Undefined, required
         RepoURL is the URL to the repository (Git or Helm) that contains the application manifests
+    tagPrefix : str, default is Undefined, optional
+        TagPrefix filters git tags to only those with this prefix before evaluating targetRevision as a semver constraint.
+        The prefix is stripped from tag names before comparison and re-added to the resolved version.
+        For example, with tagPrefix "component-b/" and targetRevision "1.0.*", tags like "component-b/1.0.0" and
+        "component-b/1.0.1" are candidates, and the constraint resolves to "component-b/1.0.1".
     targetRevision : str, default is Undefined, optional
         TargetRevision defines the revision of the source to sync the application to.
         In case of Git, this can be commit, tag, or branch. If omitted, will equal to HEAD.
@@ -6579,6 +6766,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0:
     ref?: str
     repoURL: str
 
+    tagPrefix?: str
     targetRevision?: str
 
 schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Directory:
@@ -6587,6 +6775,12 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Directory:
 
     Attributes
     ----------
+    disableExtensionFilter : bool, default is Undefined, optional
+        DisableExtensionFilter controls whether the built-in file-extension filter is skipped during
+        manifest generation. When false (the default), only files with a .yaml, .yml, .json, or
+        .jsonnet extension are considered as potential manifests. Set it to true to disable the filter
+        so that files with custom extensions (e.g. *.yaml.sealed) can be matched by the include/exclude
+        glob patterns instead.
     exclude : str, default is Undefined, optional
         Exclude contains a glob pattern to match paths against that should be explicitly excluded from being used during manifest generation
     include : str, default is Undefined, optional
@@ -6596,6 +6790,7 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Directory:
     recurse : bool, default is Undefined, optional
         Recurse specifies whether to scan a directory recursively for manifests
     """
+    disableExtensionFilter?: bool
     exclude?: str
     include?: str
     jsonnet?: ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0DirectoryJsonnet
@@ -6773,9 +6968,9 @@ schema ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0Kustomize:
     labelWithoutSelector : bool, default is Undefined, optional
         LabelWithoutSelector specifies whether to apply common labels to resource selectors or not
     namePrefix : str, default is Undefined, optional
-        NamePrefix is a prefix appended to resources for Kustomize apps
+        NamePrefix overrides the namePrefix in the kustomization.yaml for Kustomize apps
     nameSuffix : str, default is Undefined, optional
-        NameSuffix is a suffix appended to resources for Kustomize apps
+        NameSuffix overrides the nameSuffix in the kustomization.yaml for Kustomize apps
     namespace : str, default is Undefined, optional
         Namespace sets the namespace that Kustomize adds to all resources
     patches : [ArgoprojIoV1alpha1ApplicationStatusSyncComparedToSourcesItems0KustomizePatchesItems0], default is Undefined, optional
